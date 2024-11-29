@@ -1,4 +1,5 @@
 import 'package:event_ticket/auth/login_screen.dart';
+import 'package:event_ticket/auth/register_screen.dart';
 import 'package:event_ticket/home/home_screen.dart';
 import 'package:event_ticket/profile/profile_screen.dart';
 import 'package:event_ticket/ticket/ticket_screen.dart';
@@ -89,7 +90,24 @@ final GoRouter router = GoRouter(
     // Các màn hình khác
     GoRoute(
       path: '/login',
-      builder: (context, state) => LoginScreen(),
+      builder: (context, state) {
+        final extraData = state.extra as Map<String, String>?;
+
+        return LoginScreen(
+          email: extraData?['email'],
+          password: extraData?['password'],
+        );
+      },
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) {
+        final extraData = state.extra as Map<String, dynamic>?;
+        return RegisterScreen(
+          email: extraData?['email'],
+          password: extraData?['password'],
+        );
+      },
     ),
 
     // GoRoute(

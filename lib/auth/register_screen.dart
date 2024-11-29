@@ -1,12 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/request/auth_request.dart';
-import 'package:event_ticket/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({
     super.key,
     this.email = '',
     this.password = '',
@@ -16,14 +16,17 @@ class LoginScreen extends StatefulWidget {
   final String? password;
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   // State variables
   bool isOrganizer = false;
+  final TextEditingController nameController = TextEditingController();
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
+  late final TextEditingController confirmPasswordController =
+      TextEditingController();
   final _authRequest = AuthRequest();
 
   @override
@@ -34,27 +37,30 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // Placeholder function
-  void handleLogin() async {
+  void handleRegister() async {
+    final name = nameController.text;
     final email = emailController.text;
     final password = passwordController.text;
+    final confirmPassword = confirmPasswordController.text;
     final role =
         isOrganizer ? Roles.eventCreator.value : Roles.ticketBuyer.value;
 
+    Response response;
     try {
-      final response = await _authRequest.login(
+      response = await _authRequest.register(
+        name: name,
         email: email,
         password: password,
+        confirmPassword: confirmPassword,
         role: role,
       );
-
-      if (response.statusCode == 200) {
-        // Lưu token vào shared preferences
-        AuthService.setAuthBearerToken(response.data['token']);
-        print('Token: ${response.data['token']}');
-
+      if (response.statusCode == 201) {
         // Chuyển hướng đến trang chính
         if (mounted) {
-          context.pushReplacement('/home');
+          context.go('/login', extra: {
+            'email': emailController.text,
+            'password': passwordController.text,
+          });
         }
       } else {
         // Hiển thị thông báo lỗi
@@ -72,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Đăng nhập thất bại: $e'),
+            content: Text('Đăng ký thất bại: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -84,12 +90,22 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('Register'),
         centerTitle: true,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          TextField(
+            controller: nameController,
+            decoration: const InputDecoration(
+              labelText: 'Name',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.name,
+          ),
+          const SizedBox(height: 20),
+
           // Email Input
           TextField(
             controller: emailController,
@@ -111,6 +127,16 @@ class _LoginScreenState extends State<LoginScreen> {
             obscureText: true,
           ),
           const SizedBox(height: 20),
+          // Confirm Password Input
+          TextField(
+            controller: confirmPasswordController,
+            decoration: const InputDecoration(
+              labelText: 'Confirm Password',
+              border: OutlineInputBorder(),
+            ),
+            obscureText: true,
+          ),
+          const SizedBox(height: 20),
           // Role Switch
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -119,22 +145,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   value: isOrganizer,
                   onChanged: (value) => setState(() => isOrganizer = value)),
               const SizedBox(width: 8),
-              const Text('Login as Event Organizer'),
+              const Text('Register as Event Organizer'),
             ],
           ),
           // Login Button
           ElevatedButton(
-            onPressed: handleLogin,
-            child: const Text('Login'),
+            onPressed: handleRegister,
+            child: const Text('Register'),
           ),
           TextButton(
             onPressed: () {
-              context.go('/register', extra: {
+              context.go('/login', extra: {
                 'email': emailController.text,
                 'password': passwordController.text,
               });
             },
-            child: const Text('Register'),
+            child: const Text('Already have an account? Login'),
           ),
         ],
       ).p(16),
