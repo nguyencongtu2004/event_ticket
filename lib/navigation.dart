@@ -1,8 +1,8 @@
-import 'package:event_ticket/auth/login_screen.dart';
-import 'package:event_ticket/auth/register_screen.dart';
-import 'package:event_ticket/home/home_screen.dart';
-import 'package:event_ticket/profile/profile_screen.dart';
-import 'package:event_ticket/ticket/ticket_screen.dart';
+import 'package:event_ticket/pages/auth/login_screen.dart';
+import 'package:event_ticket/pages/auth/register_screen.dart';
+import 'package:event_ticket/pages/home/home_screen.dart';
+import 'package:event_ticket/pages/profile/profile_screen.dart';
+import 'package:event_ticket/pages/ticket/ticket_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
