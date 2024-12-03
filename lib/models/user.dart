@@ -25,11 +25,11 @@ class User {
     return User(
       id: json['userId'],
       email: json['email'],
-      role: Roles.values.firstWhere((e) => e.toString() == json['role']),
+      role: Roles.values.firstWhere((e) => e.value == json['role']),
       name: json['name'],
       avatar: json['avatar'],
       birthday: DateTime.parse(json['birthday']),
-      gender: Genders.values.firstWhere((e) => e.toString == json['gender']),
+      gender: Genders.values.firstWhere((e) => e.name == json['gender']),
       phone: json['phone'],
     );
   }

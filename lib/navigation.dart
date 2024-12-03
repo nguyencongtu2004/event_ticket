@@ -1,35 +1,24 @@
+import 'package:event_ticket/models/route_page.dart';
 import 'package:event_ticket/pages/auth/login_screen.dart';
 import 'package:event_ticket/pages/auth/register_screen.dart';
 import 'package:event_ticket/pages/home/home_screen.dart';
+import 'package:event_ticket/pages/profile/edit_profile_screen.dart';
 import 'package:event_ticket/pages/profile/profile_screen.dart';
 import 'package:event_ticket/pages/ticket/ticket_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class RoutePage {
-  const RoutePage(this.index, this.route, this.title, this.icon,
-      this.selectedIcon, this.color);
-
-  final int index;
-  final String route;
-  final String title;
-  final IconData icon;
-  final IconData selectedIcon;
-  final Color color;
-}
-
 const List<RoutePage> allRoutePages = [
-  RoutePage(
-      0, '/home', 'Trang chủ', Icons.home_outlined, Icons.home, Colors.teal),
-  RoutePage(1, '/ticket', 'Vé', Icons.airplane_ticket_outlined,
+  RoutePage(0, '/home', 'Home', Icons.home_outlined, Icons.home, Colors.teal),
+  RoutePage(1, '/ticket', 'Ticket', Icons.airplane_ticket_outlined,
       Icons.airplane_ticket, Colors.cyan),
-  RoutePage(2, '/profile', 'Thông Tin', Icons.person_outlined, Icons.person,
+  RoutePage(2, '/profile', 'Profile', Icons.person_outlined, Icons.person,
       Colors.orange),
 ];
 
 final GoRouter router = GoRouter(
   debugLogDiagnostics: true,
-  initialLocation: '/login',
+  initialLocation: '/home',
   navigatorKey: GlobalKey<NavigatorState>(),
   routes: [
     StatefulShellRoute.indexedStack(
@@ -92,7 +81,6 @@ final GoRouter router = GoRouter(
       path: '/login',
       builder: (context, state) {
         final extraData = state.extra as Map<String, String>?;
-
         return LoginScreen(
           email: extraData?['email'],
           password: extraData?['password'],
@@ -108,6 +96,10 @@ final GoRouter router = GoRouter(
           password: extraData?['password'],
         );
       },
+    ),
+    GoRoute(
+      path: '/edit-profile',
+      builder: (context, state) => const EditProfileScreen(),
     ),
 
     // GoRoute(

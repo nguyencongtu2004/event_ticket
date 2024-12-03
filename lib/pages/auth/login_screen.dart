@@ -1,6 +1,7 @@
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/request/auth_request.dart';
 import 'package:event_ticket/service/auth_service.dart';
+import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -82,17 +83,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-        centerTitle: true,
-      ),
+    return TicketScaffold(
+      title: 'Login',
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Email Input
           TextField(
-            controller: emailController,
+            controller: emailController..text = 'congtu2132004@gmail.com',
             decoration: const InputDecoration(
               labelText: 'Email',
               border: OutlineInputBorder(),
@@ -103,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
           // Password Input
           TextField(
-            controller: passwordController,
+            controller: passwordController..text = '12345678',
             decoration: const InputDecoration(
               labelText: 'Password',
               border: OutlineInputBorder(),
