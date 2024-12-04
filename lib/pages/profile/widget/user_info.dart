@@ -14,23 +14,23 @@ class UserInfo extends StatelessWidget {
         // Avatar tròn với trạng thái loading/lỗi
         ClipOval(
           child: Image.network(
-            user.avatar,
-            height: 100,
-            width: 100,
+            user.avatar ?? '',
+            height: 140,
+            width: 140,
             fit: BoxFit.cover,
             loadingBuilder: (context, child, loadingProgress) {
               if (loadingProgress == null) return child;
               return const SizedBox(
-                height: 100,
-                width: 100,
-                child: Icon(Icons.person, size: 100),
+                height: 140,
+                width: 140,
+                child: Icon(Icons.person, size: 140),
               );
             },
             errorBuilder: (context, error, stackTrace) {
               return const SizedBox(
-                height: 100,
-                width: 100,
-                child: Icon(Icons.person, size: 100), // Ảnh mặc định khi lỗi
+                height: 140,
+                width: 140,
+                child: Icon(Icons.person, size: 140), // Ảnh mặc định khi lỗi
               );
             },
           ),

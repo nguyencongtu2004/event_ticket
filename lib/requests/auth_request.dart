@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:event_ticket/constants/api.dart';
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/service/http_service.dart';
 
@@ -9,7 +10,7 @@ class AuthRequest extends HttpService {
     required String role,
   }) async {
     final response = await post(
-      url: 'auth/login',
+      url: Api.login,
       body: {
         'email': email,
         'password': password,
@@ -34,7 +35,7 @@ class AuthRequest extends HttpService {
     String? phone,
   }) async {
     final response = await post(
-      url: 'auth/register',
+      url: Api.register,
       body: {
         'name': name,
         'email': email,

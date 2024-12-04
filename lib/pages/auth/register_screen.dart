@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:event_ticket/enum.dart';
-import 'package:event_ticket/request/auth_request.dart';
+import 'package:event_ticket/requests/auth_request.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
