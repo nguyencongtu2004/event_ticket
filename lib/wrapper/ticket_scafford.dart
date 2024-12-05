@@ -4,14 +4,12 @@ class TicketScaffold extends StatelessWidget {
   const TicketScaffold({
     super.key,
     this.body,
-    this.listViewBody,
     this.appBar,
     this.appBarActions,
     this.title,
   });
 
   final Widget? body;
-  final List<Widget>? listViewBody;
   final PreferredSizeWidget? appBar;
   final List<Widget>? appBarActions;
   final String? title;
@@ -22,16 +20,14 @@ class TicketScaffold extends StatelessWidget {
     return Scaffold(
       appBar: appBar ??
           AppBar(
-            title: Text(title ?? 'Ticket app',
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            title: Text(
+              title ?? 'Ticket app',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             centerTitle: true,
             actions: appBarActions,
           ),
-      body: body ??
-          (listViewBody?.isNotEmpty ?? false
-              ? ListView(children: listViewBody!)
-              : noContent),
+      body: body ?? noContent,
     );
   }
 }

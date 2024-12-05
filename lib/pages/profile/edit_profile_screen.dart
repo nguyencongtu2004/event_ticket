@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/models/university.dart';
 import 'package:event_ticket/models/user.dart';
-import 'package:event_ticket/pages/profile/widget/user_info.dart';
 import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/requests/university_request.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
@@ -21,32 +20,31 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  late User _editedUser;
+  late User editedUser;
   File? _selectedImage;
   final _universityRequest = UniversityRequest();
-  List<University> _availableUniversities = [];
+  List<University> availableUniversities = [];
 
-  String? _selectedUniversity;
-  String? _selectedFaculty;
-  String? _selectedMajor;
-  List<Faculty> _filteredFaculties = [];
-  List<Major> _filteredMajors = [];
+  String? selectedUniversity;
+  String? selectedFaculty;
+  String? selectedMajor;
+  List<Faculty> filteredFaculties = [];
+  List<Major> filteredMajors = [];
 
   @override
   void initState() {
     super.initState();
     final user = ref.read(userProvider).value;
     if (user != null) {
-      _editedUser = user;
-      _selectedUniversity = user.university;
-      _selectedFaculty = user.faculty;
-      _selectedMajor = user.major;
+      editedUser = user;
+      selectedUniversity = user.university;
+      selectedFaculty = user.faculty;
+      selectedMajor = user.major;
     }
 
     _universityRequest.getUniversities().then((response) {
-      print(response.data);
       setState(() {
-        _availableUniversities = List<University>.from(
+        availableUniversities = List<University>.from(
             response.data.map((e) => University.fromJson(e)));
         _updateFilteredFaculties();
         _updateFilteredMajors();
@@ -55,20 +53,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   void _updateFilteredFaculties() {
-    final university = _availableUniversities.firstWhere(
-      (u) => u.name == _selectedUniversity,
+    final university = availableUniversities.firstWhere(
+      (u) => u.name == selectedUniversity,
       orElse: () => University(id: '', name: '', faculties: []),
     );
 
     setState(() {
-      _filteredFaculties = university.faculties;
+      filteredFaculties = university.faculties;
 
       // Giữ lại khoa đã chọn nếu tồn tại trong danh sách khoa mới
-      if (_selectedFaculty != null &&
-          _filteredFaculties.any((f) => f.name == _selectedFaculty)) {
-        _selectedFaculty = _selectedFaculty;
+      if (selectedFaculty != null &&
+          filteredFaculties.any((f) => f.name == selectedFaculty)) {
+        selectedFaculty = selectedFaculty;
       } else {
-        _selectedFaculty = null; // Reset nếu không khớp
+        selectedFaculty = null; // Reset nếu không khớp
       }
 
       _updateFilteredMajors(); // Cập nhật ngành theo khoa mới
@@ -76,20 +74,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   void _updateFilteredMajors() {
-    final faculty = _filteredFaculties.firstWhere(
-      (f) => f.name == _selectedFaculty,
+    final faculty = filteredFaculties.firstWhere(
+      (f) => f.name == selectedFaculty,
       orElse: () => Faculty(id: '', name: '', majors: []),
     );
 
     setState(() {
-      _filteredMajors = faculty.majors;
+      filteredMajors = faculty.majors;
 
       // Giữ lại ngành đã chọn nếu tồn tại trong danh sách ngành mới
-      if (_selectedMajor != null &&
-          _filteredMajors.any((m) => m.name == _selectedMajor)) {
-        _selectedMajor = _selectedMajor;
+      if (selectedMajor != null &&
+          filteredMajors.any((m) => m.name == selectedMajor)) {
+        selectedMajor = selectedMajor;
       } else {
-        _selectedMajor = null; // Reset nếu không khớp
+        selectedMajor = null; // Reset nếu không khớp
       }
     });
   }
@@ -108,19 +106,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      _editedUser = _editedUser.copyWith(
-        university: _availableUniversities
-            .firstWhere((u) => u.name == _selectedUniversity)
+      editedUser = editedUser.copyWith(
+        university: availableUniversities
+            .firstWhere((u) => u.name == selectedUniversity)
             .id,
         faculty:
-            _filteredFaculties.firstWhere((f) => f.name == _selectedFaculty).id,
-        major: _filteredMajors.firstWhere((m) => m.name == _selectedMajor).id,
+            filteredFaculties.firstWhere((f) => f.name == selectedFaculty).id,
+        major: filteredMajors.firstWhere((m) => m.name == selectedMajor).id,
       );
       // Gửi thông tin cập nhật đến UserNotifier
       final isSuccess = await ref
           .read(userProvider.notifier)
-          .updateUser(_editedUser, _selectedImage);
-      // TODO: Upload _selectedImage lên server nếu cần
+          .updateUser(editedUser, _selectedImage);
 
       if (isSuccess) {
         Navigator.of(context).pop();
@@ -161,30 +158,30 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ).centered(),
                     const SizedBox(height: 24),
                     TextFormField(
-                      initialValue: _editedUser.name,
+                      initialValue: editedUser.name,
                       decoration: const InputDecoration(labelText: 'Tên'),
                       onSaved: (value) {
                         if (value != null) {
-                          _editedUser = _editedUser.copyWith(name: value);
+                          editedUser = editedUser.copyWith(name: value);
                         }
                       },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
-                      initialValue: _editedUser.phone,
+                      initialValue: editedUser.phone,
                       decoration:
                           const InputDecoration(labelText: 'Số điện thoại'),
                       onSaved: (value) {
-                        _editedUser = _editedUser.copyWith(phone: value);
+                        editedUser = editedUser.copyWith(phone: value);
                       },
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _selectedUniversity,
+                      value: selectedUniversity,
                       isExpanded: true,
                       decoration:
                           const InputDecoration(labelText: 'Trường đại học'),
-                      items: _availableUniversities
+                      items: availableUniversities
                           .map((university) => DropdownMenuItem(
                                 value: university.name,
                                 child: Text(
@@ -195,17 +192,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           .toList(),
                       onChanged: (value) {
                         setState(() {
-                          _selectedUniversity = value;
-                          _editedUser = _editedUser.copyWith(university: value);
+                          selectedUniversity = value;
+                          editedUser = editedUser.copyWith(university: value);
                           _updateFilteredFaculties();
                         });
                       },
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _selectedFaculty,
+                      value: selectedFaculty,
                       decoration: const InputDecoration(labelText: 'Khoa'),
-                      items: _filteredFaculties
+                      items: filteredFaculties
                           .map((faculty) => DropdownMenuItem(
                                 value: faculty.name,
                                 child: Text(
@@ -216,17 +213,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           .toList(),
                       onChanged: (value) {
                         setState(() {
-                          _selectedFaculty = value;
-                          _editedUser = _editedUser.copyWith(faculty: value);
+                          selectedFaculty = value;
+                          editedUser = editedUser.copyWith(faculty: value);
                           _updateFilteredMajors();
                         });
                       },
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _selectedMajor,
+                      value: selectedMajor,
                       decoration: const InputDecoration(labelText: 'Ngành học'),
-                      items: _filteredMajors
+                      items: filteredMajors
                           .map((major) => DropdownMenuItem(
                                 value: major.name,
                                 child: Text(
@@ -237,14 +234,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           .toList(),
                       onChanged: (value) {
                         setState(() {
-                          _selectedMajor = value;
-                          _editedUser = _editedUser.copyWith(major: value);
+                          selectedMajor = value;
+                          editedUser = editedUser.copyWith(major: value);
                         });
                       },
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<Genders>(
-                      value: _editedUser.gender,
+                      value: editedUser.gender,
                       decoration: const InputDecoration(labelText: 'Giới tính'),
                       items: Genders.values
                           .map((gender) => DropdownMenuItem(
@@ -254,7 +251,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           .toList(),
                       onChanged: (value) {
                         setState(() {
-                          _editedUser = _editedUser.copyWith(gender: value);
+                          editedUser = editedUser.copyWith(gender: value);
                         });
                       },
                     ),
@@ -262,8 +259,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     TextFormField(
                       readOnly: true,
                       controller: TextEditingController(
-                        text: _editedUser.birthday != null
-                            ? _editedUser.birthday!
+                        text: editedUser.birthday != null
+                            ? editedUser.birthday!
                                 .toLocal()
                                 .toIso8601String()
                                 .split('T')
@@ -274,14 +271,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       onTap: () async {
                         final DateTime? picked = await showDatePicker(
                           context: context,
-                          initialDate: _editedUser.birthday ?? DateTime.now(),
+                          initialDate: editedUser.birthday ?? DateTime.now(),
                           firstDate: DateTime(1900),
                           lastDate: DateTime.now(),
                         );
                         if (picked != null) {
                           setState(() {
-                            _editedUser =
-                                _editedUser.copyWith(birthday: picked);
+                            editedUser =
+                                editedUser.copyWith(birthday: picked);
                           });
                         }
                       },
