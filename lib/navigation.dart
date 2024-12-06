@@ -109,55 +109,5 @@ final GoRouter router = GoRouter(
         return EventDetailScreen(eventId: eventId);
       },
     ),
-
-    // GoRoute(
-    //     path: '/splash',
-    //     builder: (context, state) {
-    //       return const SplashScreen();
-    //     }),
-    // GoRoute(
-    //     path: '/learn/:chapter',
-    //     builder: (context, state) {
-    //       final chapter = int.parse(state.pathParameters['chapter']!);
-    //       return LearnScreen(chapter: chapter);
-    //     }),
-    // GoRoute(
-    //     path: '/chose-licence-class',
-    //     builder: (context, state) {
-    //       return const ChoseLicencesClassScreen();
-    //     }),
-    // GoRoute(
-    //     path: '/signs',
-    //     builder: (context, state) {
-    //       return const SignsScreen();
-    //     }),
-    // GoRoute(
-    //     path: '/test-list',
-    //     builder: (context, state) {
-    //       return const TestListScreen();
-    //     }),
-    // GoRoute(
-    //     path: '/test-info/:testId',
-    //     builder: (context, state) {
-    //       final testId = state.pathParameters['testId']!;
-    //       return TestInfoScreen(testId: testId);
-    //     }),
-    // GoRoute(
-    //     path: '/test/:testId',
-    //     builder: (context, state) {
-    //       final testId = state.pathParameters['testId']!;
-    //       return TestScreen(testId: testId);
-    //     }),
-    // GoRoute(
-    //     path: '/test-result/:testId',
-    //     builder: (context, state) {
-    //       final testId = state.pathParameters['testId']!;
-    //       return TestResultScreen(testId: testId);
-    //     }),
-    // GoRoute(
-    //     path: '/tips',
-    //     builder: (context, state) {
-    //       return const TipsScreen();
-    //     }),
   ],
 );

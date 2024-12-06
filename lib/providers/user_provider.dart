@@ -16,8 +16,6 @@ class UserNotifier extends AsyncNotifier<User?> {
 
       // Gọi API để lấy dữ liệu
       final response = await _userRequest.getUserInfo();
-      print(response.data);
-      // final response = await fetchUserFromApi();
       final user = User.fromJson(response.data);
 
       // Trả về dữ liệu người dùng
@@ -26,7 +24,7 @@ class UserNotifier extends AsyncNotifier<User?> {
       // Xử lý lỗi và trả về trạng thái lỗi
       state = AsyncValue.error(e, st);
       print('Error in UserNotifier.build: $e');
-      print('Stacktrace: $st');
+      print(st);
       return null;
     }
   }

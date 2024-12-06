@@ -16,14 +16,14 @@ class CategoryNotifier extends AsyncNotifier<List<Category>> {
       final categories = (response.data as List)
           .map((e) => Category.fromJson(e as Map<String, dynamic>))
           .toList();
-          
+
       // Trả về dữ liệu người dùng
       return categories;
     } catch (e, st) {
       // Xử lý lỗi và trả về trạng thái lỗi
       state = AsyncValue.error(e, st);
       print('Error in CategoryNotifier.build: $e');
-      print('Stacktrace: $st');
+      print(st);
       return [];
     }
   }

@@ -150,7 +150,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         backgroundImage: _selectedImage != null
                             ? FileImage(_selectedImage!)
                             : NetworkImage(user.avatar ??
-                                'https://via.placeholder.com/150'),
+                                'https://placehold.co/150.png'),
                         child: _selectedImage == null
                             ? const Icon(Icons.camera_alt, size: 50)
                             : null,

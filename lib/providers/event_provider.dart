@@ -23,7 +23,7 @@ class EventNotifier extends AsyncNotifier<List<Event>> {
       // Xử lý lỗi và trả về trạng thái lỗi
       state = AsyncValue.error(e, st);
       print('Error in EventNotifier.build: $e');
-      print('Stacktrace: $st');
+      print(st);
       return [];
     }
   }
