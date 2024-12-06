@@ -162,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: const Text('Already have an account? Login'),
           ),
         ],
-      ).p(16),
+      ).p(16).scrollVertical(),
     );
   }
 }

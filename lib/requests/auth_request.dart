@@ -7,7 +7,7 @@ class AuthRequest extends HttpService {
   Future<Response> login({
     required String email,
     required String password,
-    required String role,
+    String? role,
   }) async {
     final response = await post(
       url: Api.login,

@@ -1,13 +1,15 @@
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/requests/auth_request.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/service/auth_service.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({
     super.key,
     this.email = '',
@@ -18,12 +20,12 @@ class LoginScreen extends StatefulWidget {
   final String? password;
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   // State variables
-  bool isOrganizer = false;
+  //bool isOrganizer = false;
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
   final _authRequest = AuthRequest();
@@ -39,24 +41,34 @@ class _LoginScreenState extends State<LoginScreen> {
   void handleLogin() async {
     final email = emailController.text;
     final password = passwordController.text;
-    final role =
-        isOrganizer ? Roles.eventCreator.value : Roles.ticketBuyer.value;
+    //final role = isOrganizer ? Roles.eventCreator.value : Roles.ticketBuyer.value;
 
     try {
       final response = await _authRequest.login(
         email: email,
         password: password,
-        role: role,
+        //role: role,
       );
 
       if (response.statusCode == 200) {
-        // Lưu token vào shared preferences
-        AuthService.setAuthBearerToken(response.data['token']);
-        print('Token: ${response.data['token']}');
+        final token = response.data['token'];
+        final isEventCreator =
+            response.data['user']['role'] == Roles.eventCreator.value;
+
+        // Lưu token và role vào shared preferences
+        AuthService.setAuthBearerToken(token);
+        AuthService.setRole(
+            isEventCreator ? Roles.eventCreator : Roles.ticketBuyer);
+        print('Token: $token');
+
+        // invalidate user provider để cập nhật thông tin người dùng
+        ref.invalidate(userProvider);
 
         // Chuyển hướng đến trang chính
-        if (mounted) {
-          context.pushReplacement(Routes.home);
+        if (isEventCreator) {
+          context.go(Routes.creatorHome);
+        } else {
+          context.go(Routes.buyerHome);
         }
       } else {
         // Hiển thị thông báo lỗi
@@ -111,16 +123,16 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           const SizedBox(height: 20),
           // Role Switch
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Switch(
-                  value: isOrganizer,
-                  onChanged: (value) => setState(() => isOrganizer = value)),
-              const SizedBox(width: 8),
-              const Text('Login as Event Organizer'),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.start,
+          //   children: [
+          //     Switch(
+          //         value: isOrganizer,
+          //         onChanged: (value) => setState(() => isOrganizer = value)),
+          //     const SizedBox(width: 8),
+          //     const Text('Login as Event Organizer'),
+          //   ],
+          // ),
           // Login Button
           ElevatedButton(
             onPressed: handleLogin,
@@ -136,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: const Text('Register'),
           ),
         ],
-      ).p(16),
+      ).p(16).scrollVertical(),
     );
   }
 }

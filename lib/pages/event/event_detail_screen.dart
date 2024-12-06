@@ -79,10 +79,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   // Tên sự kiện
                   Text(
                     event!.name,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 8),
 
@@ -93,7 +92,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       const SizedBox(width: 8),
                       Text(
                         '${Format.formatDDMMYYYY(event!.date)} - ${Format.formatHHMM(event!.date)}',
-                        style: const TextStyle(fontSize: 16),
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ],
                   ),
@@ -106,7 +105,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       const SizedBox(width: 8),
                       Text(
                         event!.location,
-                        style: const TextStyle(fontSize: 16),
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ],
                   ),
@@ -130,8 +129,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       // Tên người tổ chức
                       Text(
                         event!.createdBy.name ?? 'Unknown',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                     ],
                   ),
@@ -155,11 +156,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     children: [
                       Text(
                         'Tickets Sold: ${event!.ticketsSold}',
-                        style: const TextStyle(fontSize: 16),
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       Text(
                         'Max Attendees: ${event!.maxAttendees}',
-                        style: const TextStyle(fontSize: 16),
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ],
                   ),
@@ -168,19 +169,18 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   // Số người đã tham gia
                   Text(
                     'Participants: ${event!.attendees.length}',
-                    style: const TextStyle(fontSize: 16),
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 16),
 
                   // Trạng thái sự kiện
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         'Status:',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(width: 8),
                       Container(
@@ -194,11 +194,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         ),
                         child: Text(
                           event!.status.name.toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.labelLarge!.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ),
                     ],
@@ -206,17 +206,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   const SizedBox(height: 16),
 
                   // Thông tin mô tả sự kiện
-                  const Text(
+                  Text(
                     'About Event',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     event!.description,
-                    style: const TextStyle(fontSize: 16),
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 16),
                 ],

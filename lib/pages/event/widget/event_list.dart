@@ -1,5 +1,5 @@
 import 'package:event_ticket/models/event.dart';
-import 'package:event_ticket/pages/home/widget/event_card.dart';
+import 'package:event_ticket/pages/event/widget/event_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velocity_x/velocity_x.dart';

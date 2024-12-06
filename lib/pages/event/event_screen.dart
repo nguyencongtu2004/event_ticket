@@ -1,4 +1,4 @@
-import 'package:event_ticket/pages/home/widget/event_list.dart';
+import 'package:event_ticket/pages/event/widget/event_list.dart';
 import 'package:event_ticket/providers/category_provider.dart';
 import 'package:event_ticket/providers/event_provider.dart';
 import 'package:event_ticket/router/routes.dart';
@@ -8,14 +8,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+class EventScreen extends ConsumerStatefulWidget {
+  const EventScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<EventScreen> createState() => _EventScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _EventScreenState extends ConsumerState<EventScreen> {
   List<String> selectedCategoryIds =
       []; // Lưu danh sách ID của danh mục đã chọn
 
@@ -35,7 +35,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final eventAsyncValue = ref.watch(eventProvider);
 
     return TicketScaffold(
-      title: 'Home',
+      title: 'Events',
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
