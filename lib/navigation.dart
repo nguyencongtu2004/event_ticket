@@ -1,6 +1,7 @@
 import 'package:event_ticket/models/route_page.dart';
 import 'package:event_ticket/pages/auth/login_screen.dart';
 import 'package:event_ticket/pages/auth/register_screen.dart';
+import 'package:event_ticket/pages/event/event_detail_screen.dart';
 import 'package:event_ticket/pages/home/home_screen.dart';
 import 'package:event_ticket/pages/profile/edit_profile_screen.dart';
 import 'package:event_ticket/pages/profile/profile_screen.dart';
@@ -100,6 +101,13 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/edit-profile',
       builder: (context, state) => const EditProfileScreen(),
+    ),
+    GoRoute(
+      path: '/event/:eventId',
+      builder: (context, state) {
+        final eventId = state.pathParameters['eventId']!;
+        return EventDetailScreen(eventId: eventId);
+      },
     ),
 
     // GoRoute(

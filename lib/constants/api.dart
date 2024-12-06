@@ -12,8 +12,13 @@ class Api {
 
   // University
   static const String getUniversities = 'universities';
-  static const String _getFacultiesByUniversity =
-      'universities/:universityId/faculties';
   static String getFacultiesByUniversityId(String universityId) =>
-      _getFacultiesByUniversity.replaceAll(':universityId', universityId);
+      'universities/$universityId/faculties';
+
+  // Category
+  static const String getCategories = 'categories';
+
+  // Event
+  static const String getEvents = 'events';
+  static String getEventDetail(String eventId) => 'events/$eventId';
 }

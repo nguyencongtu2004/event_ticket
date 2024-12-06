@@ -16,3 +16,5 @@ extension RolesExtension on Roles {
     }
   }
 }
+
+enum EventStatus { active, completed, cancelled }

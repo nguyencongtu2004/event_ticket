@@ -25,13 +25,10 @@ class UserNotifier extends AsyncNotifier<User?> {
     } catch (e, st) {
       // Xử lý lỗi và trả về trạng thái lỗi
       state = AsyncValue.error(e, st);
+      print('Error in UserNotifier.build: $e');
+      print('Stacktrace: $st');
       return null;
     }
-  }
-
-  Future<void> refresh() async {
-    // Gọi hàm build để lấy dữ liệu mới
-    await build();
   }
 
   Future<bool> updateUser(User newUser, File? file) async {

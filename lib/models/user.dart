@@ -2,9 +2,9 @@ import 'package:event_ticket/enum.dart';
 
 class User {
   final String id;
-  final String email;
-  final Roles role;
-  final String name;
+  final String? email;
+  final Roles? role;
+  final String? name;
   final String? avatar;
   final DateTime? birthday;
   final Genders? gender;
@@ -16,9 +16,9 @@ class User {
 
   User({
     required this.id,
-    required this.email,
-    required this.role,
-    required this.name,
+    this.email,
+    this.role,
+    this.name,
     this.avatar,
     this.birthday,
     this.gender,
@@ -33,12 +33,16 @@ class User {
     return User(
       id: json['_id'],
       email: json['email'],
-      role: Roles.values.firstWhere((e) => e.value == json['role']),
+      role: json['role'] != null
+          ? Roles.values.firstWhere((e) => e.value == json['role'])
+          : null,
       name: json['name'],
       avatar: json['avatar'],
       birthday:
           json['birthday'] != null ? DateTime.parse(json['birthday']) : null,
-      gender: Genders.values.firstWhere((e) => e.name == json['gender']),
+      gender: json['gender'] != null
+          ? Genders.values.firstWhere((e) => e.name == json['gender'])
+          : null,
       phone: json['phone'],
       university: json['university'],
       faculty: json['faculty'],
@@ -51,7 +55,7 @@ class User {
     return {
       '_id': id,
       'email': email,
-      'role': role.value,
+      'role': role?.value,
       'name': name,
       'avatar': avatar,
       'birthday': birthday?.toIso8601String(),

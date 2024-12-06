@@ -36,11 +36,12 @@ class UserInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Text(user.name,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            )),
+        Text(
+          user.name ?? 'No name',
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
       ],
     );
   }

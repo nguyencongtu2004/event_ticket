@@ -22,7 +22,7 @@ class TicketScaffold extends StatelessWidget {
           AppBar(
             title: Text(
               title ?? 'Ticket app',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             centerTitle: true,
             actions: appBarActions,
