@@ -6,20 +6,22 @@ import 'package:event_ticket/pages/home/home_screen.dart';
 import 'package:event_ticket/pages/profile/edit_profile_screen.dart';
 import 'package:event_ticket/pages/profile/profile_screen.dart';
 import 'package:event_ticket/pages/ticket/ticket_screen.dart';
+import 'package:event_ticket/router/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+
 const List<RoutePage> allRoutePages = [
-  RoutePage(0, '/home', 'Home', Icons.home_outlined, Icons.home, Colors.teal),
-  RoutePage(1, '/ticket', 'Ticket', Icons.airplane_ticket_outlined,
+  RoutePage(0, Routes.home, 'Home', Icons.home_outlined, Icons.home, Colors.teal),
+  RoutePage(1, Routes.ticket, 'Ticket', Icons.airplane_ticket_outlined,
       Icons.airplane_ticket, Colors.cyan),
-  RoutePage(2, '/profile', 'Profile', Icons.person_outlined, Icons.person,
+  RoutePage(2, Routes.profile, 'Profile', Icons.person_outlined, Icons.person,
       Colors.orange),
 ];
 
 final GoRouter router = GoRouter(
   debugLogDiagnostics: true,
-  initialLocation: '/home',
+  initialLocation: Routes.home,
   navigatorKey: GlobalKey<NavigatorState>(),
   routes: [
     StatefulShellRoute.indexedStack(
@@ -27,19 +29,19 @@ final GoRouter router = GoRouter(
       branches: [
         StatefulShellBranch(navigatorKey: GlobalKey<NavigatorState>(), routes: [
           GoRoute(
-            path: '/home',
+            path: Routes.home,
             builder: (context, state) => const HomeScreen(),
           ),
         ]),
         StatefulShellBranch(navigatorKey: GlobalKey<NavigatorState>(), routes: [
           GoRoute(
-            path: '/ticket',
+            path: Routes.ticket,
             builder: (context, state) => const TicketScreen(),
           ),
         ]),
         StatefulShellBranch(navigatorKey: GlobalKey<NavigatorState>(), routes: [
           GoRoute(
-            path: '/profile',
+            path: Routes.profile,
             builder: (context, state) => const ProfileScreen(),
           ),
         ])
@@ -79,7 +81,7 @@ final GoRouter router = GoRouter(
     ),
     // Các màn hình khác
     GoRoute(
-      path: '/login',
+      path: Routes.login,
       builder: (context, state) {
         final extraData = state.extra as Map<String, String>?;
         return LoginScreen(
@@ -89,7 +91,7 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/register',
+      path: Routes.register,
       builder: (context, state) {
         final extraData = state.extra as Map<String, dynamic>?;
         return RegisterScreen(
@@ -99,11 +101,11 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/edit-profile',
+      path: Routes.editProfile,
       builder: (context, state) => const EditProfileScreen(),
     ),
     GoRoute(
-      path: '/event/:eventId',
+      path: Routes.eventDetail,
       builder: (context, state) {
         final eventId = state.pathParameters['eventId']!;
         return EventDetailScreen(eventId: eventId);

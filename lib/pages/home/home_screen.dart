@@ -1,6 +1,7 @@
 import 'package:event_ticket/pages/home/widget/event_list.dart';
 import 'package:event_ticket/providers/category_provider.dart';
 import 'package:event_ticket/providers/event_provider.dart';
+import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,7 +27,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     print('See all popular events');
   }
 
-  void onEventTap(event) => context.push('/event/${event.id}');
+  void onEventTap(event) => context.push(Routes.getEventDetailPath(event.id));
 
   @override
   Widget build(BuildContext context) {

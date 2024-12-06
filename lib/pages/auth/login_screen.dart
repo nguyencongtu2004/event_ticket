@@ -1,5 +1,6 @@
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/requests/auth_request.dart';
+import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/service/auth_service.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Chuyển hướng đến trang chính
         if (mounted) {
-          context.pushReplacement('/home');
+          context.pushReplacement(Routes.home);
         }
       } else {
         // Hiển thị thông báo lỗi
@@ -127,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           TextButton(
             onPressed: () {
-              context.go('/register', extra: {
+              context.go(Routes.register, extra: {
                 'email': emailController.text,
                 'password': passwordController.text,
               });

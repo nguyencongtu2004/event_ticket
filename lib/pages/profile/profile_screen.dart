@@ -1,5 +1,6 @@
 import 'package:event_ticket/pages/profile/widget/user_info.dart';
 import 'package:event_ticket/providers/user_provider.dart';
+import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +19,7 @@ class ProfileScreen extends ConsumerWidget {
       appBarActions: [
         IconButton(
           icon: const Icon(Icons.edit),
-          onPressed: () => context.push('/edit-profile'),
+          onPressed: () => context.push(Routes.editProfile),
         ),
       ],
       body: userAsyncValue.when(

@@ -1,4 +1,4 @@
-import 'package:event_ticket/navigation.dart';
+import 'package:event_ticket/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
