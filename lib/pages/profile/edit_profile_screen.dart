@@ -59,7 +59,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
 
     setState(() {
-      filteredFaculties = university.faculties;
+      filteredFaculties = university.faculties ?? [];
 
       // Giữ lại khoa đã chọn nếu tồn tại trong danh sách khoa mới
       if (selectedFaculty != null &&
@@ -80,7 +80,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
 
     setState(() {
-      filteredMajors = faculty.majors;
+      filteredMajors = faculty.majors ?? [];
 
       // Giữ lại ngành đã chọn nếu tồn tại trong danh sách ngành mới
       if (selectedMajor != null &&
@@ -108,11 +108,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       _formKey.currentState!.save();
       editedUser = editedUser.copyWith(
         university: availableUniversities
-            .firstWhere((u) => u.name == selectedUniversity)
+            .firstWhere((u) => u.name == selectedUniversity,
+                orElse: () => University.fromNull())
             .id,
-        faculty:
-            filteredFaculties.firstWhere((f) => f.name == selectedFaculty).id,
-        major: filteredMajors.firstWhere((m) => m.name == selectedMajor).id,
+        faculty: filteredFaculties
+            .firstWhere((f) => f.name == selectedFaculty,
+                orElse: () => Faculty.fromNull())
+            .id,
+        major: filteredMajors
+            .firstWhere((m) => m.name == selectedMajor,
+                orElse: () => Major.fromNull())
+            .id,
       );
       // Gửi thông tin cập nhật đến UserNotifier
       final isSuccess = await ref
@@ -149,8 +155,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         radius: 70,
                         backgroundImage: _selectedImage != null
                             ? FileImage(_selectedImage!)
-                            : NetworkImage(user.avatar ??
-                                'https://placehold.co/150.png'),
+                            : NetworkImage(
+                                user.avatar ?? 'https://placehold.co/150.png'),
                         child: _selectedImage == null
                             ? const Icon(Icons.camera_alt, size: 50)
                             : null,
@@ -185,7 +191,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           .map((university) => DropdownMenuItem(
                                 value: university.name,
                                 child: Text(
-                                  university.name,
+                                  university.name ?? '',
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ))
@@ -206,7 +212,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           .map((faculty) => DropdownMenuItem(
                                 value: faculty.name,
                                 child: Text(
-                                  faculty.name,
+                                  faculty.name ?? '',
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ))
@@ -227,7 +233,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           .map((major) => DropdownMenuItem(
                                 value: major.name,
                                 child: Text(
-                                  major.name,
+                                  major.name ?? '',
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ))
@@ -277,8 +283,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         );
                         if (picked != null) {
                           setState(() {
-                            editedUser =
-                                editedUser.copyWith(birthday: picked);
+                            editedUser = editedUser.copyWith(birthday: picked);
                           });
                         }
                       },
