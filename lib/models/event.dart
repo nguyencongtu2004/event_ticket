@@ -10,11 +10,11 @@ class Event {
   final List<Category> category;
   final String location;
   final DateTime date;
-  final double price;
+  final double? price;
   final User createdBy;
   final List<String> attendees;
   final List<String> collaborators;
-  final int maxAttendees;
+  final int? maxAttendees;
   final int ticketsSold;
   final EventStatus status;
   final String? conservation;
@@ -47,7 +47,7 @@ class Event {
           json['category'].map((x) => Category.fromJson(x))),
       location: json['location'],
       date: DateTime.parse(json['date']),
-      price: json['price'].toDouble(),
+      price: json['price'] != null ? double.parse(json['price'].toString()) : null,
       createdBy: User.fromJson(json['createdBy']),
       attendees:
           json['attendees'] != null ? List<String>.from(json['attendees']) : [],

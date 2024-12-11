@@ -18,7 +18,7 @@ class EventNotifier extends AsyncNotifier<List<Event>> {
           .toList();
 
       // Trả về dữ liệu người dùng
-      return [...events, ...events, ...events];
+      return events;
     } catch (e, st) {
       // Xử lý lỗi và trả về trạng thái lỗi
       state = AsyncValue.error(e, st);

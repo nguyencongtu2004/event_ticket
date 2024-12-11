@@ -7,12 +7,14 @@ class TicketScaffold extends StatelessWidget {
     this.appBar,
     this.appBarActions,
     this.title,
+    this.floatingActionButton,
   });
 
   final Widget? body;
   final PreferredSizeWidget? appBar;
   final List<Widget>? appBarActions;
   final String? title;
+  final Widget? floatingActionButton;
 
   final noContent = const Center(child: Text('No content'));
   @override
@@ -28,6 +30,8 @@ class TicketScaffold extends StatelessWidget {
             actions: appBarActions,
           ),
       body: body ?? noContent,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+      floatingActionButton: floatingActionButton,
     );
   }
 }

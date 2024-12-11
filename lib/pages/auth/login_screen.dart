@@ -1,4 +1,5 @@
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/requests/auth_request.dart';
 import 'package:event_ticket/router/routes.dart';
@@ -42,7 +43,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final email = emailController.text;
     final password = passwordController.text;
     //final role = isOrganizer ? Roles.eventCreator.value : Roles.ticketBuyer.value;
-
     try {
       final response = await _authRequest.login(
         email: email,
@@ -94,6 +94,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  //bool isOrganizer = false;
+
   @override
   Widget build(BuildContext context) {
     return TicketScaffold(
@@ -122,13 +124,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             obscureText: true,
           ),
           const SizedBox(height: 20),
-          // Role Switch
+          // Role Switch (for development)
           // Row(
           //   mainAxisAlignment: MainAxisAlignment.start,
           //   children: [
           //     Switch(
-          //         value: isOrganizer,
-          //         onChanged: (value) => setState(() => isOrganizer = value)),
+          //       value: isOrganizer,
+          //       onChanged: (value) {
+          //         setState(() => isOrganizer = value);
+          //       },
+          //     ),
           //     const SizedBox(width: 8),
           //     const Text('Login as Event Organizer'),
           //   ],

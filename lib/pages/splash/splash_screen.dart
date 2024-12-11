@@ -1,4 +1,7 @@
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/providers/category_provider.dart';
+import 'package:event_ticket/providers/event_management_provider.dart';
+import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/service/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +29,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       context.go(Routes.login);
       return;
     }
+
+    // Khởi tạo Provider
+    await Future.wait([
+      ref.read(userProvider.notifier).build(),
+      ref.read(categoryProvider.notifier).build(),
+    ]);
 
     // Lấy role của người dùng và chuyển hướng đến trang tương ứng
     final role = await AuthService.getRole();

@@ -55,7 +55,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void _updateFilteredFaculties() {
     final university = availableUniversities.firstWhere(
       (u) => u.name == selectedUniversity,
-      orElse: () => University(id: '', name: '', faculties: []),
+      orElse: () => University.fromNull(),
     );
 
     setState(() {
@@ -66,7 +66,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           filteredFaculties.any((f) => f.name == selectedFaculty)) {
         selectedFaculty = selectedFaculty;
       } else {
-        selectedFaculty = null; // Reset nếu không khớp
+        selectedFaculty =
+            filteredFaculties.first.name; // Reset cái đầu tiên nếu không khớp
       }
 
       _updateFilteredMajors(); // Cập nhật ngành theo khoa mới
@@ -76,7 +77,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void _updateFilteredMajors() {
     final faculty = filteredFaculties.firstWhere(
       (f) => f.name == selectedFaculty,
-      orElse: () => Faculty(id: '', name: '', majors: []),
+      orElse: () => Faculty.fromNull(),
     );
 
     setState(() {
@@ -87,7 +88,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           filteredMajors.any((m) => m.name == selectedMajor)) {
         selectedMajor = selectedMajor;
       } else {
-        selectedMajor = null; // Reset nếu không khớp
+        selectedMajor =
+            filteredMajors.first.name; // Reset cái đầu tiên nếu không khớp
       }
     });
   }

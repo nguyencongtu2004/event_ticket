@@ -80,7 +80,7 @@ class EventCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    Format.formatPrice(event.price),
+                    event.price != null ? Format.formatPrice(event.price!) : 'Free',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.green,

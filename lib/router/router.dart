@@ -1,5 +1,8 @@
+import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/pages/auth/login_screen.dart';
 import 'package:event_ticket/pages/auth/register_screen.dart';
+import 'package:event_ticket/pages/event/add_event_screen.dart';
+import 'package:event_ticket/pages/event/edit_event_screen.dart';
 import 'package:event_ticket/pages/event/event_detail_screen.dart';
 import 'package:event_ticket/pages/event/event_management_screen.dart';
 import 'package:event_ticket/pages/home/buyer_home_screen.dart';
@@ -66,12 +69,24 @@ final GoRouter router = GoRouter(
       path: Routes.eventDetail,
       builder: (context, state) {
         final eventId = state.pathParameters['eventId']!;
-        return EventDetailScreen(eventId: eventId);
+        final canEdit = state.extra as bool?;
+        return EventDetailScreen(eventId: eventId, canEdit: canEdit);
       },
     ),
     GoRoute(
       path: Routes.eventManagement,
       builder: (context, state) => const EventManagementScreen(),
+    ),
+    GoRoute(
+      path: Routes.createEvent,
+      builder: (context, state) => const AddEventScreen(),
+    ),
+    GoRoute(
+      path: Routes.editEvent,
+      builder: (context, state) {
+        final event = state.extra as Event;
+        return EditEventScreen(event: event);
+      },
     ),
   ],
 );

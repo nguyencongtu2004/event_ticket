@@ -1,8 +1,6 @@
 import 'package:event_ticket/models/route_page.dart';
 import 'package:event_ticket/pages/event/event_management_screen.dart';
-import 'package:event_ticket/pages/event/event_screen.dart';
 import 'package:event_ticket/pages/profile/profile_screen.dart';
-import 'package:event_ticket/pages/ticket/ticket_screen.dart';
 import 'package:flutter/material.dart';
 
 class CreatorHomeScreen extends StatefulWidget {

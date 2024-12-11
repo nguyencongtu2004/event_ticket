@@ -1,15 +1,22 @@
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/requests/event_request.dart';
+import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/ulties/format.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:go_router/go_router.dart';
 
 class EventDetailScreen extends StatefulWidget {
-  const EventDetailScreen({super.key, required this.eventId});
+  const EventDetailScreen({
+    super.key,
+    required this.eventId,
+    this.canEdit = false,
+  });
 
   final String eventId;
+  final bool? canEdit;
 
   @override
   State<EventDetailScreen> createState() => _EventDetailScreenState();
@@ -23,9 +30,15 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     print('Join event');
   }
 
+  void onEditEvent() {
+    print('Edit event');
+    context.push(Routes.editEvent, extra: event);
+  }
+
   @override
   void initState() {
     super.initState();
+    // Lấy thông tin sự kiện từ API mà không cần đợi có data
     getEventDetail();
   }
 
@@ -158,10 +171,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         'Tickets Sold: ${event!.ticketsSold}',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
-                      Text(
-                        'Max Attendees: ${event!.maxAttendees}',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
+                      if (event?.maxAttendees != null)
+                        Text(
+                          'Max Attendees: ${event!.maxAttendees}',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        )
+                      else
+                        Container(),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -222,13 +238,24 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               ).p(16).scrollVertical().expand(),
 
               // Nút mua vé luôn ở dưới cùng
-              ElevatedButton(
-                onPressed: onJoinEvent,
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                child: Text('Buy Ticket ${Format.formatPrice(event!.price)}'),
-              ).p(16),
+              if (widget.canEdit == false)
+                ElevatedButton(
+                  onPressed: onJoinEvent,
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                  ),
+                  child: Text(
+                      'Buy Ticket ${event?.price != null ? Format.formatPrice(event!.price!) : 'For Free'}'),
+                ).p(16)
+              // Nếu có quyền chỉnh sửa sự kiện
+              else
+                ElevatedButton(
+                  onPressed: onEditEvent,
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                  ),
+                  child: const Text('Edit Event'),
+                ).p(16),
             ]),
     );
   }

@@ -13,6 +13,7 @@ class User {
   final String? faculty;
   final String? major;
   final String? studentId;
+  final String? token;
 
   User({
     required this.id,
@@ -27,6 +28,7 @@ class User {
     this.faculty,
     this.major,
     this.studentId,
+    this.token,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -48,6 +50,7 @@ class User {
       faculty: json['faculty'],
       major: json['major'],
       studentId: json['studentId'],
+      token: json['token'],
     );
   }
 
@@ -65,6 +68,7 @@ class User {
       'faculty': faculty,
       'major': major,
       'studentId': studentId,
+      'token': token,
     };
   }
 
@@ -82,6 +86,7 @@ class User {
     String? faculty,
     String? major,
     String? studentId,
+    String? token,
   }) {
     return User(
       id: id ?? this.id,
@@ -96,6 +101,7 @@ class User {
       faculty: faculty ?? this.faculty,
       major: major ?? this.major,
       studentId: studentId ?? this.studentId,
+      token: token ?? this.token,
     );
   }
 }

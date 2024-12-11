@@ -29,11 +29,13 @@ class HttpService {
     required String url,
     bool includeHeaders = true,
     Map<String, dynamic>? headers,
+    Map<String, dynamic>? queryParameters,
   }) async {
     Response response;
     try {
       response = await _dio.get(
         Api.baseUrl + url,
+        queryParameters: queryParameters,
         options: Options(
           headers: includeHeaders ? await getHeaders() : headers,
         ),
@@ -76,6 +78,7 @@ class HttpService {
     return response;
   }
 
+  // Post request with file
   Future<Response> postWithFile({
     required String url,
     required FormData body,
@@ -147,6 +150,31 @@ class HttpService {
           headers: includeHeaders
               ? await getHeaders(contentType: 'multipart/form-data')
               : headers,
+        ),
+      );
+    } on DioException catch (error) {
+      response = Response(
+        requestOptions: error.requestOptions,
+        statusCode: 400,
+        statusMessage: error.message,
+      );
+    }
+
+    return response;
+  }
+
+  // Delete request
+  Future<Response> delete({
+    required String url,
+    bool includeHeaders = true,
+    Map<String, dynamic>? headers,
+  }) async {
+    Response response;
+    try {
+      response = await _dio.delete(
+        Api.baseUrl + url,
+        options: Options(
+          headers: includeHeaders ? await getHeaders() : headers,
         ),
       );
     } on DioException catch (error) {
