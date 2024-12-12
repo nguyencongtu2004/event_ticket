@@ -140,12 +140,28 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       const SizedBox(width: 8),
 
                       // Tên người tổ chức
-                      Text(
-                        event!.createdBy.name ?? 'Unknown',
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Organized by',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium!
+                                .copyWith(
+                                  color: Colors.grey.shade600,
+                                ),
+                          ),
+                          Text(
+                            event!.createdBy.name ?? 'Unknown',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -238,7 +254,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               ).p(16).scrollVertical().expand(),
 
               // Nút mua vé luôn ở dưới cùng
-              if (widget.canEdit == false)
+              if (widget.canEdit == false || widget.canEdit == null)
                 ElevatedButton(
                   onPressed: onJoinEvent,
                   style: ElevatedButton.styleFrom(

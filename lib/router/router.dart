@@ -70,7 +70,7 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         final eventId = state.pathParameters['eventId']!;
         final canEdit = state.extra as bool?;
-        return EventDetailScreen(eventId: eventId, canEdit: canEdit);
+        return EventDetailScreen(eventId: eventId, canEdit: canEdit ?? false);
       },
     ),
     GoRoute(

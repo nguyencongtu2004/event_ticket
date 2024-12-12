@@ -12,8 +12,8 @@ class Event {
   final DateTime date;
   final double? price;
   final User createdBy;
-  final List<String> attendees;
-  final List<String> collaborators;
+  final List<User> attendees;
+  final List<User> collaborators;
   final int? maxAttendees;
   final int ticketsSold;
   final EventStatus status;
@@ -50,8 +50,8 @@ class Event {
       price: json['price'] != null ? double.parse(json['price'].toString()) : null,
       createdBy: User.fromJson(json['createdBy']),
       attendees:
-          json['attendees'] != null ? List<String>.from(json['attendees']) : [],
-      collaborators: List<String>.from(json['collaborators']),
+          json['attendees'] != null ? (json['attendees'] as List).map((e) => User.fromJson(e)).toList() : [],
+      collaborators: json['collaborators'] != null ? (json['collaborators'] as List).map((e) => User.fromJson(e)).toList() : [],
       maxAttendees: json['maxAttendees'],
       ticketsSold: json['ticketsSold'],
       status: EventStatus.values.firstWhere((e) => e.name == json['status']),

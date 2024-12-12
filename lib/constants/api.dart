@@ -9,6 +9,7 @@ class Api {
   // User
   static const String getUserInfo = 'users/information';
   static const String updateUserInfo = 'users/update';
+  static const String search = 'users/search';
 
   // University
   static const String getUniversities = 'universities';

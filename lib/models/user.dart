@@ -104,4 +104,41 @@ class User {
       token: token ?? this.token,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is User &&
+        other.id == id &&
+        other.email == email &&
+        other.role == role &&
+        other.name == name &&
+        other.avatar == avatar &&
+        other.birthday == birthday &&
+        other.gender == gender &&
+        other.phone == phone &&
+        other.university == university &&
+        other.faculty == faculty &&
+        other.major == major &&
+        other.studentId == studentId &&
+        other.token == token;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        email.hashCode ^
+        role.hashCode ^
+        name.hashCode ^
+        avatar.hashCode ^
+        birthday.hashCode ^
+        gender.hashCode ^
+        phone.hashCode ^
+        university.hashCode ^
+        faculty.hashCode ^
+        major.hashCode ^
+        studentId.hashCode ^
+        token.hashCode;
+  }
 }

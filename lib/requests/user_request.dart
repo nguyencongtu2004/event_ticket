@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:event_ticket/constants/api.dart';
+import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/service/http_service.dart';
 
 class UserRequest extends HttpService {
@@ -18,5 +20,26 @@ class UserRequest extends HttpService {
     );
 
     return response;
+  }
+
+  Future<List<User>> searchUser({
+    required String query,
+    required Roles role,
+  }) async {
+    final response = await get(
+      url: Api.search,
+      queryParameters: {
+        'query': query,
+        'role': role.value,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return (response.data as List)
+          .map((user) => User.fromJson(user))
+          .toList();
+    } else {
+      return [];
+    }
   }
 }
