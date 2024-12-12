@@ -7,7 +7,6 @@ import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/providers/category_provider.dart';
 import 'package:event_ticket/providers/event_management_provider.dart';
-import 'package:event_ticket/requests/event_request.dart';
 import 'package:event_ticket/requests/user_request.dart';
 import 'package:event_ticket/ulties/format.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';

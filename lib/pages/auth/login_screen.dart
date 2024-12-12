@@ -1,5 +1,4 @@
 import 'package:event_ticket/enum.dart';
-import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/requests/auth_request.dart';
 import 'package:event_ticket/router/routes.dart';

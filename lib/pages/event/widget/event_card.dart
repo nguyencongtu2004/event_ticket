@@ -1,7 +1,6 @@
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/ulties/format.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Thư viện để định dạng thời gian
 import 'package:velocity_x/velocity_x.dart'; // Thư viện hỗ trợ việc viết code nhanh hơn
 
 class EventCard extends StatelessWidget {
