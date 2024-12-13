@@ -4,16 +4,17 @@ import 'package:event_ticket/pages/profile/profile_screen.dart';
 import 'package:event_ticket/pages/ticket/ticket_screen.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class BuyerHomeScreen extends StatefulWidget {
-  const BuyerHomeScreen({super.key});
+  BuyerHomeScreen({super.key, this.index = 0});
+
+  int index;
 
   @override
   createState() => _BuyerHomeScreenState();
 }
 
 class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
-  int _selectedIndex = 0;
-
   // Tạo một PageStorageBucket để lưu trạng thái
   final PageStorageBucket _bucket = PageStorageBucket();
 
@@ -44,15 +45,15 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: _pages[widget.index],
       bottomNavigationBar: NavigationBar(
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         height: 60,
-        indicatorColor: routePages[_selectedIndex].color.withOpacity(0.1),
-        selectedIndex: _selectedIndex,
+        indicatorColor: routePages[widget.index].color.withOpacity(0.1),
+        selectedIndex: widget.index,
         onDestinationSelected: (index) {
           setState(() {
-            _selectedIndex = index;
+            widget.index = index;
           });
         },
         destinations: routePages.map(_buildNavigationDestination).toList(),

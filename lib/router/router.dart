@@ -23,7 +23,10 @@ final GoRouter router = GoRouter(
     //shellRoute,
     GoRoute(
       path: Routes.buyerHome,
-      builder: (context, state) => const BuyerHomeScreen(),
+      builder: (context, state) {
+        final index = state.extra as int? ?? 0;
+        return BuyerHomeScreen(index: index);
+      },
     ),
     GoRoute(
       path: Routes.creatorHome,
@@ -34,7 +37,7 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const TicketScreen(),
     ),
     GoRoute(
-      path: Routes.ticket,
+      path: Routes.profile,
       builder: (context, state) => const ProfileScreen(),
     ),
     GoRoute(

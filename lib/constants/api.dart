@@ -25,4 +25,7 @@ class Api {
   static const String createEvent = 'events/create';
   static String deleteEvent(String eventId) => 'events/$eventId'; 
   static String updateEvent(String eventId) => 'events/$eventId';
+
+  // ticket
+  static const String bookTicket = 'ticket/book';
 }

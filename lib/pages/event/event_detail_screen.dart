@@ -1,10 +1,13 @@
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/models/event.dart';
+import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/requests/event_request.dart';
+import 'package:event_ticket/requests/ticket_request.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/ulties/format.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,9 +28,28 @@ class EventDetailScreen extends StatefulWidget {
 class _EventDetailScreenState extends State<EventDetailScreen> {
   Event? event;
   final _eventRequest = EventRequest();
+  final _ticketRequest = TicketRequest();
 
-  void onJoinEvent() {
-    print('Join event');
+  Future<void> onJoinEvent() async {
+    final response = await _ticketRequest.bookTicket(event!.id);
+
+    if (response.statusCode != 201) {
+      print('Error buying ticket: ${response.data}');
+      return;
+    }
+
+    final ticket = Ticket.fromJson(response.data as Map<String, dynamic>);
+
+    if (ticket.paymentData?.deeplink != null) {
+      final Uri url = Uri.parse(ticket.paymentData!.deeplink!);
+      try {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } catch (e) {
+        print('Could not launch $url: $e');
+      }
+    } else {
+      context.go(Routes.buyerHome, extra: 1);
+    }
   }
 
   void onEditEvent() {
@@ -261,7 +283,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     minimumSize: const Size.fromHeight(50),
                   ),
                   child: Text(
-                      'Buy Ticket ${event?.price != null ? Format.formatPrice(event!.price!) : 'For Free'}'),
+                      'Buy Ticket ${(event?.price == null || event?.price == 0) ? 'For Free' : Format.formatPrice(event!.price!)}'),
                 ).p(16)
               // Nếu có quyền chỉnh sửa sự kiện
               else
