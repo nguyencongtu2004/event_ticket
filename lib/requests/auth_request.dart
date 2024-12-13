@@ -16,6 +16,7 @@ class AuthRequest extends HttpService {
         'password': password,
         'role': role,
       },
+      includeHeaders: false,
     );
 
     return response;
@@ -49,6 +50,7 @@ class AuthRequest extends HttpService {
         'gender': gender?.name,
         'phone': phone,
       },
+      includeHeaders: false,
     );
 
     return response;

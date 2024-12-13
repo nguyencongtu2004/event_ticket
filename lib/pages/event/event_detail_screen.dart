@@ -48,7 +48,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         print('Could not launch $url: $e');
       }
     } else {
-      context.go(Routes.buyerHome, extra: 1);
+      context.go('${Routes.buyerHome}?page=1');
     }
   }
 

@@ -1,6 +1,7 @@
 class Api {
   // 10.0.2.2 -> localhost for Android emulator
-  static const String baseUrl = 'http://10.0.2.2:3001/api/';
+  // static const String baseUrl = 'http://10.0.2.2:3001/api/';
+  static const String baseUrl = 'https://b3510dzk-3001.asse.devtunnels.ms/api/';
 
   // Auth
   static const String login = 'auth/login';
@@ -23,7 +24,7 @@ class Api {
   static const String getEvents = 'events';
   static String getEventDetail(String eventId) => 'events/$eventId';
   static const String createEvent = 'events/create';
-  static String deleteEvent(String eventId) => 'events/$eventId'; 
+  static String deleteEvent(String eventId) => 'events/$eventId';
   static String updateEvent(String eventId) => 'events/$eventId';
 
   // ticket

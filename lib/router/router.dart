@@ -24,7 +24,11 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.buyerHome,
       builder: (context, state) {
-        final index = state.extra as int? ?? 0;
+        //final index = state.extra as int? ?? 0;
+        final page = state.uri.queryParameters['page'] ?? '0';
+        int index = int.tryParse(page) ?? 0;
+        if (index < 0) index = 0;
+        if (index > 2) index = 2;
         return BuyerHomeScreen(index: index);
       },
     ),
