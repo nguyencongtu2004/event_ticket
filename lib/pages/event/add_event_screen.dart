@@ -14,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:event_ticket/ulties/format.dart';
 
 class AddEventScreen extends ConsumerStatefulWidget {
   const AddEventScreen({super.key});
@@ -75,6 +76,26 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
     setState(() {
       _selectedImages = pickedFiles.map((file) => File(file.path)).toList();
     });
+  }
+
+  void _addImage() async {
+    final picker = ImagePicker();
+    final pickedFiles = await picker.pickMultiImage();
+    if (pickedFiles.isNotEmpty) {
+      setState(() {
+        // Convert new files to File objects
+        final newFiles = pickedFiles.map((file) => File(file.path));
+
+        // Add only files that don't exist in _selectedImages
+        for (var newFile in newFiles) {
+          bool isDuplicate = _selectedImages
+              .any((existingFile) => existingFile.path == newFile.path);
+          if (!isDuplicate) {
+            _selectedImages.add(newFile);
+          }
+        }
+      });
+    }
   }
 
   void _pickDate(BuildContext context) async {
@@ -168,7 +189,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
       }
     });
     return TicketScaffold(
-      title: 'Create Event',
+      title: 'Create Event ${_nameController.text}',
       appBarActions: [
         IconButton(
           icon: const Icon(Icons.check),
@@ -214,33 +235,62 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Images
-          GestureDetector(
-            onTap: _pickImages,
-            child: _selectedImages.isEmpty
-                ? Container(
-                    height: 150,
-                    color: Colors.grey[300],
-                    child: const Center(child: Text('Tap to select images')),
-                  )
-                : SizedBox(
-                    height: 150,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: _selectedImages
-                          .map((image) => Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Image.file(
-                                  image,
-                                  width: 100,
-                                  height: 150,
-                                  fit: BoxFit.cover,
-                                ),
-                              ))
-                          .toList(),
-                    ),
+          ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              ..._selectedImages.map((image) => Stack(
+                    children: [
+                      Image.file(
+                        image,
+                        fit: BoxFit.cover,
+                      ).p(4).w(150).h(150),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon: const Icon(Icons.close, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              _selectedImages.remove(image);
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  )),
+              if (_selectedImages.isEmpty)
+                Container(
+                  color: Colors.grey[300],
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add, size: 32),
+                      Text(
+                        'Tap to select images',
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
-          ),
-          const SizedBox(height: 16),
+                ).p(4).wFull(context).h(150).onTap(_pickImages)
+              else
+                Container(
+                  color: Colors.grey[300],
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add, size: 32),
+                      Text(
+                        'Tap to select more images',
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ).p(4).w(150).h(150).onTap(_addImage),
+            ],
+          ).h(150),
+
           // Name
           TextFormField(
             controller: _nameController,
@@ -249,6 +299,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
               labelText: 'Event Name',
               prefixIcon: Icon(Icons.event),
             ),
+            onChanged: (_) => setState(() {}),
             onFieldSubmitted: (_) =>
                 FocusScope.of(context).requestFocus(_descriptionFocus),
             textInputAction: TextInputAction.next,
@@ -303,6 +354,17 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
                 FocusScope.of(context).requestFocus(_maxAttendeesFocus),
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.number,
+            validator: (value) {
+              const minPrice = 1000;
+              const maxPrice = 500000000;
+              if (value == null || value.isEmpty) return null;
+              final price = double.tryParse(value);
+              if (price == null) return 'Please enter a valid number';
+              if (price != 0 && (price < minPrice || price > maxPrice)) {
+                return 'Price must be between ${Format.formatPrice(minPrice.toDouble())} and ${Format.formatPrice(maxPrice.toDouble())}';
+              }
+              return null;
+            },
           ),
           const SizedBox(height: 16),
 
