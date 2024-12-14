@@ -1,13 +1,15 @@
 class Routes {
   Routes._();
 
-  static const String splash = '/';
+  static const String splash = '/splash';
   static const String buyerHome = '/buyer-home';
   static const String creatorHome = '/creator-home';
 
   static const String ticket = '/ticket';
   static const String profile = '/profile';
   static const String eventManagement = '/event-management';
+  static const String event = '/event';
+  static const String checkIn = '/check-in';
 
   static const String login = '/login';
   static const String register = '/register';

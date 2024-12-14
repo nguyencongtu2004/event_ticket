@@ -1,4 +1,6 @@
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/providers/navigation_index_provider.dart';
+import 'package:event_ticket/providers/role_provider.dart';
 import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/requests/auth_request.dart';
 import 'package:event_ticket/router/routes.dart';
@@ -62,12 +64,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
         // invalidate user provider để cập nhật thông tin người dùng
         ref.invalidate(userProvider);
-
+        ref.invalidate(roleProvider);
+        ref.invalidate(navigationIndexProvider);
+        
         // Chuyển hướng đến trang chính
         if (isEventCreator) {
-          context.go(Routes.creatorHome);
+          context.go(Routes.eventManagement);
         } else {
-          context.go(Routes.buyerHome);
+          context.go(Routes.event);
         }
       } else {
         // Hiển thị thông báo lỗi

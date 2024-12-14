@@ -39,9 +39,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final role = await AuthService.getRole();
     print(role.name);
     if (role == Roles.ticketBuyer) {
-      context.go(Routes.buyerHome);
+      context.go(Routes.event);
     } else {
-      context.go(Routes.creatorHome);
+      context.go(Routes.eventManagement);
     }
   }
 

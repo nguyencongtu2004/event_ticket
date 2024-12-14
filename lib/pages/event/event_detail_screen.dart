@@ -52,7 +52,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     } else {
       // TODO: add new ticket to provider
       ref.invalidate(ticketProvider);
-      context.go('${Routes.buyerHome}?page=1');
+      context.go(Routes.ticket);
     }
   }
 
