@@ -4,8 +4,6 @@ import 'package:event_ticket/pages/auth/register_screen.dart';
 import 'package:event_ticket/pages/event/add_event_screen.dart';
 import 'package:event_ticket/pages/event/edit_event_screen.dart';
 import 'package:event_ticket/pages/event/event_detail_screen.dart';
-import 'package:event_ticket/pages/home/buyer_home_screen.dart';
-import 'package:event_ticket/pages/home/creator_home_screen.dart';
 import 'package:event_ticket/pages/profile/edit_profile_screen.dart';
 import 'package:event_ticket/pages/splash/splash_screen.dart';
 import 'package:event_ticket/pages/ticket/ticket_detail_screen.dart';
@@ -20,21 +18,6 @@ final GoRouter router = GoRouter(
   navigatorKey: GlobalKey<NavigatorState>(),
   routes: [
     shellRoute,
-        // GoRoute(
-    //   path: Routes.buyerHome,
-    //   builder: (context, state) {
-    //     //final index = state.extra as int? ?? 0;
-    //     final page = state.uri.queryParameters['page'] ?? '0';
-    //     int index = int.tryParse(page) ?? 0;
-    //     if (index < 0) index = 0;
-    //     if (index > 2) index = 2;
-    //     return BuyerHomeScreen(index: index);
-    //   },
-    // ),
-    // GoRoute(
-    //   path: Routes.creatorHome,
-    //   builder: (context, state) => const CreatorHomeScreen(),
-    // ),
     GoRoute(
       path: Routes.splash,
       builder: (context, state) => const SplashScreen(),

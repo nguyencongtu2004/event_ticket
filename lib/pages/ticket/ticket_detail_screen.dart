@@ -54,6 +54,6 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
         title: ticket?.event?.name ?? 'Ticket Detail',
         body: ticket == null
             ? const CircularProgressIndicator().centered()
-            : const Text('data'));
+            : Text(ticket!.bookingCode ?? 'code'));
   }
 }
