@@ -10,6 +10,7 @@ import 'package:event_ticket/pages/home/creator_home_screen.dart';
 import 'package:event_ticket/pages/profile/edit_profile_screen.dart';
 import 'package:event_ticket/pages/profile/profile_screen.dart';
 import 'package:event_ticket/pages/splash/splash_screen.dart';
+import 'package:event_ticket/pages/ticket/ticket_detail_screen.dart';
 import 'package:event_ticket/pages/ticket/ticket_screen.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +94,13 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         final event = state.extra as Event;
         return EditEventScreen(event: event);
+      },
+    ),
+    GoRoute(
+      path: Routes.ticketDetail,
+      builder: (context, state) {
+        final ticketId = state.pathParameters['ticketId']!;
+        return TicketDetailScreen(ticketId: ticketId);
       },
     ),
   ],

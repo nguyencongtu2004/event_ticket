@@ -49,7 +49,7 @@ class EventCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    event.name,
+                    event.name ?? 'Event Name',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -67,7 +67,7 @@ class EventCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        event.location,
+                        event.location ?? 'Location',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
@@ -101,7 +101,7 @@ class EventCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                Format.formatShortDay(event.date),
+                Format.formatShortDay(event.date!),
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

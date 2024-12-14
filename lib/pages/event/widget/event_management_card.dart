@@ -39,7 +39,7 @@ class EventManagementCard extends StatelessWidget {
             children: [
               const SizedBox(height: 8),
               Text(
-                event.name,
+                event.name ?? 'Event Name',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -52,7 +52,7 @@ class EventManagementCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Date: ${DateFormat.yMMMMd().format(event.date)}',
+                'Date: ${DateFormat.yMMMMd().format(event.date!)}',
                 style: const TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 4),

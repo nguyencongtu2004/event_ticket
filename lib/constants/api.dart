@@ -29,4 +29,5 @@ class Api {
 
   // ticket
   static const String bookTicket = 'ticket/book';
+  static const String getHistory = 'ticket/history';
 }

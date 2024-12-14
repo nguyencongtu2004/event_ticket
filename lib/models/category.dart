@@ -14,6 +14,13 @@ class Category {
     );
   }
 
+  Map<String, String> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+    };
+  }
+
   // thực hiện toán tử == và hashCode để so sánh 2 đối tượng Category
   @override
   bool operator ==(Object other) =>

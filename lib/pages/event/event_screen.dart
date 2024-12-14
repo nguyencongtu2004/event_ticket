@@ -91,7 +91,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
             title: 'Upcoming Events',
             eventsAsyncValue: eventAsyncValue,
             filter: (event) =>
-                event.date.isAfter(DateTime.now()) &&
+                event.date!.isAfter(DateTime.now()) &&
                 (selectedCategoryIds.isEmpty ||
                     event.category
                         .any((cat) => selectedCategoryIds.contains(cat.id))),

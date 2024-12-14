@@ -18,6 +18,8 @@ class Routes {
   static String getEventDetailPath(String eventId) => '/event/$eventId';
   static const String editEvent = '/edit-event/:eventId';
   static String getEditEventPath(String eventId) => '/edit-event/$eventId';
-
   static const String createEvent = '/create-event';
+
+  static const String ticketDetail = '/ticket/:ticketId';
+  static String getTicketDetailPath(String ticketId) => '/ticket/$ticketId';
 }

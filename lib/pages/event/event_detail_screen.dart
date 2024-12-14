@@ -1,6 +1,7 @@
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/models/ticket.dart';
+import 'package:event_ticket/providers/ticket_provider.dart';
 import 'package:event_ticket/requests/event_request.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
 import 'package:event_ticket/router/routes.dart';
@@ -10,8 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EventDetailScreen extends StatefulWidget {
+class EventDetailScreen extends ConsumerStatefulWidget {
   const EventDetailScreen({
     super.key,
     required this.eventId,
@@ -22,10 +24,10 @@ class EventDetailScreen extends StatefulWidget {
   final bool? canEdit;
 
   @override
-  State<EventDetailScreen> createState() => _EventDetailScreenState();
+  ConsumerState<EventDetailScreen> createState() => _EventDetailScreenState();
 }
 
-class _EventDetailScreenState extends State<EventDetailScreen> {
+class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   Event? event;
   final _eventRequest = EventRequest();
   final _ticketRequest = TicketRequest();
@@ -48,6 +50,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         print('Could not launch $url: $e');
       }
     } else {
+      // TODO: add new ticket to provider
+      ref.invalidate(ticketProvider);
       context.go('${Routes.buyerHome}?page=1');
     }
   }
@@ -68,11 +72,12 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     try {
       // Lấy thông tin sự kiện từ API
       final response = await _eventRequest.getEventDetail(widget.eventId);
-      print(response.data);
 
-      setState(() {
-        event = Event.fromJson(response.data as Map<String, dynamic>);
-      });
+      if (response.statusCode == 200) {
+        setState(() {
+          event = Event.fromJson(response.data as Map<String, dynamic>);
+        });
+      }
     } catch (e, st) {
       print('Error in EventDetailScreen.getEventDetail: $e');
       print(st);
@@ -113,7 +118,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 children: [
                   // Tên sự kiện
                   Text(
-                    event!.name,
+                    event!.name ?? 'Event Name',
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -126,7 +131,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       const Icon(Icons.calendar_today, color: Colors.blue),
                       const SizedBox(width: 8),
                       Text(
-                        '${Format.formatDDMMYYYY(event!.date)} - ${Format.formatHHMM(event!.date)}',
+                        '${Format.formatDDMMYYYY(event!.date!)} - ${Format.formatHHMM(event!.date!)}',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ],
@@ -139,7 +144,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       const Icon(Icons.location_on, color: Colors.blue),
                       const SizedBox(width: 8),
                       Text(
-                        event!.location,
+                        event!.location ?? 'Location',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ],
@@ -152,8 +157,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       // Avatar hình tròn
                       CircleAvatar(
                         radius: 20, // Bán kính của avatar
-                        backgroundImage: NetworkImage(event!.createdBy.avatar ??
-                            'https://placehold.co/150.png'),
+                        backgroundImage: NetworkImage(
+                            event!.createdBy?.avatar ??
+                                'https://placehold.co/150.png'),
                         onBackgroundImageError: (error, stackTrace) {
                           // Trường hợp ảnh không tải được
                           print('Error loading avatar: $error');
@@ -175,7 +181,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                 ),
                           ),
                           Text(
-                            event!.createdBy.name ?? 'Unknown',
+                            event!.createdBy?.name ?? 'Unknown',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium!
@@ -243,11 +249,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           horizontal: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: _getStatusColor(event!.status),
+                          color: _getStatusColor(event!.status!),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          event!.status.name.toUpperCase(),
+                          event!.status!.name.toUpperCase(),
                           style:
                               Theme.of(context).textTheme.labelLarge!.copyWith(
                                     color: Colors.white,
@@ -268,7 +274,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    event!.description,
+                    event?.description ?? 'Description',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 16),
