@@ -8,14 +8,19 @@ class Format {
   }
 
   static String formatDDMMYYYY(DateTime dateTime) {
-    return DateFormat('dd/MM/yyyy').format(dateTime);
+    return DateFormat('dd/MM/yyyy', Intl.defaultLocale).format(dateTime);
   }
 
   static String formatShortDay(DateTime dateTime) {
-    return DateFormat('d MMM').format(dateTime);
+    return DateFormat('d MMM', Intl.defaultLocale).format(dateTime);
   }
 
   static String formatHHMM(DateTime dateTime) {
-    return DateFormat('HH:mm').format(dateTime);
+    return DateFormat('HH:mm', Intl.defaultLocale).format(dateTime);
+  }
+
+  static String formatDDMMYYYYHHMM(DateTime dateTime) {
+    return DateFormat('dd/MM/yyyy - HH:mm', Intl.defaultLocale)
+        .format(dateTime);
   }
 }

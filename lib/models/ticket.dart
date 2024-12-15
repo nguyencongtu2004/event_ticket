@@ -1,6 +1,7 @@
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/models/event.dart';
 import 'payment_data.dart';
+import 'user.dart'; // Assuming the User class is defined in this file
 
 class Ticket {
   String id;
@@ -12,6 +13,7 @@ class Ticket {
   String? cancelReason;
   PaymentStatus? paymentStatus;
   PaymentData? paymentData;
+  User? buyer;
 
   Ticket({
     required this.id,
@@ -23,6 +25,7 @@ class Ticket {
     this.paymentData,
     this.createdAt,
     this.cancelReason,
+    this.buyer,
   });
 
   Ticket copyWith({
@@ -35,7 +38,9 @@ class Ticket {
     PaymentStatus? paymentStatus,
     PaymentData? paymentData,
     DateTime? createdAt,
+    DateTime? updatedAt,
     String? cancelReason,
+    User? buyer,
   }) {
     return Ticket(
       id: id ?? this.id,
@@ -47,6 +52,7 @@ class Ticket {
       paymentData: paymentData ?? this.paymentData,
       createdAt: createdAt ?? this.createdAt,
       cancelReason: cancelReason ?? this.cancelReason,
+      buyer: buyer ?? this.buyer,
     );
   }
 
@@ -61,6 +67,7 @@ class Ticket {
       'paymentData': paymentData?.toJson(),
       'createdAt': createdAt?.toIso8601String(),
       'cancelReason': cancelReason,
+      'buyer': buyer?.toJson(),
     };
   }
 
@@ -83,16 +90,17 @@ class Ticket {
           : PaymentData.fromJson(json['paymentData'] as Map<String, dynamic>),
       createdAt: DateTime.tryParse(json['createdAt'] ?? ''),
       cancelReason: json['cancelReason'] as String?,
+      buyer: json['buyer'] != null ? User.fromJson(json['buyer']) : null,
     );
   }
 
   @override
   String toString() =>
-      "Ticket(id: $id, event: $event, bookingCode: $bookingCode, qrCode: $qrCode, status: $status, paymentStatus: $paymentStatus, createdAt: $createdAt, cancelReason: $cancelReason, paymentData: $paymentData)";
+      "Ticket(id: $id, event: $event, bookingCode: $bookingCode, qrCode: $qrCode, status: $status, paymentStatus: $paymentStatus, createdAt: $createdAt, cancelReason: $cancelReason, paymentData: $paymentData, buyer: $buyer)";
 
   @override
   int get hashCode => Object.hash(id, event, bookingCode, qrCode, status,
-      paymentStatus, createdAt, cancelReason, paymentData);
+      paymentStatus, createdAt, cancelReason, paymentData, buyer);
 
   @override
   bool operator ==(Object other) =>
@@ -107,5 +115,6 @@ class Ticket {
           paymentStatus == other.paymentStatus &&
           createdAt == other.createdAt &&
           cancelReason == other.cancelReason &&
-          paymentData == other.paymentData;
+          paymentData == other.paymentData &&
+          buyer == other.buyer;
 }
