@@ -9,15 +9,35 @@ import 'package:velocity_x/velocity_x.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class TicketScreen extends ConsumerWidget {
-  const TicketScreen({super.key});
+class TicketScreen extends ConsumerStatefulWidget {
+  const TicketScreen({super.key, this.detailId});
+
+  final String? detailId;
+
+  @override
+  ConsumerState<TicketScreen> createState() => _TicketScreenState();
+}
+
+class _TicketScreenState extends ConsumerState<TicketScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.detailId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Vì trong initState thì qidget chưa được build nên trong context chưa có widget này
+        // => chưa chuyển hướng được => thêm call back khi widget được build xong
+        context.push(Routes.getTicketDetailPath(widget.detailId!));
+      });
+    }
+  }
 
   void onTicket(BuildContext context, Ticket ticket) {
     context.push(Routes.getTicketDetailPath(ticket.id));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final asyncValue = ref.watch(ticketProvider);
 
     return TicketScaffold(

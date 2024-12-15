@@ -91,9 +91,19 @@ final shellRoute = ShellRoute(
     ),
     GoRoute(
       path: Routes.ticket,
-      builder: (context, state) => const TicketScreen(),
-      pageBuilder: (context, state) =>
-          const NoTransitionPage(child: TicketScreen()),
+      builder: (context, state) {
+        final detailId = state.uri.queryParameters['detailId'];
+        return Consumer(
+          builder: (context, ref, _) {
+            ref.read(navigationIndexProvider.notifier).setIndex(1);
+            return TicketScreen(detailId: detailId);
+          },
+        );
+      },
+      pageBuilder: (context, state) {
+        final detailId = state.uri.queryParameters['detailId'];
+        return NoTransitionPage(child: TicketScreen(detailId: detailId));
+      },
     ),
     GoRoute(
       path: Routes.profile,
