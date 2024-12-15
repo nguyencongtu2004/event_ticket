@@ -167,12 +167,14 @@ class HttpService {
   Future<Response> delete({
     required String url,
     bool includeHeaders = true,
+    Map<String, dynamic>? body,
     Map<String, dynamic>? headers,
   }) async {
     Response response;
     try {
       response = await _dio.delete(
         Api.baseUrl + url,
+        data: body,
         options: Options(
           headers: includeHeaders ? await getHeaders() : headers,
         ),

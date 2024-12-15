@@ -27,4 +27,13 @@ class TicketRequest extends HttpService {
   
     return response;
   }
+
+  Future<Response> cancelTicket(String ticketId, String cancelReason) async {
+    final response = await delete(
+      url: Api.cancelTicket(ticketId),
+      body: {'cancelReason': cancelReason},
+    );
+  
+    return response;
+  }
 }
