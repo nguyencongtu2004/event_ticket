@@ -14,6 +14,7 @@ class Ticket {
   PaymentStatus? paymentStatus;
   PaymentData? paymentData;
   User? buyer;
+  DateTime? checkInTime;
 
   Ticket({
     required this.id,
@@ -26,6 +27,7 @@ class Ticket {
     this.createdAt,
     this.cancelReason,
     this.buyer,
+    this.checkInTime,
   });
 
   Ticket copyWith({
@@ -41,6 +43,7 @@ class Ticket {
     DateTime? updatedAt,
     String? cancelReason,
     User? buyer,
+    DateTime? checkInTime,
   }) {
     return Ticket(
       id: id ?? this.id,
@@ -53,6 +56,7 @@ class Ticket {
       createdAt: createdAt ?? this.createdAt,
       cancelReason: cancelReason ?? this.cancelReason,
       buyer: buyer ?? this.buyer,
+      checkInTime: checkInTime ?? this.checkInTime,
     );
   }
 
@@ -68,6 +72,7 @@ class Ticket {
       'createdAt': createdAt?.toIso8601String(),
       'cancelReason': cancelReason,
       'buyer': buyer?.toJson(),
+      'checkInTime': checkInTime?.toIso8601String(),
     };
   }
 
@@ -91,16 +96,17 @@ class Ticket {
       createdAt: DateTime.tryParse(json['createdAt'] ?? ''),
       cancelReason: json['cancelReason'] as String?,
       buyer: json['buyer'] != null ? User.fromJson(json['buyer']) : null,
+      checkInTime: DateTime.tryParse(json['checkInTime'] ?? ''),
     );
   }
 
   @override
   String toString() =>
-      "Ticket(id: $id, event: $event, bookingCode: $bookingCode, qrCode: $qrCode, status: $status, paymentStatus: $paymentStatus, createdAt: $createdAt, cancelReason: $cancelReason, paymentData: $paymentData, buyer: $buyer)";
+      "Ticket(id: $id, event: $event, bookingCode: $bookingCode, qrCode: $qrCode, status: $status, paymentStatus: $paymentStatus, createdAt: $createdAt, cancelReason: $cancelReason, paymentData: $paymentData, buyer: $buyer, checkInTime: $checkInTime)";
 
   @override
   int get hashCode => Object.hash(id, event, bookingCode, qrCode, status,
-      paymentStatus, createdAt, cancelReason, paymentData, buyer);
+      paymentStatus, createdAt, cancelReason, paymentData, buyer, checkInTime);
 
   @override
   bool operator ==(Object other) =>
@@ -116,5 +122,6 @@ class Ticket {
           createdAt == other.createdAt &&
           cancelReason == other.cancelReason &&
           paymentData == other.paymentData &&
-          buyer == other.buyer;
+          buyer == other.buyer &&
+          checkInTime == other.checkInTime;
 }

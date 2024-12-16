@@ -147,7 +147,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
         'maxAttendees': _maxAttendeesController.text,
         'date': DateFormat('yyyy-MM-dd').format(_selectedDate!),
         'categoryId': _selectedCategory!.id,
-        'colaborators':
+        'collaborators':
             json.encode(selectedUsers.map((user) => user.id).toList()),
       };
 
@@ -209,7 +209,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
               },
               tabs: const [
                 Tab(text: 'General Information'),
-                Tab(text: 'Colaborators'),
+                Tab(text: 'Collaborators'),
               ],
             ),
             Form(
@@ -218,7 +218,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
                 index: currentIndex,
                 children: [
                   _buildGeneralInformationTab(),
-                  _buildColaboratorsTab(),
+                  _buildCollaboratorsTab(),
                 ],
               ),
             ).expand(),
@@ -425,7 +425,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
     );
   }
 
-  Widget _buildColaboratorsTab() {
+  Widget _buildCollaboratorsTab() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

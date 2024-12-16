@@ -173,7 +173,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
             : _maxAttendeesController.text,
         'date': DateFormat('yyyy-MM-dd').format(_selectedDate!),
         'categoryId': json.encode([_selectedCategory!.id]),
-        'colaborators':
+        'collaborators':
             json.encode(selectedUsers.map((user) => user.id).toList()),
       };
 
@@ -240,7 +240,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
               },
               tabs: const [
                 Tab(text: 'General Information'),
-                Tab(text: 'Colaborators'),
+                Tab(text: 'Collaborators'),
               ],
             ),
             Form(
@@ -249,7 +249,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
                 index: currentIndex,
                 children: [
                   _buildGeneralInformationTab(),
-                  _buildColaboratorsTab(),
+                  _buildCollaboratorsTab(),
                 ],
               ),
             ).expand(),
@@ -477,7 +477,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
     );
   }
 
-  Widget _buildColaboratorsTab() {
+  Widget _buildCollaboratorsTab() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

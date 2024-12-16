@@ -32,4 +32,5 @@ class Api {
   static const String getTicketHistory = 'ticket/history';
   static String getTicketDetail(String ticketId) => 'ticket/$ticketId';
   static String cancelTicket(String ticketId) => 'ticket/$ticketId/cancel';
+  static const String checkIn = 'ticket/check-in';
 }

@@ -220,7 +220,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                 _buildEventInformation(context),
 
                 // cancel button
-                if (ticket!.status != TicketStatus.cancelled)
+                if (ticket!.status != TicketStatus.cancelled && ticket!.status != TicketStatus.checkedIn)
                   ElevatedButton(
                     onPressed: () => onCancelTicket(),
                     child: const Text('Cancel Ticket'),
@@ -372,6 +372,14 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                             const Icon(Icons.location_on),
                             const SizedBox(width: 8),
                             Text('Location: ${ticket!.event!.location}'),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on),
+                            const SizedBox(width: 8),
+                            Text('Status: ${ticket!.event!.status!.value}'),
                           ],
                         ),
                         const SizedBox(height: 8),

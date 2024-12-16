@@ -36,4 +36,14 @@ class TicketRequest extends HttpService {
   
     return response;
   }
+
+  Future<Response> checkInTicket(String bookingCode) async {
+    final response = await post(
+      url: Api.checkIn,
+      body: {'bookingCode': bookingCode},
+    );
+  
+    return response;
+  }
+
 }

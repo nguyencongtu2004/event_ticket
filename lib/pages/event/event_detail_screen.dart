@@ -1,6 +1,7 @@
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/models/ticket.dart';
+import 'package:event_ticket/providers/navigation_index_provider.dart';
 import 'package:event_ticket/providers/ticket_provider.dart';
 import 'package:event_ticket/requests/event_request.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
@@ -52,6 +53,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     } else {
       // TODO: add new ticket to provider
       ref.invalidate(ticketProvider);
+      ref.read(navigationIndexProvider.notifier).setIndex(1);
       context.go(Routes.ticket);
     }
   }
