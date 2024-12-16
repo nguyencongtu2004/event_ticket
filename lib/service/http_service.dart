@@ -41,11 +41,7 @@ class HttpService {
         ),
       );
     } on DioException catch (error) {
-      response = Response(
-        requestOptions: error.requestOptions,
-        statusCode: 400,
-        statusMessage: error.message,
-      );
+      response = _handleDioError(error);
     }
 
     return response;
@@ -68,11 +64,7 @@ class HttpService {
         ),
       );
     } on DioException catch (error) {
-      response = Response(
-        requestOptions: error.requestOptions,
-        statusCode: 400,
-        statusMessage: error.message,
-      );
+      response = _handleDioError(error);
     }
 
     return response;
@@ -97,11 +89,7 @@ class HttpService {
         ),
       );
     } on DioException catch (error) {
-      response = Response(
-        requestOptions: error.requestOptions,
-        statusCode: 400,
-        statusMessage: error.message,
-      );
+      response = _handleDioError(error);
     }
 
     return response;
@@ -124,11 +112,7 @@ class HttpService {
         ),
       );
     } on DioException catch (error) {
-      response = Response(
-        requestOptions: error.requestOptions,
-        statusCode: 400,
-        statusMessage: error.message,
-      );
+      response = _handleDioError(error);
     }
 
     return response;
@@ -153,11 +137,7 @@ class HttpService {
         ),
       );
     } on DioException catch (error) {
-      response = Response(
-        requestOptions: error.requestOptions,
-        statusCode: 400,
-        statusMessage: error.message,
-      );
+      response = _handleDioError(error);
     }
 
     return response;
@@ -180,11 +160,7 @@ class HttpService {
         ),
       );
     } on DioException catch (error) {
-      response = Response(
-        requestOptions: error.requestOptions,
-        statusCode: 400,
-        statusMessage: error.message,
-      );
+      response = _handleDioError(error);
     }
 
     return response;
@@ -202,37 +178,53 @@ class HttpService {
     };
   }
 
-  // Handle DioException
-  // Response formatDioExecption(DioException ex) {
-  //   var response = Response(requestOptions: ex.requestOptions);
+  // Handle Dio error
+  Response _handleDioError(DioException error) {
+    if (error.response != null) {
+      final statusCode = error.response?.statusCode ?? 400;
+      final errorMessage = error.response?.data['message'] ?? 'Unknown error';
 
-  //   response.statusCode = 400;
-  //   String? msg = response.statusMessage;
+      print('Error: $errorMessage, Status Code: $statusCode');
 
-  //   try {
-  //     if (ex.type == DioExceptionType.connectionTimeout) {
-  //       msg =
-  //           "Connection timeout. Please check your internet connection and try again";
-  //     } else if (ex.type == DioExceptionType.sendTimeout) {
-  //       msg =
-  //           "Send timeout. Please check your internet connection and try again";
-  //     } else if (ex.type == DioExceptionType.receiveTimeout) {
-  //       msg =
-  //           "Receive timeout. Please check your internet connection and try again";
-  //     } else if (ex.type == DioExceptionType.cancel) {
-  //       msg = "Request to server was cancelled. Please try again";
-  //     } else if (ex.type == DioExceptionType.unknown) {
-  //       msg = "Unexpected error occurred. Please try again";
-  //     } else {
-  //       msg = ex.message;
-  //     }
-  //     response.data = {"message": msg};
-  //   } catch (error) {
-  //     response.statusCode = 400;
-  //     msg = "An error occurred. Please try again";
-  //     response.data = {"message": msg};
-  //   }
+      return Response(
+        requestOptions: error.requestOptions,
+        statusCode: statusCode,
+        statusMessage: errorMessage,
+        data: error.response?.data,
+      );
+    } else {
+      String? fallbackMessage;
 
-  //   throw Exception(msg);
-  // }
+      switch (error.type) {
+        case DioExceptionType.connectionTimeout:
+          fallbackMessage =
+              "Connection timeout. Please check your internet connection and try again";
+          break;
+        case DioExceptionType.sendTimeout:
+          fallbackMessage =
+              "Send timeout. Please check your internet connection and try again";
+          break;
+        case DioExceptionType.receiveTimeout:
+          fallbackMessage =
+              "Receive timeout. Please check your internet connection and try again";
+          break;
+        case DioExceptionType.cancel:
+          fallbackMessage = "Request to server was cancelled. Please try again";
+          break;
+        case DioExceptionType.unknown:
+          fallbackMessage = "Unexpected error occurred. Please try again";
+          break;
+        default:
+          fallbackMessage = error.message ?? "An unexpected error occurred";
+      }
+
+      print('Error: $fallbackMessage');
+
+      return Response(
+        requestOptions: error.requestOptions,
+        statusCode: 400,
+        statusMessage: fallbackMessage,
+      );
+    }
+  }
 }
