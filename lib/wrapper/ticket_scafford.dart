@@ -24,7 +24,9 @@ class TicketScaffold extends StatelessWidget {
           AppBar(
             title: Text(
               title ?? 'Ticket app',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             centerTitle: true,
             actions: appBarActions,

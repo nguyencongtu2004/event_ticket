@@ -6,6 +6,7 @@ import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class EventManagementScreen extends ConsumerStatefulWidget {
   const EventManagementScreen({super.key});
@@ -25,10 +26,13 @@ class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
   }
 
   Future<void> _initializeEvents() async {
+    ref.invalidate(eventManagementProvider);
     final asyncValue = await ref.read(eventManagementProvider.future);
     if (mounted) {
-      setState(() {
-        displayedEvents = List.from(asyncValue);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          displayedEvents = List.from(asyncValue);
+        });
       });
     }
   }
@@ -105,11 +109,13 @@ class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
     return TicketScaffold(
       title: 'Event Management',
       body: RefreshIndicator(
-        onRefresh: () => ref.refresh(eventManagementProvider.future),
+        onRefresh: () => _initializeEvents(),
         child: displayedEvents.isEmpty
-            ? const Center(
-                child: Text('No events available'),
-              )
+            ? SizedBox(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height - 100,
+                child: const Text('No events available').centered(),
+              ).scrollVertical().centered()
             : _buildEventList(),
       ),
       floatingActionButton: FloatingActionButton(
