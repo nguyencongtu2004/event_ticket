@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

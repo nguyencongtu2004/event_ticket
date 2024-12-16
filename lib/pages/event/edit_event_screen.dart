@@ -8,7 +8,7 @@ import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/providers/category_provider.dart';
 import 'package:event_ticket/providers/event_management_provider.dart';
 import 'package:event_ticket/requests/user_request.dart';
-import 'package:event_ticket/ulties/format.dart';
+import 'package:event_ticket/extensions/extension.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -406,13 +406,13 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.number,
             validator: (value) {
-              const minPrice = 1000;
-              const maxPrice = 500000000;
+              const minPrice = 1000.0;
+              const maxPrice = 500000000.0;
               if (value == null || value.isEmpty) return null;
               final price = double.tryParse(value);
               if (price == null) return 'Please enter a valid number';
               if (price != 0 && (price < minPrice || price > maxPrice)) {
-                return 'Price must be between ${Format.formatPrice(minPrice.toDouble())} and ${Format.formatPrice(maxPrice.toDouble())}';
+                return 'Price must be between ${minPrice.toCurrency()} and ${maxPrice.toCurrency()}';
               }
               return null;
             },
@@ -442,7 +442,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
               contentPadding: const EdgeInsets.only(left: 12),
               title: const Text('Select Date'),
               subtitle: Text(_selectedDate != null
-                  ? Format.formatDDMMYYYY(_selectedDate!)
+                  ? _selectedDate!.toDDMMYYYY()
                   : 'No date selected'),
               leading: const Icon(Icons.calendar_today),
             ),

@@ -3,7 +3,7 @@ import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/providers/ticket_provider.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
 import 'package:event_ticket/router/routes.dart';
-import 'package:event_ticket/ulties/format.dart';
+import 'package:event_ticket/extensions/extension.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -220,7 +220,8 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                 _buildEventInformation(context),
 
                 // cancel button
-                if (ticket!.status != TicketStatus.cancelled && ticket!.status != TicketStatus.checkedIn)
+                if (ticket!.status != TicketStatus.cancelled &&
+                    ticket!.status != TicketStatus.checkedIn)
                   ElevatedButton(
                     onPressed: () => onCancelTicket(),
                     child: const Text('Cancel Ticket'),
@@ -286,7 +287,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
         if (ticket!.cancelReason != null)
           Text('Cancel Reason: ${ticket!.cancelReason ?? "N/A"}'),
         if (ticket!.createdAt != null)
-          Text('Created At: ${Format.formatDDMMYYYYHHMM(ticket!.createdAt!)}'),
+          Text('Created At: ${ticket!.createdAt!.toFullDate()}'),
         Text('Buyer: ${ticket!.buyer?.name ?? "N/A"}'),
         Text('Email: ${ticket!.buyer?.email ?? "N/A"}'),
       ],
@@ -307,7 +308,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                  'Amount: ${Format.formatPrice(ticket!.paymentData!.amount!.toDouble())}'),
+                  'Amount: ${ticket!.paymentData!.amount!.toDouble().toCurrency()}'),
               if (ticket!.paymentData!.resultCode != 0) ...[
                 Text(
                     'Payment Status: ${ticket!.paymentData!.message ?? "N/A"}'),
@@ -362,8 +363,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                           children: [
                             const Icon(Icons.date_range),
                             const SizedBox(width: 8),
-                            Text(
-                                'Date: ${Format.formatDDMMYYYY(ticket!.event!.date!)}'),
+                            Text('Date: ${ticket!.event!.date!.toFullDate()}'),
                           ],
                         ),
                         const SizedBox(height: 8),

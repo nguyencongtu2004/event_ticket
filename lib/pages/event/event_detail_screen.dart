@@ -6,7 +6,7 @@ import 'package:event_ticket/providers/ticket_provider.dart';
 import 'package:event_ticket/requests/event_request.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
 import 'package:event_ticket/router/routes.dart';
-import 'package:event_ticket/ulties/format.dart';
+import 'package:event_ticket/extensions/extension.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -133,7 +133,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                       const Icon(Icons.calendar_today, color: Colors.blue),
                       const SizedBox(width: 8),
                       Text(
-                        '${Format.formatDDMMYYYY(event!.date!)} - ${Format.formatHHMM(event!.date!)}',
+                        event!.date!.toFullDate(),
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ],
@@ -291,7 +291,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                     minimumSize: const Size.fromHeight(50),
                   ),
                   child: Text(
-                      'Buy Ticket ${(event?.price == null || event?.price == 0) ? 'For Free' : Format.formatPrice(event!.price!)}'),
+                      'Buy Ticket ${(event?.price == null || event?.price == 0) ? 'For Free' : event!.price!.toCurrency()}'),
                 ).p(16)
               // Nếu có quyền chỉnh sửa sự kiện
               else

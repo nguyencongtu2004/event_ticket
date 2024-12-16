@@ -1,10 +1,8 @@
 import 'package:event_ticket/enum.dart';
-import 'package:event_ticket/providers/navigation_index_provider.dart';
-import 'package:event_ticket/providers/role_provider.dart';
-import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/requests/auth_request.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/service/auth_service.dart';
+import 'package:event_ticket/utils/provider_utils.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,10 +60,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             isEventCreator ? Roles.eventCreator : Roles.ticketBuyer);
         print('Token: $token');
 
-        // invalidate user provider để cập nhật thông tin người dùng
-        ref.invalidate(userProvider);
-        ref.invalidate(roleProvider);
-        ref.invalidate(navigationIndexProvider);
+        // invalidate tất cả provider (trừ categoryProvider)
+        invalidateAllProvidersExceptCategory(ref);
         
         // Chuyển hướng đến trang chính
         if (isEventCreator) {

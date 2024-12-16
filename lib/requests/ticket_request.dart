@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:event_ticket/constants/api.dart';
 import 'package:event_ticket/service/http_service.dart';

@@ -1,7 +1,8 @@
 import 'dart:async';
 
+import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/providers/checked_in_ticket_provider.dart';
-import 'package:event_ticket/ulties/format.dart';
+import 'package:event_ticket/extensions/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -93,7 +94,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
     });
   }
 
-  void _showCheckedInList(BuildContext context, List checkedInTicket) {
+  void _showCheckedInList(BuildContext context, List<Ticket> checkedInTicket) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -138,7 +139,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
                           children: [
                             Text('Event: ${ticket.event?.name ?? 'N/A'}'),
                             Text(
-                                'Check-in Time: ${Format.formatDDMMYYYYHHMM(ticket.checkInTime!)}'),
+                                'Check-in Time: ${ticket.checkInTime!.toFullDate()}'),
                           ],
                         ),
                       );

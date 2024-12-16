@@ -1,6 +1,6 @@
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/models/ticket.dart';
-import 'package:event_ticket/ulties/format.dart';
+import 'package:event_ticket/extensions/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -75,7 +75,7 @@ class TicketCard extends StatelessWidget {
                     const Icon(Icons.calendar_today,
                         size: 16, color: Colors.blueGrey),
                     const SizedBox(width: 4),
-                    Text(Format.formatDDMMYYYY(ticket.event!.date!)),
+                    Text(ticket.event!.date!.toDDMMYYYY()),
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -94,7 +94,7 @@ class TicketCard extends StatelessWidget {
                       const Icon(Icons.monetization_on,
                           size: 16, color: Colors.green),
                       const SizedBox(width: 4),
-                      Text(Format.formatPrice(ticket.event?.price ?? 0)),
+                      Text(ticket.event?.price?.toCurrency() ?? "N/A"),
                     ],
                   ),
                 const SizedBox(height: 8),

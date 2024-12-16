@@ -1,5 +1,5 @@
 import 'package:event_ticket/models/event.dart';
-import 'package:event_ticket/ulties/format.dart';
+import 'package:event_ticket/extensions/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart'; // Thư viện hỗ trợ việc viết code nhanh hơn
 
@@ -79,7 +79,7 @@ class EventCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    event.price != null ? Format.formatPrice(event.price!) : 'Free',
+                    event.price != null ? event.price!.toCurrency() : 'Free',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.green,
@@ -101,7 +101,7 @@ class EventCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                Format.formatShortDay(event.date!),
+                event.date!.toShortDay(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
