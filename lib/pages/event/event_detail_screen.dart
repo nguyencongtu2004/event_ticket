@@ -93,196 +93,211 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       body: event == null
           ? const Center(child: CircularProgressIndicator())
           : Column(children: [
-              // Hình ảnh có thể cuộn ngang
-              SizedBox(
-                height: 200,
-                child: event!.images.isNotEmpty
-                    ? PageView.builder(
-                        itemCount: event!.images.length,
-                        itemBuilder: (context, index) {
-                          return Image.network(
-                            event!.images[index],
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          );
-                        },
-                      )
-                    : Image.network(
-                        'https://placehold.co/150.png',
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-              ),
-
-              // Thông tin chi tiết sự kiện
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Tên sự kiện
-                  Text(
-                    event!.name ?? 'Event Name',
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Ngày và giờ
-                  Row(
-                    children: [
-                      const Icon(Icons.calendar_today, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      Text(
-                        event!.date!.toFullDate(),
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Địa điểm
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      Text(
-                        event!.location ?? 'Location',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Thông tin người tổ chức
-                  Row(
-                    children: [
-                      // Avatar hình tròn
-                      CircleAvatar(
-                        radius: 20, // Bán kính của avatar
-                        backgroundImage: NetworkImage(
-                            event!.createdBy?.avatar ??
-                                'https://placehold.co/150.png'),
-                        onBackgroundImageError: (error, stackTrace) {
-                          // Trường hợp ảnh không tải được
-                          print('Error loading avatar: $error');
-                        },
-                      ),
-                      const SizedBox(width: 8),
-
-                      // Tên người tổ chức
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Organized by',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelMedium!
-                                .copyWith(
-                                  color: Colors.grey.shade600,
-                                ),
-                          ),
-                          Text(
-                            event!.createdBy?.name ?? 'Unknown',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Danh mục
-                  Wrap(
-                    spacing: 8,
-                    children: event!.category.map((category) {
-                      return Chip(
-                        label: Text(category.name),
-                        backgroundColor: Colors.blue.shade50,
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Vé đã bán, người tham gia tối đa, trạng thái sự kiện
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Tickets Sold: ${event!.ticketsSold}',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      if (event?.maxAttendees != null)
-                        Text(
-                          'Max Attendees: ${event!.maxAttendees}',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        )
-                      else
-                        Container(),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Số người đã tham gia
-                  Text(
-                    'Participants: ${event!.attendees.length}',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Trạng thái sự kiện
-                  Row(
-                    children: [
-                      Text(
-                        'Status:',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              fontWeight: FontWeight.bold,
+              RefreshIndicator(
+                onRefresh: () => getEventDetail(),
+                child: ListView(
+                  // shrinkWrap: true, // chiếm ít không gian nhất có thể (tốn tài nguyên)
+                  children: [
+                    // Hình ảnh có thể cuộn ngang
+                    SizedBox(
+                      height: 200,
+                      child: event!.images.isNotEmpty
+                          ? PageView.builder(
+                              itemCount: event!.images.length,
+                              itemBuilder: (context, index) {
+                                return Image.network(
+                                  event!.images[index],
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            )
+                          : Image.network(
+                              'https://placehold.co/150.png',
+                              width: double.infinity,
+                              fit: BoxFit.cover,
                             ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 4,
-                          horizontal: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(event!.status!),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          event!.status!.name.toUpperCase(),
+                    ),
+
+                    // Thông tin chi tiết sự kiện
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Tên sự kiện
+                        Text(
+                          event!.name ?? 'Event Name',
                           style:
-                              Theme.of(context).textTheme.labelLarge!.copyWith(
-                                    color: Colors.white,
+                              Theme.of(context).textTheme.titleLarge!.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                        const SizedBox(height: 8),
 
-                  // Thông tin mô tả sự kiện
-                  Text(
-                    'About Event',
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          fontWeight: FontWeight.bold,
+                        // Ngày và giờ
+                        Row(
+                          children: [
+                            const Icon(Icons.calendar_today,
+                                color: Colors.blue),
+                            const SizedBox(width: 8),
+                            Text(
+                              event!.date!.toFullDate(),
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
                         ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    event?.description ?? 'Description',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ).p(16).scrollVertical().expand(),
+                        const SizedBox(height: 8),
 
+                        // Địa điểm
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, color: Colors.blue),
+                            const SizedBox(width: 8),
+                            Text(
+                              event!.location ?? 'Location',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Thông tin người tổ chức
+                        Row(
+                          children: [
+                            // Avatar hình tròn
+                            CircleAvatar(
+                              radius: 20, // Bán kính của avatar
+                              backgroundImage: NetworkImage(
+                                  event!.createdBy?.avatar ??
+                                      'https://placehold.co/150.png'),
+                              onBackgroundImageError: (error, stackTrace) {
+                                // Trường hợp ảnh không tải được
+                                print('Error loading avatar: $error');
+                              },
+                            ),
+                            const SizedBox(width: 8),
+
+                            // Tên người tổ chức
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Organized by',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium!
+                                      .copyWith(
+                                        color: Colors.grey.shade600,
+                                      ),
+                                ),
+                                Text(
+                                  event!.createdBy?.name ?? 'Unknown',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Danh mục
+                        Wrap(
+                          spacing: 8,
+                          children: event!.category.map((category) {
+                            return Chip(
+                              label: Text(category.name),
+                              backgroundColor: Colors.blue.shade50,
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Vé đã bán, người tham gia tối đa, trạng thái sự kiện
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Tickets Sold: ${event!.ticketsSold}',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            if (event?.maxAttendees != null)
+                              Text(
+                                'Max Attendees: ${event!.maxAttendees}',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              )
+                            else
+                              Container(),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Số người đã tham gia
+                        Text(
+                          'Participants: ${event!.attendees.length}',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Trạng thái sự kiện
+                        Row(
+                          children: [
+                            Text(
+                              'Status:',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _getStatusColor(event!.status!),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                event!.status!.name.toUpperCase(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Thông tin mô tả sự kiện
+                        Text(
+                          'About Event',
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          event?.description ?? 'Description',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ).p(16),
+                  ],
+                ).expand(),
+              ).expand(),
               // Nút mua vé luôn ở dưới cùng
               if (widget.canEdit == false || widget.canEdit == null)
                 ElevatedButton(

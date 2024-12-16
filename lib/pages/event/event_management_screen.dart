@@ -104,11 +104,14 @@ class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
   Widget build(BuildContext context) {
     return TicketScaffold(
       title: 'Event Management',
-      body: displayedEvents.isEmpty
-          ? const Center(
-              child: Text('No events available'),
-            )
-          : _buildEventList(),
+      body: RefreshIndicator(
+        onRefresh: () => ref.refresh(eventManagementProvider.future),
+        child: displayedEvents.isEmpty
+            ? const Center(
+                child: Text('No events available'),
+              )
+            : _buildEventList(),
+      ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'addEvent',
         onPressed: () => onCreateEvent(context, ref),

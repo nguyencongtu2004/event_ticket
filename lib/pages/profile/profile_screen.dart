@@ -1,3 +1,4 @@
+import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/pages/profile/widget/user_info.dart';
 import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/router/routes.dart';
@@ -29,22 +30,27 @@ class ProfileScreen extends ConsumerWidget {
           onPressed: () => context.push(Routes.editProfile),
         ),
       ],
-      body: userAsyncValue.when(
-        data: (user) => Column(
+      body: RefreshIndicator(
+        onRefresh: () => ref.refresh(userProvider.future),
+        child: ListView(
           children: [
-            if (user != null)
-              UserInfo(user: user)
-            else
-              const Center(child: Text('No information.')),
-            ElevatedButton(
-              onPressed: () => onLogout(context, ref),
-              child: const Text('Logout'),
-            ).pOnly(top: 24),
+            switch (userAsyncValue) {
+              // Nếu có dữ liệu, hiển thị dữ liệu, kể cả trong lúc làm mới.
+              AsyncValue<User?>(:final valueOrNull?) => Column(
+                  children: [
+                    UserInfo(user: valueOrNull),
+                    ElevatedButton(
+                      onPressed: () => onLogout(context, ref),
+                      child: const Text('Logout'),
+                    ).pOnly(top: 24),
+                  ],
+                ).wFull(context).pOnly(top: 24),
+              // Nếu có lỗi, hiển thị lỗi.
+              AsyncValue(:final error?) => Center(child: Text('Error: $error')),
+              // Nếu không có dữ liệu, hiển thị trạng thái tải.
+              _ => const Center(child: CircularProgressIndicator()),
+            },
           ],
-        ).wFull(context).pOnly(top: 24),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(
-          child: Text('Đã xảy ra lỗi: $error'),
         ),
       ),
     );

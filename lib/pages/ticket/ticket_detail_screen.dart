@@ -95,7 +95,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                 size: MediaQuery.of(context).size.width * 0.7,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
             // instructions
             Container(
@@ -211,23 +211,26 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
           : 'Ticket Details',
       body: ticket == null
           ? const CircularProgressIndicator().centered()
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildQrCode(context),
-                _buildTicketInformation(context),
-                _buildPaymentInformation(context),
-                _buildEventInformation(context),
+          : RefreshIndicator(
+              onRefresh: () => getTicketDetail(),
+              child: ListView(
+                //crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildQrCode(context),
+                  _buildTicketInformation(context),
+                  _buildPaymentInformation(context),
+                  _buildEventInformation(context),
 
-                // cancel button
-                if (ticket!.status != TicketStatus.cancelled &&
-                    ticket!.status != TicketStatus.checkedIn)
-                  ElevatedButton(
-                    onPressed: () => onCancelTicket(),
-                    child: const Text('Cancel Ticket'),
-                  ).p16(),
-              ],
-            ).scrollVertical(),
+                  // cancel button
+                  if (ticket!.status != TicketStatus.cancelled &&
+                      ticket!.status != TicketStatus.checkedIn)
+                    ElevatedButton(
+                      onPressed: () => onCancelTicket(),
+                      child: const Text('Cancel Ticket'),
+                    ).p16(),
+                ],
+              ),
+            ),
     );
   }
 
