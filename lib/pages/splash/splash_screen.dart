@@ -4,6 +4,7 @@ import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/service/auth_service.dart';
 import 'package:event_ticket/service/firebase_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -47,6 +48,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     } else {
       context.go(Routes.eventManagement);
     }
+
+    // Xử lý nếu ấn vào app từ thông báo
+    FirebaseService.setupInteractedMessage(_handleMessageTap);
+  }
+
+  void _handleMessageTap(RemoteMessage message) {
+    // rẽ nhánh điều hướng màn hình các thứ...
+    context.go(Routes.profile);
+    print('Message title: ${message.notification?.title}');
   }
 
   @override

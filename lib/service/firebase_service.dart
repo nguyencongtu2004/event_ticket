@@ -6,17 +6,29 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:event_ticket/firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class FirebaseService {
   static final FirebaseMessaging fcm = FirebaseMessaging.instance;
   static final AuthRequest _authRequest = AuthRequest();
+  static final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   static Future<void> init() async {
     // Khởi tạo Firebase
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
 
-    // Khởi tạo Crashlytics
+    // Cấu hình FlutterLocalNotifications
+    const AndroidInitializationSettings androidInitializationSettings =
+        AndroidInitializationSettings(
+            '@mipmap/ic_launcher'); // Icon cho thông báo
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: androidInitializationSettings);
+
+    await _localNotificationsPlugin.initialize(initializationSettings);
+
+    // Khởi chạy Crashlytics
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
     };
@@ -27,34 +39,18 @@ class FirebaseService {
       return true;
     };
 
-    // Đồng bộ token mới khi có thay đổi (gỡ app cài lại, xóa dữ liệu, ...)
-    fcm.onTokenRefresh.listen((newToken) {
-      print("Token mới: $newToken");
-      _authRequest.sendFCMTokenToServer(newToken);
-    }).onError((err) {
-      print("Error getting FCM token: $err");
-    });
-
-    // Xin quyền thông báo trên IOS (Android không cần thiết)
+    // Xin quyền thông báo trên iOS
     NotificationSettings settings = await fcm.requestPermission(
       alert: true,
-      announcement: false,
       badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
       sound: true,
     );
     print('User granted permission: ${settings.authorizationStatus}');
 
-    // Đăng ký nhận thông báo forceround
+    // Lắng nghe thông báo khi app chạy foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
-
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
-      }
+      print('Nhận thông báo khi app chạy foreground');
+      _showLocalNotification(message);
     });
 
     // Đăng ký nhận thông báo background
@@ -83,7 +79,7 @@ class FirebaseService {
     }
   }
 
-  // Code xử lý trong này, không dùng anymous function
+  // Code xử lý khi nhân thông báo trên background trong này, không dùng anymous function
   @pragma('vm:entry-point')
   static Future<void> _firebaseMessagingBackgroundHandler(
       RemoteMessage message) async {
@@ -92,5 +88,39 @@ class FirebaseService {
     // await Firebase.initializeApp();
 
     print("Handling a background message: ${message.messageId}");
+  }
+
+  // Hiển thị thông báo local (mới cấu hình trên Android)
+  static Future<void> _showLocalNotification(RemoteMessage message) async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'default_channel', // ID channel
+      'General Notifications', // Tên channel
+      channelDescription: 'This channel is used for general notifications.',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+
+    await _localNotificationsPlugin.show(
+      DateTime.now().microsecond, // ID của thông báo
+      message.notification?.title ?? "Thông báo",
+      message.notification?.body ?? "Nội dung thông báo",
+      notificationDetails,
+    );
+  }
+
+  // Cấu hình khi ấn vào thông báo
+  static Future<void> setupInteractedMessage(
+      Function(RemoteMessage) onMessage) async {
+    // Cấu hình khi ấn vào thông báo khi app terminated
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) onMessage(initialMessage);
+
+    // Cấu hình khi ấn vào thông báo khi app chạy background
+    FirebaseMessaging.onMessageOpenedApp.listen(onMessage);
   }
 }
