@@ -3,6 +3,7 @@ import 'package:event_ticket/pages/profile/widget/user_info.dart';
 import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/service/auth_service.dart';
+import 'package:event_ticket/service/firebase_service.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +16,7 @@ class ProfileScreen extends ConsumerWidget {
   void onLogout(BuildContext context, WidgetRef ref) {
     AuthService.removeAuthBearerToken();
     AuthService.removeRole();
+    FirebaseService.deleteFCMTokenOnServer();
     context.go(Routes.login);
   }
 

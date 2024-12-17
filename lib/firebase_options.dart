@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'ticket-event-edc21.firebasestorage.app',
     measurementId: 'G-WWHKGGGDFV',
   );
+
 }

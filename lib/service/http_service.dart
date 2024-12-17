@@ -182,7 +182,7 @@ class HttpService {
   Response _handleDioError(DioException error) {
     if (error.response != null) {
       final statusCode = error.response?.statusCode ?? 400;
-      final errorMessage = error.response?.data['message'] ?? 'Unknown error';
+      final errorMessage = error.response?.data?['message'] ?? 'Unknown error';
 
       print('Error: $errorMessage, Status Code: $statusCode');
 

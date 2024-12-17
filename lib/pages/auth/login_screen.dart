@@ -2,6 +2,7 @@ import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/requests/auth_request.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/service/auth_service.dart';
+import 'package:event_ticket/service/firebase_service.dart';
 import 'package:event_ticket/utils/provider_utils.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         final isEventCreator =
             response.data['user']['role'] == Roles.eventCreator.value;
 
+        // Đồng bộ FCM token vào server
+        FirebaseService.syncFCMToken();
+
         // Lưu token và role vào shared preferences
         AuthService.setAuthBearerToken(token);
         AuthService.setRole(
@@ -62,7 +66,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
         // invalidate tất cả provider (trừ categoryProvider)
         invalidateAllProvidersExceptCategory(ref);
-        
+
         // Chuyển hướng đến trang chính
         if (isEventCreator) {
           context.go(Routes.eventManagement);

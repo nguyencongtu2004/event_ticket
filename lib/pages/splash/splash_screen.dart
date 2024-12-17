@@ -3,6 +3,7 @@ import 'package:event_ticket/providers/category_provider.dart';
 import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/service/auth_service.dart';
+import 'package:event_ticket/service/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -34,6 +35,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       ref.read(userProvider.notifier).build(),
       ref.read(categoryProvider.notifier).build(),
     ]);
+
+    // Đồng bộ FCM token vào server
+    FirebaseService.syncFCMToken();
 
     // Lấy role của người dùng và chuyển hướng đến trang tương ứng
     final role = await AuthService.getRole();

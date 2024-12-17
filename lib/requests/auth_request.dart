@@ -55,4 +55,22 @@ class AuthRequest extends HttpService {
 
     return response;
   }
+
+  Future<Response> sendFCMTokenToServer(String fcmToken) {
+    final response = post(
+      url: Api.fcmToken,
+      body: {'fcmToken': fcmToken},
+    );
+
+    return response;
+  }
+
+  Future<Response> deleteFCMTokenOnServer(String fcmToken) {
+    final response = delete(
+      url: Api.fcmToken,
+      body: {'fcmToken': fcmToken},
+    );
+
+    return response;
+  }
 }

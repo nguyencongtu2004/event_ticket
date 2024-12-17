@@ -25,8 +25,20 @@ class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
     _initializeEvents();
   }
 
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   _initializeEvents();
+  // }
+
+  @override
+  void dispose() {
+    print('Disposing EventManagementScreen');
+    super.dispose();
+  }
+
   Future<void> _initializeEvents() async {
-    ref.invalidate(eventManagementProvider);
+    //ref.invalidate(eventManagementProvider);
     final asyncValue = await ref.read(eventManagementProvider.future);
     if (mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
