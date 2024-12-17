@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "214317871931",
+    "project_id": "ticket-event-edc21",
+    "storage_bucket": "ticket-event-edc21.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214317871931:android:ab453e50c8789fd0753d1e",
+        "android_client_info": {
+          "package_name": "com.example.event_ticket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdBZnQXUMZK6U1PW_UG-5ntVOKxKyNh2E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

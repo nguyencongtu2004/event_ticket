@@ -1,0 +1,25 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "ticket-event-edc21",
+                    "appId": "1:214317871931:android:ab453e50c8789fd0753d1e",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "ticket-event-edc21",
+                    "configurations": {
+                        "android": "1:214317871931:android:ab453e50c8789fd0753d1e",
+                        "ios": "1:214317871931:ios:77280a431234c300753d1e",
+                        "macos": "1:214317871931:ios:77280a431234c300753d1e",
+                        "web": "1:214317871931:web:36924755ba857126753d1e",
+                        "windows": "1:214317871931:web:39e0585e37ae8f4d753d1e"
+                    }
+                }
+            }
+        }
+    }
+}
