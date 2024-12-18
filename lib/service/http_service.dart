@@ -17,10 +17,10 @@ class HttpService {
         print('Dio Response: ${response.statusCode}');
         return handler.next(response);
       },
-      onError: (DioException e, handler) {
-        print('Dio Error: ${e.message}');
-        return handler.next(e);
-      },
+      // onError: (DioException e, handler) {
+      //   print('Dio Error: ${e.message}');
+      //   return handler.next(e);
+      // },
     ));
   }
 
@@ -182,7 +182,9 @@ class HttpService {
   Response _handleDioError(DioException error) {
     if (error.response != null) {
       final statusCode = error.response?.statusCode ?? 400;
-      final errorMessage = error.response?.data?['message'] ?? 'Unknown error';
+      final errorMessage = error.response?.data is Map
+          ? error.response?.data['message']
+          : error.response?.statusMessage ?? 'Unknown error';
 
       print('Error: $errorMessage, Status Code: $statusCode');
 
