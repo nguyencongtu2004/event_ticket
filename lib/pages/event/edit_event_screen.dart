@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
@@ -54,6 +55,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
   List<Category> _categories = [];
   List<User> searchResult = [];
   List<User> selectedUsers = [];
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -133,6 +135,14 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
         _selectedDate = selectedDate;
       });
     }
+  }
+
+  void _onSearchChanged() {
+    // Debounce logic
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _searchUser();
+    });
   }
 
   Future<void> _searchUser() async {
@@ -482,24 +492,11 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Search bar
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  labelText: 'Search User',
-                  prefixIcon: Icon(Icons.search),
-                ),
-                onFieldSubmitted: (_) => _searchUser(),
-                textInputAction: TextInputAction.search,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: _searchUser,
-              child: const Text('Search'),
-            ),
-          ],
+        SearchBar(
+          controller: _searchController,
+          onChanged: (_) => _onSearchChanged(),
+          hintText: 'Search for a user...',
+          leading: const Icon(Icons.search),
         ).p16(),
 
         //  Selected users
@@ -541,24 +538,27 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
         if (searchResult.isNotEmpty) ...[
           Text('Search Result:', style: Theme.of(context).textTheme.titleMedium)
               .px(16),
-          ListView(
-            children: searchResult
-                .map((user) => ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            user.avatar ?? 'https://via.placeholder.com/50'),
-                        radius: 25,
-                      ),
-                      title: Text(user.name ?? 'No name'),
-                      subtitle: Text(user.studentId ?? 'No student ID'),
-                      trailing: ElevatedButton(
-                        onPressed: () => _addUser(user),
-                        child: const Text('Add'),
-                      ),
-                    ))
-                .toList(),
+          ListView.builder(
+            itemCount: searchResult.length,
+            itemBuilder: (context, index) {
+              final user = searchResult[index];
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(
+                      user.avatar ?? 'https://via.placeholder.com/50'),
+                  radius: 25,
+                ),
+                title: Text(user.name ?? 'No name'),
+                subtitle: Text(user.studentId ?? 'No student ID'),
+                trailing: ElevatedButton(
+                  onPressed: () => _addUser(user),
+                  child: const Text('Add'),
+                ),
+              );
+            },
           ).expand(),
-        ],
+        ] else
+          const Text('No search result').centered().expand(),
       ],
     );
   }

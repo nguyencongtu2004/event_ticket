@@ -296,7 +296,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                       ],
                     ).p(16),
                   ],
-                ).expand(),
+                ),
               ).expand(),
               // Nút mua vé luôn ở dưới cùng
               if (widget.canEdit == false || widget.canEdit == null)
