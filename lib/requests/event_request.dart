@@ -10,6 +10,13 @@ class EventRequest extends HttpService {
     );
     return response;
   }
+  Future<Response> getManagementEvents({Map<String, dynamic>? queryParameters}) async {
+    final response = await get(
+      url: Api.getManagementEvents,
+      queryParameters: queryParameters,
+    );
+    return response;
+  }
 
   Future<Response> getEventDetail(String eventId) async {
     final response = await get(url: Api.getEventDetail(eventId));

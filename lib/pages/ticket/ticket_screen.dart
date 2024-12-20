@@ -36,12 +36,22 @@ class _TicketScreenState extends ConsumerState<TicketScreen>
     context.push(Routes.getTicketDetailPath(ticket.id));
   }
 
+  void onTransferTicketScreen() {
+    context.push(Routes.transferTicket);
+  }
+
   @override
   Widget build(BuildContext context) {
     final asyncValue = ref.watch(ticketProvider);
 
     return TicketScaffold(
       title: 'Tickets',
+      appBarActions: [
+        IconButton(
+          icon: const Icon(Icons.notifications),
+          onPressed: onTransferTicketScreen,
+        ),
+      ],
       body: Column(
         children: [
           TabBar(

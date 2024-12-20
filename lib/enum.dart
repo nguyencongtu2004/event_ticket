@@ -4,7 +4,7 @@ enum Roles { admin, eventCreator, ticketBuyer }
 
 enum EventStatus { active, completed, cancelled }
 
-enum TicketStatus { booked, cancelled, checkedIn }
+enum TicketStatus { booked, cancelled, checkedIn, transferring, transferred }
 
 enum PaymentStatus { pending, paid, failed }
 

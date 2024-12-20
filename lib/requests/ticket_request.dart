@@ -44,4 +44,28 @@ class TicketRequest extends HttpService {
     return response;
   }
 
+  Future<Response> transferTicket(String ticketId, String newOwnerId) async {
+    final response = await post(
+      url: Api.transferTicket(ticketId),
+      body: {'newOwnerId': newOwnerId},
+    );
+  
+    return response;
+  }
+
+  Future<Response> confirmTransferTicket(String ticketId) async {
+    final response = await post(
+      url: Api.confirmTransferTicket(ticketId),
+    );
+  
+    return response;
+  }
+  
+  Future<Response> rejectTransferTicket(String ticketId) async {
+    final response = await post(
+      url: Api.rejectTransferTicket(ticketId),
+    );
+  
+    return response;
+  }
 }

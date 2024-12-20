@@ -30,6 +30,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
   bool isQrFullScreen = false;
   final TextEditingController _cancelReasonController = TextEditingController();
   final FocusNode _cancelReasonFocusNode = FocusNode();
+  bool isShowBottomSheet = true;
 
   @override
   void initState() {
@@ -203,6 +204,22 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
     }
   }
 
+  void onTransferTicket() async {
+    final message =
+        await context.push<String>(Routes.transferTicketSearch, extra: ticket);
+    if (message != null) {
+      // show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+        ),
+      );
+      setState(() {
+        isShowBottomSheet = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return TicketScaffold(
@@ -220,14 +237,33 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                   _buildTicketInformation(context),
                   _buildPaymentInformation(context),
                   _buildEventInformation(context),
-
-                  // cancel button
-                  if (ticket!.status != TicketStatus.cancelled &&
+                  if (isShowBottomSheet &&
+                      ticket!.status != TicketStatus.cancelled &&
                       ticket!.status != TicketStatus.checkedIn)
-                    ElevatedButton(
-                      onPressed: () => onCancelTicket(),
-                      child: const Text('Cancel Ticket'),
-                    ).p16(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // cancel button
+                        ElevatedButton(
+                          onPressed: () => onCancelTicket(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red[500],
+                          ),
+                          child: const Text(
+                            'Cancel Ticket',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ).p16(),
+
+                        // transfer button
+                        ElevatedButton(
+                          onPressed: onTransferTicket,
+                          child: const Text('Transfer Ticket'),
+                        ).p16(),
+                      ],
+                    )
                 ],
               ),
             ),

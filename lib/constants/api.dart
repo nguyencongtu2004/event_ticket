@@ -23,6 +23,7 @@ class Api {
 
   // Event
   static const String getEvents = 'events';
+  static const String getManagementEvents = 'events/management';
   static String getEventDetail(String eventId) => 'events/$eventId';
   static const String createEvent = 'events/create';
   static String deleteEvent(String eventId) => 'events/$eventId';
@@ -34,4 +35,7 @@ class Api {
   static String getTicketDetail(String ticketId) => 'ticket/$ticketId';
   static String cancelTicket(String ticketId) => 'ticket/$ticketId/cancel';
   static const String checkIn = 'ticket/check-in';
+  static String transferTicket(String ticketId) => 'ticket/$ticketId/transfer';
+  static String confirmTransferTicket(String ticketId) => 'ticket/$ticketId/confirm';
+  static String rejectTransferTicket(String ticketId) => 'ticket/$ticketId/reject';
 }

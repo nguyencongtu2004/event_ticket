@@ -41,53 +41,74 @@ class _EventScreenState extends ConsumerState<EventScreen> {
         child: ListView(
           children: [
             // Thanh tìm kiếm
-            TextField(
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: 'Search for events...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ).px(16).py(8),
+            SearchAnchor.bar(
+              searchController: SearchController(),
+              barHintText: 'Search for events...',
+              onSubmitted: (_) => print('Search for events...'),
+              suggestionsBuilder: (context, searchController) {
+                return [
+                  const Text('Search for events...').px(16).py(8),
+                  const Text('Search for events...').px(16).py(8),
+                  const Text('Search for events...').px(16).py(8),
+                ];
+              },
+            ).px(16),
+            const SizedBox(height: 16),
 
             // Danh mục (Categories)
-            categoryAsyncValue
-                .when(
-                  data: (categories) => Row(
-                    children: categories.map((category) {
-                      final isSelected =
-                          selectedCategoryIds.contains(category.id);
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (isSelected) {
-                              selectedCategoryIds.remove(category.id);
-                            } else {
-                              selectedCategoryIds.add(category.id);
-                            }
-                          });
-                        },
-                        child: Chip(
-                          label: Text(category.name),
-                          backgroundColor: isSelected
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey[300],
-                          labelStyle: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black,
+            SizedBox(
+              height: 50,
+              child: categoryAsyncValue.when(
+                data: (categories) => CarouselView.weighted(
+                  flexWeights: const [1, 2, 2, 1],
+                  onTap: (index) {
+                    final category = categories[index];
+                    setState(() {
+                      if (selectedCategoryIds.contains(category.id)) {
+                        selectedCategoryIds.remove(category.id);
+                      } else {
+                        selectedCategoryIds.add(category.id);
+                      }
+                    });
+                  },
+                  children: [
+                    ...categories.map(
+                      (category) {
+                        final isSelected =
+                            selectedCategoryIds.contains(category.id);
+                        return Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.blue : Colors.grey[300],
+                            // color: selectedCategoryIds.contains(category.id)
+                            //     ? Theme.of(context).colorScheme.primary
+                            //     : _getCategoryColor(category.id),
+                            // borderRadius: BorderRadius.circular(20),
                           ),
-                        ).px(4),
-                      );
-                    }).toList(),
-                  ).px(16).scrollHorizontal(),
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (error, stackTrace) => Center(
-                    child: Text('Đã xảy ra lỗi: $error'),
-                  ),
-                )
-                .py(8),
-            const SizedBox(height: 16),
+                          child: Text(
+                            category.name,
+                            style: TextStyle(
+                              color: selectedCategoryIds.contains(category.id)
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            softWrap: true,
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                loading: () => null,
+                error: (_, __) => null,
+              ),
+            ),
+
             // Upcoming Events
             EventList(
               title: 'Upcoming Events',

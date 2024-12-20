@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:event_ticket/models/event.dart';
-import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/requests/event_request.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,10 +13,7 @@ class EventManagementNotifier extends AsyncNotifier<List<Event>> {
       state = const AsyncValue.loading();
 
       // Gọi API để lấy dữ liệu
-      final user = ref.read(userProvider).value;
-      final response = await _eventRequest.getEvents(queryParameters: {
-        'createdBy': user?.id,
-      });
+      final response = await _eventRequest.getManagementEvents();
       final events = (response.data as List)
           .map((e) => Event.fromJson(e as Map<String, dynamic>))
           .toList();

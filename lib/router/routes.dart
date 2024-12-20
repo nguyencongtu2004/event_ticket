@@ -24,4 +24,6 @@ class Routes {
 
   static const String ticketDetail = '/ticket/:ticketId';
   static String getTicketDetailPath(String ticketId) => '/ticket/$ticketId';
+  static const String transferTicketSearch = '/transfer-ticket-search';
+  static const String transferTicket = '/transfer-ticket';
 }
