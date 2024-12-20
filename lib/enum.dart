@@ -8,6 +8,8 @@ enum TicketStatus { booked, cancelled, checkedIn, transferring, transferred }
 
 enum PaymentStatus { pending, paid, failed }
 
+enum ConversasionType { private, public }
+
 //////////////////////////
 // get value
 
@@ -20,8 +22,6 @@ extension GendersExtension on Genders {
         return 'female';
       case Genders.other:
         return 'other';
-      default:
-        return '';
     }
   }
 }
@@ -35,8 +35,6 @@ extension EventStatusExtension on EventStatus {
         return 'cancelled';
       case EventStatus.completed:
         return 'completed';
-      default:
-        return '';
     }
   }
 }
@@ -50,8 +48,6 @@ extension RolesExtension on Roles {
         return 'event_creator';
       case Roles.ticketBuyer:
         return 'ticket_buyer';
-      default:
-        return '';
     }
   }
 }
@@ -65,8 +61,6 @@ extension PaymentStatusExtension on PaymentStatus {
         return 'paid';
       case PaymentStatus.failed:
         return 'failed';
-      default:
-        return '';
     }
   }
 }
@@ -80,8 +74,21 @@ extension TicketStatusExtension on TicketStatus {
         return 'cancelled';
       case TicketStatus.checkedIn:
         return 'checked-in';
-      default:
-        return '';
+      case TicketStatus.transferring:
+        return 'transferring';
+      case TicketStatus.transferred:
+        return 'transferred';
+    }
+  }
+}
+
+extension ConversasionTypeExtension on ConversasionType {
+  String get value {
+    switch (this) {
+      case ConversasionType.private:
+        return 'private';
+      case ConversasionType.public:
+        return 'public';
     }
   }
 }
