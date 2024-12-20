@@ -13,10 +13,10 @@ import 'package:go_router/go_router.dart';
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
-  void onLogout(BuildContext context, WidgetRef ref) {
+  Future<void> onLogout(BuildContext context, WidgetRef ref) async {
+    await FirebaseService.deleteFCMTokenOnServer();
     AuthService.removeAuthBearerToken();
     AuthService.removeRole();
-    FirebaseService.deleteFCMTokenOnServer();
     context.go(Routes.login);
   }
 
