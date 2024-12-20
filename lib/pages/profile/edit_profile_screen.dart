@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/university.dart';
 import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/providers/user_provider.dart';
@@ -129,13 +130,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
       if (isSuccess) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cập nhật thông tin thành công')),
-        );
+        context.showAnimatedToast('Update profile successfully!');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cập nhật thông tin thất bại')),
-        );
+        context.showAnimatedToast('Failed to update profile.');
       }
     }
   }
@@ -167,7 +164,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     const SizedBox(height: 24),
                     TextFormField(
                       initialValue: editedUser.name,
-                      decoration: const InputDecoration(labelText: 'Tên'),
+                      decoration: const InputDecoration(labelText: 'Name'),
                       onSaved: (value) {
                         if (value != null) {
                           editedUser = editedUser.copyWith(name: value);
@@ -178,7 +175,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     TextFormField(
                       initialValue: editedUser.phone,
                       decoration:
-                          const InputDecoration(labelText: 'Số điện thoại'),
+                          const InputDecoration(labelText: 'Phone number'),
                       onSaved: (value) {
                         editedUser = editedUser.copyWith(phone: value);
                       },
@@ -188,7 +185,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       value: selectedUniversity,
                       isExpanded: true,
                       decoration:
-                          const InputDecoration(labelText: 'Trường đại học'),
+                          const InputDecoration(labelText: 'University'),
                       items: availableUniversities
                           .map((university) => DropdownMenuItem(
                                 value: university.name,
@@ -209,7 +206,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       value: selectedFaculty,
-                      decoration: const InputDecoration(labelText: 'Khoa'),
+                      decoration: const InputDecoration(labelText: 'Faculty'),
                       items: filteredFaculties
                           .map((faculty) => DropdownMenuItem(
                                 value: faculty.name,
@@ -230,7 +227,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       value: selectedMajor,
-                      decoration: const InputDecoration(labelText: 'Ngành học'),
+                      decoration: const InputDecoration(labelText: 'Major'),
                       items: filteredMajors
                           .map((major) => DropdownMenuItem(
                                 value: major.name,
@@ -250,7 +247,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<Genders>(
                       value: editedUser.gender,
-                      decoration: const InputDecoration(labelText: 'Giới tính'),
+                      decoration: const InputDecoration(labelText: 'Gender'),
                       items: Genders.values
                           .map((gender) => DropdownMenuItem(
                                 value: gender,
@@ -275,7 +272,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 .first
                             : '',
                       ),
-                      decoration: const InputDecoration(labelText: 'Ngày sinh'),
+                      decoration:
+                          const InputDecoration(labelText: 'Date of birth'),
                       onTap: () async {
                         final DateTime? picked = await showDatePicker(
                           context: context,
@@ -293,15 +291,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _saveProfile,
-                      child: const Text('Lưu'),
+                      child: const Text('Save'),
                     ),
                   ],
                 ),
               ).pOnly(top: 24, left: 16, right: 16).scrollVertical()
-            : const Center(child: Text('Không có thông tin người dùng.')),
+            : const Center(child: Text('User not found')),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
-          child: Text('Đã xảy ra lỗi: $error'),
+          child: Text('Error: $error'),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/providers/ticket_provider.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
@@ -191,11 +192,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
           });
           ref.invalidate(ticketProvider);
           // show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Ticket cancelled successfully'),
-            ),
-          );
+          context.showAnimatedToast('Ticket cancelled successfully!');
         }
       } catch (e, st) {
         print('Error in TicketDetailScreen.onCancelTicket: $e');
@@ -209,11 +206,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
         await context.push<String>(Routes.transferTicketSearch, extra: ticket);
     if (message != null) {
       // show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-        ),
-      );
+      context.showAnimatedToast(message);
       setState(() {
         isShowBottomSheet = false;
       });

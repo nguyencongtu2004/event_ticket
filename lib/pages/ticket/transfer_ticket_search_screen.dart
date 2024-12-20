@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
@@ -75,11 +76,8 @@ class _TransferTicketSearchScreenState
       final response =
           await _ticketRequest.transferTicket(widget.ticket!.id, user.id);
       if (response.statusCode != 200) {
-        print('Failed to transfer ticket: ${response.data}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Failed to transfer ticket: ${response.data}')),
-        );
+        context
+            .showAnimatedToast('Failed to transfer ticket: ${response.data}');
         return;
       }
       context.pop(response.data is Map ? response.data['message'] : 'Success');

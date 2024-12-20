@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/category.dart';
 import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/providers/category_provider.dart';
@@ -177,11 +178,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
         if (created) {
           Navigator.of(context).pop(true);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to create event'),
-            ),
-          );
+          context.showAnimatedToast('Failed to create event');
         }
       }
     } else {

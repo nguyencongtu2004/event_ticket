@@ -1,4 +1,5 @@
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/requests/auth_request.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/service/auth_service.dart';
@@ -76,17 +77,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       } else {
         // Hiển thị thông báo lỗi
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(response.data['message']),
-              backgroundColor: Colors.red,
-            ),
-          );
+          context.showAnimatedToast(response.data['message'], isError: true);
         }
       }
     } catch (e) {
       // Hiển thị thông báo lỗi
       if (mounted) {
+        context.showAnimatedToast('Login failed: $e', isError: true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Đăng nhập thất bại: $e'),

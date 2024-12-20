@@ -1,3 +1,4 @@
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/pages/event/widget/event_management_card.dart';
 import 'package:event_ticket/providers/event_management_provider.dart';
@@ -51,30 +52,23 @@ class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
 
   Future<void> onEventTap(BuildContext context, Event event) async {
     // Mở trang chi tiết sự kiện
-    print('Event tapped: ${event.name}');
     final bool? updated =
         await context.push(Routes.getEventDetailPath(event.id), extra: true);
     if (updated != null && updated) {
-      print('Event updated');
+      context.showAnimatedToast('Event updated successfully!');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Event updated successfully!')),
-      );
-
-      await _initializeEvents(); // Refresh danh sách sự kiện
+      // Refresh danh sách sự kiện
+      await _initializeEvents();
     }
   }
 
   Future<void> onCreateEvent(BuildContext context, WidgetRef ref) async {
     final bool? created = await context.push<bool>(Routes.createEvent);
     if (created != null && created) {
-      print('Event created');
+      context.showAnimatedToast('Event created successfully!');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Event created successfully!')),
-      );
-
-      await _initializeEvents(); // Refresh danh sách sự kiện
+      // Refresh danh sách sự kiện
+      await _initializeEvents();
     }
   }
 

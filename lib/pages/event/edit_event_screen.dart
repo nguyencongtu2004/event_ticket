@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/category.dart';
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/models/user.dart';
@@ -208,15 +209,11 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
           Navigator.of(context).pop(true);
           Navigator.of(context).pop(true);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to update event'),
-            ),
-          );
+          context.showAnimatedToast('Failed to update event', isError: true);
         }
       }
     } else {
-      VxToast.show(context, msg: 'Please fill in all required fields');
+      context.showAnimatedToast('Please fill in all required fields');
     }
   }
 

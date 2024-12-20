@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:event_ticket/models/ticket.dart';
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/providers/checked_in_ticket_provider.dart';
 import 'package:event_ticket/extensions/extension.dart';
 import 'package:flutter/material.dart';
@@ -86,9 +86,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
             .checkInTicket(element.displayValue!);
 
         if (message != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message)),
-          );
+          context.showAnimatedToast(message);
         }
       }
     });

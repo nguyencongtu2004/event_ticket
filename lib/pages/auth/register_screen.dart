@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/requests/auth_request.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
@@ -67,23 +68,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else {
         // Hiển thị thông báo lỗi
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(response.data['message']),
-              backgroundColor: Colors.red,
-            ),
-          );
+          context.showAnimatedToast(response.data['message'], isError: true);
         }
       }
     } catch (e) {
       // Hiển thị thông báo lỗi
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đăng ký thất bại: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        context.showAnimatedToast('Register failed: $e', isError: true);
       }
     }
   }
