@@ -94,7 +94,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
     });
   }
 
-  void _showCheckedInList(BuildContext context, List<Ticket> checkedInTicket) {
+  void _showCheckedInList(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -106,55 +106,59 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       builder: (context) {
-        return checkedInTicket.isEmpty
-            ? const Text('No checked-in tickets').py(16).centered()
-            : Column(
-                children: [
-                  Text(
-                    'Checked-in tickets',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const Divider().py(4),
-                  ListView.builder(
-                    itemCount: checkedInTicket.length,
-                    itemBuilder: (context, index) {
-                      final ticket = checkedInTicket[index];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          radius: 25,
-                          backgroundImage:
-                              NetworkImage(ticket.buyer?.avatar ?? ''),
-                          onBackgroundImageError: (_, __) =>
-                              const Icon(Icons.person),
-                          child: ticket.buyer?.avatar == null
-                              ? const Icon(Icons.person)
-                              : null,
-                        ),
-                        title: Text(
-                          'Attendee: ${ticket.buyer?.name ?? 'N/A'}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Event: ${ticket.event?.name ?? 'N/A'}'),
-                            Text(
-                                'Check-in Time: ${ticket.checkInTime!.toFullDate()}'),
-                          ],
-                        ),
-                      );
-                    },
-                  ).expand(),
-                ],
-              );
+        return Consumer(
+          builder: (context, ref, _) {
+            final checkedInTicket =
+                ref.watch(checkedInTicketProvider).value ?? [];
+            return checkedInTicket.isEmpty
+                ? const Text('No checked-in tickets').py(16).centered()
+                : Column(
+                    children: [
+                      Text(
+                        'Checked-in tickets',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const Divider().py(4),
+                      ListView.builder(
+                        itemCount: checkedInTicket.length,
+                        itemBuilder: (context, index) {
+                          final ticket = checkedInTicket[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              radius: 25,
+                              backgroundImage:
+                                  NetworkImage(ticket.buyer?.avatar ?? ''),
+                              onBackgroundImageError: (_, __) =>
+                                  const Icon(Icons.person),
+                              child: ticket.buyer?.avatar == null
+                                  ? const Icon(Icons.person)
+                                  : null,
+                            ),
+                            title: Text(
+                              'Attendee: ${ticket.buyer?.name ?? 'N/A'}',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Event: ${ticket.event?.name ?? 'N/A'}'),
+                                Text(
+                                    'Check-in Time: ${ticket.checkInTime!.toFullDate()}'),
+                              ],
+                            ),
+                          );
+                        },
+                      ).expand(),
+                    ],
+                  );
+          },
+        );
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final checkedInTicket = ref.watch(checkedInTicketProvider).value ?? [];
-
     return Scaffold(
       body: Stack(
         children: [
@@ -183,7 +187,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
                   child: Text(_isScanning ? 'Pause' : 'Resume'),
                 ).w(120).py(12).centered(),
                 ElevatedButton(
-                  onPressed: () => _showCheckedInList(context, checkedInTicket),
+                  onPressed: () => _showCheckedInList(context),
                   child: const Text('Show checked-in list'),
                 ).py(12).centered(),
               ],
