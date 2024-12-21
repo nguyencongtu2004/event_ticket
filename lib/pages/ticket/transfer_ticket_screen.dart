@@ -58,7 +58,7 @@ class TransferTicketScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(transferTicketProvider.future),
         child: switch (asyncValue) {
-          // Nếu có dữ liệu, hiển thị dữ liệu, kesy cả trong lúc làm mới.
+          // Nếu có dữ liệu, hiển thị dữ liệu, kể cả trong lúc làm mới.
           AsyncValue<List<TransferTicket>>(:final valueOrNull?) =>
             _buildTransferTicketList(context, ref, valueOrNull),
           // Nếu có lỗi, hiển thị lỗi.

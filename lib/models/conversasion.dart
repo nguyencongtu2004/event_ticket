@@ -6,12 +6,14 @@ class Conversasion {
   final String? title;
   final ConversasionType? type;
   final List<User>? members;
+  final DateTime? createdAt;
 
   Conversasion({
     required this.id,
     this.title,
     this.type,
     this.members,
+    this.createdAt,
   });
 
   factory Conversasion.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,9 @@ class Conversasion {
           ? List<User>.from(json['members']
               .map((e) => User.fromJson(e as Map<String, dynamic>)))
           : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
     );
   }
 
@@ -34,6 +39,7 @@ class Conversasion {
       'title': title,
       'type': type?.value,
       'members': members?.map((e) => e.toJson()).toList(),
+      'createdAt': createdAt?.toIso8601String(),
     };
   }
 

@@ -41,4 +41,9 @@ class Api {
   static String rejectTransferTicket(String ticketId) =>
       'ticket/$ticketId/reject';
   static const String getTransferTicket = 'ticket/transferring-ticket';
+
+  // Forum
+  static const String getConversasions = 'conversations';
+  static String getConversasionDetail(String conversationId) =>
+      'conversations/$conversationId/messages';
 }

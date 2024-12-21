@@ -1,6 +1,7 @@
 import 'package:event_ticket/pages/check_in/check_in_screen.dart';
 import 'package:event_ticket/pages/event/event_management_screen.dart';
 import 'package:event_ticket/pages/event/event_screen.dart';
+import 'package:event_ticket/pages/forum/forum_screen.dart';
 import 'package:event_ticket/pages/profile/profile_screen.dart';
 import 'package:event_ticket/pages/ticket/ticket_screen.dart';
 import 'package:event_ticket/providers/navigation_index_provider.dart';
@@ -36,6 +37,9 @@ final shellRoute = ShellRoute(
                         context.go(Routes.ticket);
                         break;
                       case 2:
+                        context.go(Routes.forum);
+                        break;
+                      case 3:
                         context.go(Routes.profile);
                         break;
                     }
@@ -59,6 +63,8 @@ final shellRoute = ShellRoute(
                             icon: Icon(Icons.event), label: 'Event'),
                         NavigationDestination(
                             icon: Icon(Icons.airplane_ticket), label: 'Ticket'),
+                        NavigationDestination(
+                            icon: Icon(Icons.forum), label: 'Forum'),
                         NavigationDestination(
                             icon: Icon(Icons.person), label: 'Profile'),
                       ]
@@ -122,6 +128,12 @@ final shellRoute = ShellRoute(
       builder: (context, state) => const CheckInScreen(),
       pageBuilder: (context, state) =>
           const NoTransitionPage(child: CheckInScreen()),
+    ),
+    GoRoute(
+      path: Routes.forum,
+      builder: (context, state) => const ForumScreen(),
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: ForumScreen()),
     ),
   ],
 );

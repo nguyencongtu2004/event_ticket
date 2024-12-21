@@ -10,6 +10,7 @@ class Routes {
   static const String eventManagement = '/event-management';
   static const String event = '/event';
   static const String checkIn = '/check-in';
+  static const String forum = '/forum';
 
   static const String login = '/login';
   static const String register = '/register';
@@ -26,4 +27,7 @@ class Routes {
   static String getTicketDetailPath(String ticketId) => '/ticket/$ticketId';
   static const String transferTicketSearch = '/transfer-ticket-search';
   static const String transferTicket = '/transfer-ticket';
+
+  static const String forumDetail = '/forum/:forumId';
+  static String getForumDetailPath(String forumId) => '/forum/$forumId';
 }

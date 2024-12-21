@@ -5,6 +5,7 @@ import 'package:event_ticket/pages/auth/register_screen.dart';
 import 'package:event_ticket/pages/event/add_event_screen.dart';
 import 'package:event_ticket/pages/event/edit_event_screen.dart';
 import 'package:event_ticket/pages/event/event_detail_screen.dart';
+import 'package:event_ticket/pages/forum/forum_detail_screen.dart';
 import 'package:event_ticket/pages/profile/edit_profile_screen.dart';
 import 'package:event_ticket/pages/splash/splash_screen.dart';
 import 'package:event_ticket/pages/ticket/ticket_detail_screen.dart';
@@ -86,6 +87,13 @@ final GoRouter router = GoRouter(
       path: Routes.transferTicket,
       builder: (context, state) {
         return const TransferTicketScreen();
+      },
+    ),
+    GoRoute(
+      path: Routes.forumDetail,
+      builder: (context, state) {
+        final forumId = state.pathParameters['forumId']!;
+        return ForumDetailScreen(forumId: forumId);
       },
     ),
   ],

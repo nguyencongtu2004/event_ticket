@@ -161,6 +161,34 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                         ),
                         const SizedBox(height: 16),
 
+                        // Danh mục
+                        Wrap(
+                          spacing: 8,
+                          children: event!.category.map((category) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade50,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                category.name,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 16),
+
                         // Thông tin người tổ chức
                         Row(
                           children: [
@@ -196,78 +224,105 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Danh mục
-                        Wrap(
-                          spacing: 8,
-                          children: event!.category.map((category) {
-                            return Chip(
-                              label: Text(category.name),
-                              backgroundColor: Colors.blue.shade50,
-                            );
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Vé đã bán, người tham gia tối đa, trạng thái sự kiện
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Tickets Sold: ${event!.ticketsSold}',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            if (event?.maxAttendees != null)
-                              Text(
-                                'Max Attendees: ${event!.maxAttendees}',
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              )
-                            else
-                              Container(),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Số người đã tham gia
-                        Text(
-                          'Participants: ${event!.attendees.length}',
-                          style: Theme.of(context).textTheme.bodyLarge,
+                        // Thông tin vé và người tham gia
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest
+                                .withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: _buildInfoTile(
+                                      context,
+                                      Icons.confirmation_number,
+                                      'Tickets Sold',
+                                      '${event!.ticketsSold}',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  if (event?.maxAttendees != null)
+                                    Expanded(
+                                      child: _buildInfoTile(
+                                        context,
+                                        Icons.groups,
+                                        'Max Attendees',
+                                        '${event!.maxAttendees}',
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              _buildInfoTile(
+                                context,
+                                Icons.people,
+                                'Participants',
+                                '${event!.attendees.length}',
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 16),
 
                         // Trạng thái sự kiện
-                        Row(
-                          children: [
-                            Text(
-                              'Status:',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(event!.status!)
+                                .withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: _getStatusColor(event!.status!),
+                              width: 1,
                             ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 4,
-                                horizontal: 8,
-                              ),
-                              decoration: BoxDecoration(
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                _getStatusIcon(event!.status!),
                                 color: _getStatusColor(event!.status!),
-                                borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Text(
-                                event!.status!.name.toUpperCase(),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Status:',
                                 style: Theme.of(context)
                                     .textTheme
-                                    .labelLarge!
+                                    .bodyLarge!
                                     .copyWith(
-                                      color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                  horizontal: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _getStatusColor(event!.status!),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  event!.status!.name.toUpperCase(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge!
+                                      .copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 16),
 
@@ -322,6 +377,51 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         return Colors.grey;
       case EventStatus.cancelled:
         return Colors.red;
+    }
+  }
+
+  Widget _buildInfoTile(
+      BuildContext context, IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: Theme.of(context).colorScheme.primary,
+          size: 24,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  IconData _getStatusIcon(EventStatus status) {
+    switch (status) {
+      case EventStatus.active:
+        return Icons.event_available;
+      case EventStatus.completed:
+        return Icons.event_busy;
+      case EventStatus.cancelled:
+        return Icons.event_busy;
     }
   }
 }
