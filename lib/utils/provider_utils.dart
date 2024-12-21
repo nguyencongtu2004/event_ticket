@@ -4,6 +4,7 @@ import 'package:event_ticket/providers/event_provider.dart';
 import 'package:event_ticket/providers/navigation_index_provider.dart';
 import 'package:event_ticket/providers/role_provider.dart';
 import 'package:event_ticket/providers/ticket_provider.dart';
+import 'package:event_ticket/providers/transfer_ticket_provider.dart';
 import 'package:event_ticket/providers/user_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,4 +16,5 @@ void invalidateAllProvidersExceptCategory(WidgetRef ref) {
   ref.invalidate(roleProvider);
   ref.invalidate(ticketProvider);
   ref.invalidate(userProvider);
+  ref.invalidate(transferTicketProvider);
 }

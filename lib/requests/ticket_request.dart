@@ -22,7 +22,7 @@ class TicketRequest extends HttpService {
     final response = await get(
       url: Api.getTicketDetail(ticketId),
     );
-  
+
     return response;
   }
 
@@ -31,7 +31,7 @@ class TicketRequest extends HttpService {
       url: Api.cancelTicket(ticketId),
       body: {'cancelReason': cancelReason},
     );
-  
+
     return response;
   }
 
@@ -40,7 +40,7 @@ class TicketRequest extends HttpService {
       url: Api.checkIn,
       body: {'bookingCode': bookingCode},
     );
-  
+
     return response;
   }
 
@@ -49,7 +49,7 @@ class TicketRequest extends HttpService {
       url: Api.transferTicket(ticketId),
       body: {'newOwnerId': newOwnerId},
     );
-  
+
     return response;
   }
 
@@ -57,15 +57,23 @@ class TicketRequest extends HttpService {
     final response = await post(
       url: Api.confirmTransferTicket(ticketId),
     );
-  
+
     return response;
   }
-  
+
   Future<Response> rejectTransferTicket(String ticketId) async {
     final response = await post(
       url: Api.rejectTransferTicket(ticketId),
     );
-  
+
+    return response;
+  }
+
+  Future<Response> getTransferTicket() async {
+    final response = await get(
+      url: Api.getTransferTicket,
+    );
+
     return response;
   }
 }

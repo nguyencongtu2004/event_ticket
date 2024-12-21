@@ -10,6 +10,8 @@ enum PaymentStatus { pending, paid, failed }
 
 enum ConversasionType { private, public }
 
+enum TransferStatus { pending, success, cancelled }
+
 //////////////////////////
 // get value
 
@@ -89,6 +91,19 @@ extension ConversasionTypeExtension on ConversasionType {
         return 'private';
       case ConversasionType.public:
         return 'public';
+    }
+  }
+}
+
+extension TransferStatusExtension on TransferStatus {
+  String get value {
+    switch (this) {
+      case TransferStatus.pending:
+        return 'pending';
+      case TransferStatus.success:
+        return 'success';
+      case TransferStatus.cancelled:
+        return 'cancelled';
     }
   }
 }

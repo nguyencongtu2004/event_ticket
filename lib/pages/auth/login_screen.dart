@@ -60,8 +60,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         FirebaseService.syncFCMToken();
 
         // Lưu token và role vào shared preferences
-        AuthService.setAuthBearerToken(token);
-        AuthService.setRole(
+        await AuthService.setAuthBearerToken(token);
+        await AuthService.setRole(
             isEventCreator ? Roles.eventCreator : Roles.ticketBuyer);
         print('Token: $token');
 

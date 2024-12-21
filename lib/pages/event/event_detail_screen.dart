@@ -7,6 +7,7 @@ import 'package:event_ticket/requests/event_request.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/extensions/extension.dart';
+import 'package:event_ticket/wrapper/avatar.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -164,16 +165,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                         Row(
                           children: [
                             // Avatar hình tròn
-                            CircleAvatar(
-                              radius: 20, // Bán kính của avatar
-                              backgroundImage: NetworkImage(
-                                  event!.createdBy?.avatar ??
-                                      'https://placehold.co/150.png'),
-                              onBackgroundImageError: (error, stackTrace) {
-                                // Trường hợp ảnh không tải được
-                                print('Error loading avatar: $error');
-                              },
-                            ),
+                            Avatar(event!.createdBy, radius: 20),
                             const SizedBox(width: 8),
 
                             // Tên người tổ chức

@@ -5,6 +5,7 @@ import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
 import 'package:event_ticket/requests/user_request.dart';
+import 'package:event_ticket/wrapper/avatar.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -111,10 +112,7 @@ class _TransferTicketSearchScreenState
               itemBuilder: (context, index) {
                 final user = searchSuggestions[index];
                 return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        user.avatar ?? 'https://via.placeholder.com/50'),
-                  ),
+                  leading: Avatar(user, radius: 25),
                   title: Text(user.name ?? 'No name'),
                   subtitle: Text(user.studentId ?? 'No student ID'),
                   onTap: () => _onTransferTicket(user),

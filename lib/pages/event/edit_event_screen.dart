@@ -11,6 +11,7 @@ import 'package:event_ticket/providers/category_provider.dart';
 import 'package:event_ticket/providers/event_management_provider.dart';
 import 'package:event_ticket/requests/user_request.dart';
 import 'package:event_ticket/extensions/extension.dart';
+import 'package:event_ticket/wrapper/avatar.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -508,11 +509,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(user.avatar ??
-                                  'https://via.placeholder.com/50'),
-                              radius: 25,
-                            ),
+                            Avatar(user, radius: 25),
                             const SizedBox(height: 4),
                             Text(
                               user.name ?? 'No name',
@@ -540,11 +537,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
             itemBuilder: (context, index) {
               final user = searchResult[index];
               return ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      user.avatar ?? 'https://via.placeholder.com/50'),
-                  radius: 25,
-                ),
+                leading: Avatar(user, radius: 25),
                 title: Text(user.name ?? 'No name'),
                 subtitle: Text(user.studentId ?? 'No student ID'),
                 trailing: ElevatedButton(

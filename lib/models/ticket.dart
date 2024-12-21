@@ -79,7 +79,9 @@ class Ticket {
   factory Ticket.fromJson(Map<String, dynamic> json) {
     return Ticket(
       id: json['_id'] as String,
-      event: json['event'] != null ? Event.fromJson(json['event']) : null,
+      event: json['event'] != null
+          ? Event.fromJson(json['event'])
+          : (json['eventId'] != null ? Event.fromJson(json['eventId']) : null),
       bookingCode: json['bookingCode'] as String?,
       qrCode: json['qrCode'] as String?,
       status: TicketStatus.values.cast<TicketStatus?>().firstWhere(
