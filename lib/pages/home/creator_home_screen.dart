@@ -48,7 +48,7 @@ class _CreatorHomeScreenState extends State<CreatorHomeScreen> {
       bottomNavigationBar: NavigationBar(
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         height: 60,
-        indicatorColor: routePages[_selectedIndex].color.withOpacity(0.1),
+        indicatorColor: routePages[_selectedIndex].color.withValues(alpha: 0.1),
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
           setState(() {

@@ -330,8 +330,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         return Colors.grey;
       case EventStatus.cancelled:
         return Colors.red;
-      default:
-        return Colors.blue;
     }
   }
 }

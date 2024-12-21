@@ -49,7 +49,7 @@ class _BuyerHomeScreenState extends State<BuyerHomeScreen> {
       bottomNavigationBar: NavigationBar(
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         height: 60,
-        indicatorColor: routePages[widget.index].color.withOpacity(0.1),
+        indicatorColor: routePages[widget.index].color.withValues(alpha: 0.1),
         selectedIndex: widget.index,
         onDestinationSelected: (index) {
           setState(() {

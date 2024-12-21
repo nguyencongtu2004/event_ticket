@@ -11,9 +11,9 @@ class TransferTicketScreen extends StatefulWidget {
 class _TransferTicketScreenState extends State<TransferTicketScreen> {
   @override
   Widget build(BuildContext context) {
-    return TicketScaffold(
+    return const TicketScaffold(
       title: 'Transfer Ticket',
-      body: const Center(
+      body: Center(
         child: Text('Transfer Ticket Screen'),
       ),
     );

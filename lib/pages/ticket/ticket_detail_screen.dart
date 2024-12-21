@@ -85,7 +85,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     spreadRadius: 5,
                     blurRadius: 10,
                   ),
@@ -107,7 +107,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     spreadRadius: 5,
                     blurRadius: 10,
                   ),
@@ -273,7 +273,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             spreadRadius: 2,
             blurRadius: 5,
           ),
