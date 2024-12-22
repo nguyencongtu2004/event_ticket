@@ -16,7 +16,11 @@ class TicketList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tickets.isEmpty) {
-      return const Center(child: Text('No tickets available'));
+      return SizedBox(
+        height: MediaQuery.of(context).size.height - 200,
+        width: double.infinity,
+        child: const Text('No tickets available').centered(),
+      ).scrollVertical();
     }
 
     return ListView.builder(

@@ -4,6 +4,7 @@ import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/university.dart';
 import 'package:event_ticket/models/user.dart';
+import 'package:event_ticket/pages/profile/widget/pick_avatar.dart';
 import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/requests/university_request.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
@@ -148,18 +149,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    GestureDetector(
+                    PickAvatar(
+                      user,
+                      radius: 70,
+                      selectedImage: _selectedImage,
                       onTap: _pickImage,
-                      child: CircleAvatar(
-                        radius: 70,
-                        backgroundImage: _selectedImage != null
-                            ? FileImage(_selectedImage!)
-                            : NetworkImage(
-                                user.avatar ?? 'https://placehold.co/150.png'),
-                        child: _selectedImage == null
-                            ? const Icon(Icons.camera_alt, size: 50)
-                            : null,
-                      ),
+                      showCamera: true,
                     ).centered(),
                     const SizedBox(height: 24),
                     TextFormField(
@@ -295,7 +290,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ),
                   ],
                 ),
-              ).pOnly(top: 24, left: 16, right: 16).scrollVertical()
+              ).px(16).py(24).scrollVertical()
             : const Center(child: Text('User not found')),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(

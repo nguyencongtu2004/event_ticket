@@ -15,34 +15,69 @@ class Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircleAvatar(
       radius: radius,
-      backgroundImage:
-          user?.avatar != null ? NetworkImage(user!.avatar!) : null,
-      child: user?.avatar != null
-          ? FutureBuilder<void>(
-              future: precacheImage(NetworkImage(user!.avatar!), context),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _buildInitialOrIcon();
-                } else if (snapshot.hasError) {
-                  return _buildInitialOrIcon();
-                }
-                return const SizedBox();
-              },
-            )
-          : _buildInitialOrIcon(),
+      backgroundColor: Colors.grey.shade300,
+      child: ClipOval(
+        child: user?.avatar != null
+            ? FutureBuilder<void>(
+                future: precacheImage(NetworkImage(user!.avatar!), context),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        _buildInitialOrIcon(),
+                        FadeInImage.assetNetwork(
+                          placeholder: 'assets/images/transparent.png',
+                          image: user!.avatar!,
+                          fit: BoxFit.cover,
+                          fadeInDuration: const Duration(milliseconds: 5000),
+                          imageErrorBuilder: (context, error, stackTrace) {
+                            return _buildInitialOrIcon();
+                          },
+                        ),
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return _buildInitialOrIcon();
+                  }
+                  return Image.network(
+                    user!.avatar!,
+                    fit: BoxFit.cover,
+                    width: radius * 2,
+                    height: radius * 2,
+                    errorBuilder: (context, error, stackTrace) {
+                      return _buildInitialOrIcon();
+                    },
+                  );
+                },
+              )
+            : _buildInitialOrIcon(),
+      ),
     );
   }
 
   Widget _buildInitialOrIcon() {
     if (user?.name != null && user!.name!.isNotEmpty) {
-      return Text(
-        user!.name![0].toUpperCase(),
-        style: TextStyle(
-          fontSize: radius * 0.8,
-          fontWeight: FontWeight.bold,
+      return Container(
+        width: radius * 2,
+        height: radius * 2,
+        color: Colors.grey.shade300,
+        alignment: Alignment.center,
+        child: Text(
+          user!.name![0].toUpperCase(),
+          style: TextStyle(
+            fontSize: radius * 0.8,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       );
     }
-    return Icon(Icons.person, size: radius);
+    return Container(
+      width: radius * 2,
+      height: radius * 2,
+      color: Colors.grey.shade300,
+      alignment: Alignment.center,
+      child: Icon(Icons.person, size: radius),
+    );
   }
 }
