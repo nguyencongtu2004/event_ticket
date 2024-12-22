@@ -46,4 +46,9 @@ class Api {
   static const String getConversasions = 'conversations';
   static String getConversasionDetail(String conversationId) =>
       'conversations/$conversationId/messages';
+
+  // Message
+  static const String sendMessage = 'messages';
+  static String editMessage(String messageId) => 'messages/$messageId';
+  static String deleteMessage(String messageId) => 'messages/$messageId';
 }

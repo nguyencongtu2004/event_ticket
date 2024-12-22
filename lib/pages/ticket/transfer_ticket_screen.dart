@@ -79,12 +79,12 @@ class TransferTicketScreen extends ConsumerWidget {
       itemBuilder: (context, index) {
         final transferTicket = tickets[index];
         return GestureDetector(
-          onTap: () => onTicketTap(context, transferTicket),
           child: Card(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Column(
               children: [
                 ListTile(
+                  onTap: () => onTicketTap(context, transferTicket),
                   leading: Avatar(transferTicket.fromUser),
                   title: Text(
                       'Event: ${transferTicket.ticket?.event?.name ?? 'N/A'}'),

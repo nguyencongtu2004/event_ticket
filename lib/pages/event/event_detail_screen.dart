@@ -87,6 +87,12 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     }
   }
 
+  void onForumTap() {
+    print('Forum tapped: ${Routes.forum} extra: ${event?.conversation}');
+    context.push(Routes.getForumDetailPath(event!.conversation!.id),
+        extra: event?.conversation);
+  }
+
   @override
   Widget build(BuildContext context) {
     return TicketScaffold(
@@ -325,6 +331,22 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
+
+                        // Đi đến forum
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: onForumTap,
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Go to Forum'),
+                                SizedBox(width: 8),
+                                Icon(Icons.forum),
+                              ],
+                            ),
+                          ),
+                        ),
 
                         // Thông tin mô tả sự kiện
                         Text(

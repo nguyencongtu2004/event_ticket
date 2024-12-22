@@ -1,5 +1,6 @@
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/models/category.dart';
+import 'package:event_ticket/models/conversasion.dart';
 import 'package:event_ticket/models/user.dart';
 
 class Event {
@@ -17,7 +18,7 @@ class Event {
   final int? maxAttendees;
   final int? ticketsSold;
   final EventStatus? status;
-  final String? conservation;
+  final Conversasion? conversation;
 
   Event({
     required this.id,
@@ -34,7 +35,7 @@ class Event {
     this.maxAttendees,
     this.ticketsSold,
     this.status,
-    this.conservation,
+    this.conversation,
   });
 
   // Factory method
@@ -69,7 +70,11 @@ class Event {
             (e) => e?.name == json['status'],
             orElse: () => null,
           ),
-      conservation: json['conservation'],
+      conversation: json['conversation'] != null
+          ? Conversasion.fromJson(json['conversation'])
+          : json['conversationId'] != null
+              ? Conversasion(id: json['conversationId'])
+              : null,
     );
   }
 
@@ -90,7 +95,7 @@ class Event {
       'maxAttendees': maxAttendees,
       'ticketsSold': ticketsSold,
       'status': status?.name,
-      'conservation': conservation,
+      'conservation': conversation,
     };
   }
 
@@ -110,7 +115,7 @@ class Event {
     int? maxAttendees,
     int? ticketsSold,
     EventStatus? status,
-    String? conservation,
+    Conversasion? conversation,
   }) {
     return Event(
       id: this.id,
@@ -127,7 +132,7 @@ class Event {
       maxAttendees: maxAttendees ?? this.maxAttendees,
       ticketsSold: ticketsSold ?? this.ticketsSold,
       status: status ?? this.status,
-      conservation: conservation ?? this.conservation,
+      conversation: conversation ?? this.conversation,
     );
   }
 
@@ -137,7 +142,7 @@ class Event {
         'category: $category, location: $location, date: $date, price: $price, '
         'createdBy: $createdBy, attendees: $attendees, collaborators: $collaborators, '
         'maxAttendees: $maxAttendees, ticketsSold: $ticketsSold, status: $status, '
-        'conservation: $conservation)';
+        'conversation: $conversation)';
   }
 
   @override
@@ -156,7 +161,7 @@ class Event {
         maxAttendees,
         ticketsSold,
         status,
-        conservation,
+        conversation,
       );
 
   @override
@@ -177,6 +182,6 @@ class Event {
         other.maxAttendees == maxAttendees &&
         other.ticketsSold == ticketsSold &&
         other.status == status &&
-        other.conservation == conservation;
+        other.conversation == conversation;
   }
 }

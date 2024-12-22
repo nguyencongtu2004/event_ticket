@@ -20,17 +20,19 @@ class TicketScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar ??
-          AppBar(
-            title: Text(
-              title ?? 'Ticket app',
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            centerTitle: true,
-            actions: appBarActions,
-          ),
+      appBar: (title == null && appBar == null)
+          ? null
+          : appBar ??
+              AppBar(
+                title: Text(
+                  title ?? 'Ticket app',
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                centerTitle: true,
+                actions: appBarActions,
+              ),
       body: body ?? noContent,
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       floatingActionButton: floatingActionButton,

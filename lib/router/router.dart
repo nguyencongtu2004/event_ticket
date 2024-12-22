@@ -1,3 +1,4 @@
+import 'package:event_ticket/models/conversasion.dart';
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/pages/auth/login_screen.dart';
@@ -93,7 +94,8 @@ final GoRouter router = GoRouter(
       path: Routes.forumDetail,
       builder: (context, state) {
         final forumId = state.pathParameters['forumId']!;
-        return ForumDetailScreen(forumId: forumId);
+        final conversasion = state.extra as Conversasion?;
+        return ForumDetailScreen(forumId: forumId, conversasion: conversasion);
       },
     ),
   ],

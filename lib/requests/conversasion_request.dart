@@ -10,9 +10,14 @@ class ConversasionRequest extends HttpService {
     return response;
   }
 
-  Future<Response> getConversasionDetail(String conversationId) async {
+  Future<Response> getConversasionDetail(String conversationId,
+      {int page = 1, int limit = 10}) async {
     final response = await get(
       url: Api.getConversasionDetail(conversationId),
+      queryParameters: {
+        'page': page,
+        'limit': limit,
+      },
     );
     return response;
   }
