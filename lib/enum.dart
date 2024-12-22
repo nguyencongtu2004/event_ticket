@@ -12,6 +12,17 @@ enum ConversasionType { private, public }
 
 enum TransferStatus { pending, success, cancelled }
 
+enum NotificationType {
+  paymentSuccess,
+  checkIn,
+  newEvent,
+  eventUpdate,
+  ticketBooking,
+  ticketCancel,
+  ticketTransfer,
+  unknown
+}
+
 //////////////////////////
 // get value
 
@@ -104,6 +115,29 @@ extension TransferStatusExtension on TransferStatus {
         return 'success';
       case TransferStatus.cancelled:
         return 'cancelled';
+    }
+  }
+}
+
+extension NotificationTypeExtension on NotificationType {
+  String get value {
+    switch (this) {
+      case NotificationType.paymentSuccess:
+        return 'payment_success';
+      case NotificationType.checkIn:
+        return 'check_in';
+      case NotificationType.newEvent:
+        return 'new_event';
+      case NotificationType.eventUpdate:
+        return 'event_update';
+      case NotificationType.ticketBooking:
+        return 'ticket_booking';
+      case NotificationType.ticketCancel:
+        return 'ticket_cancel';
+      case NotificationType.ticketTransfer:
+        return 'ticket_transfer';
+      case NotificationType.unknown:
+        return 'unknown';
     }
   }
 }

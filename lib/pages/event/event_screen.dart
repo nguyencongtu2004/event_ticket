@@ -1,6 +1,7 @@
 import 'package:event_ticket/pages/event/widget/event_list.dart';
 import 'package:event_ticket/providers/category_provider.dart';
 import 'package:event_ticket/providers/event_provider.dart';
+import 'package:event_ticket/providers/notification_provider.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class EventScreen extends ConsumerStatefulWidget {
 class _EventScreenState extends ConsumerState<EventScreen> {
   // Lưu danh sách ID của danh mục đã chọn
   List<String> selectedCategoryIds = [];
+  int unreadNotificationCount = 0;
 
   void onSeeAllUpcomingEvents() {
     print('See all upcoming events');
@@ -29,13 +31,31 @@ class _EventScreenState extends ConsumerState<EventScreen> {
 
   void onEventTap(event) => context.push(Routes.getEventDetailPath(event.id));
 
+  void onNotificationScreen() => context.push(Routes.notification);
+
   @override
   Widget build(BuildContext context) {
     final categoryAsyncValue = ref.watch(categoryProvider);
     final eventAsyncValue = ref.watch(eventProvider);
+    ref.watch(notificationProvider).whenData((notifications) {
+      unreadNotificationCount = notifications
+          .where((notification) => notification.isRead != true)
+          .length;
+    });
 
     return TicketScaffold(
       title: 'Events',
+      appBarActions: [
+        Badge(
+          label: Text(unreadNotificationCount.toString()),
+          isLabelVisible: unreadNotificationCount > 0,
+          offset: const Offset(-5, 4),
+          child: IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: onNotificationScreen,
+          ),
+        )
+      ],
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(eventProvider.future),
         child: ListView(

@@ -30,4 +30,6 @@ class Routes {
 
   static const String forumDetail = '/forum/:forumId';
   static String getForumDetailPath(String forumId) => '/forum/$forumId';
+
+  static const String notification = '/notification';
 }

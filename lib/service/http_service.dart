@@ -166,6 +166,29 @@ class HttpService {
     return response;
   }
 
+  // Patch request
+  Future<Response> patch({
+    required String url,
+    Map<String, dynamic>? body,
+    bool includeHeaders = true,
+    Map<String, dynamic>? headers,
+  }) async {
+    Response response;
+    try {
+      response = await _dio.patch(
+        Api.baseUrl + url,
+        data: body,
+        options: Options(
+          headers: includeHeaders ? await getHeaders() : headers,
+        ),
+      );
+    } on DioException catch (error) {
+      response = _handleDioError(error);
+    }
+
+    return response;
+  }
+
   // Get headers
   Future<Map<String, String>> getHeaders({
     contentType = 'application/json',

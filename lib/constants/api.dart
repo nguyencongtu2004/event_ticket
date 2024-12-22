@@ -51,4 +51,10 @@ class Api {
   static const String sendMessage = 'messages';
   static String editMessage(String messageId) => 'messages/$messageId';
   static String deleteMessage(String messageId) => 'messages/$messageId';
+
+  // Notification
+  static const String getNotifications = 'notifications';
+  static String markNotificationAsRead(String notificationId) =>
+      'notifications/$notificationId/mark-as-read';
+  static const String markAllNotificationAsRead = 'notifications/mark-all-as-read';
 }

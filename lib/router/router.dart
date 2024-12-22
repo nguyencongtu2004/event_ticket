@@ -7,6 +7,7 @@ import 'package:event_ticket/pages/event/add_event_screen.dart';
 import 'package:event_ticket/pages/event/edit_event_screen.dart';
 import 'package:event_ticket/pages/event/event_detail_screen.dart';
 import 'package:event_ticket/pages/forum/forum_detail_screen.dart';
+import 'package:event_ticket/pages/notification/notification_screen.dart';
 import 'package:event_ticket/pages/profile/edit_profile_screen.dart';
 import 'package:event_ticket/pages/splash/splash_screen.dart';
 import 'package:event_ticket/pages/ticket/ticket_detail_screen.dart';
@@ -96,6 +97,12 @@ final GoRouter router = GoRouter(
         final forumId = state.pathParameters['forumId']!;
         final conversasion = state.extra as Conversasion?;
         return ForumDetailScreen(forumId: forumId, conversasion: conversasion);
+      },
+    ),
+    GoRoute(
+      path: Routes.notification,
+      builder: (context, state) {
+        return const NotificationScreen();
       },
     ),
   ],

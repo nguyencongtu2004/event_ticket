@@ -2,6 +2,7 @@ import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/pages/ticket/widget/ticket_list.dart';
 import 'package:event_ticket/providers/ticket_provider.dart';
+import 'package:event_ticket/providers/transfer_ticket_provider.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class TicketScreen extends ConsumerStatefulWidget {
 class _TicketScreenState extends ConsumerState<TicketScreen>
     with TickerProviderStateMixin {
   late TabController tabBarController;
+  int unreadNotificationCount = 0;
 
   @override
   void initState() {
@@ -43,14 +45,22 @@ class _TicketScreenState extends ConsumerState<TicketScreen>
   @override
   Widget build(BuildContext context) {
     final asyncValue = ref.watch(ticketProvider);
+    ref.watch(transferTicketProvider).whenData((transferTicket) {
+      unreadNotificationCount = transferTicket.length;
+    });
 
     return TicketScaffold(
       title: 'Tickets',
       appBarActions: [
-        IconButton(
-          icon: const Icon(Icons.notifications),
-          onPressed: onTransferTicketScreen,
-        ),
+        Badge(
+          label: Text(unreadNotificationCount.toString()),
+          isLabelVisible: unreadNotificationCount > 0,
+          offset: const Offset(-5, 4),
+          child: IconButton(
+            icon: const Icon(Icons.airplane_ticket_outlined),
+            onPressed: onTransferTicketScreen,
+          ),
+        )
       ],
       body: Column(
         children: [

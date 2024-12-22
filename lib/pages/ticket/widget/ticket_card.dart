@@ -61,7 +61,10 @@ class TicketCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
-                    ),
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ).expand(),
                     IconButton(
                       icon: const Icon(Icons.event),
                       color: Colors.blue.shade400,

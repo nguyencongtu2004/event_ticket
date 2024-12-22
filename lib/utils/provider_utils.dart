@@ -3,6 +3,7 @@ import 'package:event_ticket/providers/event_management_provider.dart';
 import 'package:event_ticket/providers/event_provider.dart';
 import 'package:event_ticket/providers/forum_provider.dart';
 import 'package:event_ticket/providers/navigation_index_provider.dart';
+import 'package:event_ticket/providers/notification_provider.dart';
 import 'package:event_ticket/providers/role_provider.dart';
 import 'package:event_ticket/providers/ticket_provider.dart';
 import 'package:event_ticket/providers/transfer_ticket_provider.dart';
@@ -19,4 +20,5 @@ void invalidateAllProvidersExceptCategory(WidgetRef ref) {
   ref.invalidate(userProvider);
   ref.invalidate(transferTicketProvider);
   ref.invalidate(forumProvider);
+  ref.invalidate(notificationProvider);
 }
