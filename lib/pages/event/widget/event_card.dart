@@ -123,9 +123,9 @@ class EventCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            event.price != null
-                                ? event.price!.toCurrency()
-                                : 'Free',
+                            event.price == null || event.price == 0
+                                ? 'Free'
+                                : event.price!.toCurrency(),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -198,9 +198,9 @@ class EventCard extends StatelessWidget {
                             ),
                             const Spacer(),
                             Text(
-                              event.price != null
-                                  ? event.price!.toCurrency()
-                                  : 'Free',
+                              event.price == null || event.price == 0
+                                  ? 'Free'
+                                  : event.price!.toCurrency(),
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green,

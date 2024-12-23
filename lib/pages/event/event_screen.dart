@@ -24,11 +24,17 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   final _searchController = SearchController();
 
   void onSeeAllUpcomingEvents() {
-    print('See all upcoming events');
+    context.push(Routes.getEventListPath(
+      title: 'Upcoming Events',
+      sortBy: 'date',
+    ));
   }
 
   void onSeeAllPopularEvents() {
-    print('See all popular events');
+    context.push(Routes.getEventListPath(
+      title: 'Popular Events',
+      sortBy: 'sold',
+    ));
   }
 
   void onEventTap(event) => context.push(Routes.getEventDetailPath(event.id));

@@ -24,6 +24,9 @@ class Routes {
   static String getEditEventPath(String eventId) => '/edit-event/$eventId';
   static const String createEvent = '/create-event';
   static const String searchEvent = '/search-event';
+  static const String eventList = '/event-list';
+  static String getEventListPath({required String title, required String sortBy}) => 
+      '/event-list?title=$title&sortBy=$sortBy';
 
   // Ticket
   static const String ticketDetail = '/ticket/:ticketId';

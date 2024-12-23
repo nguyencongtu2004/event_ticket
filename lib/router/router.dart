@@ -6,6 +6,7 @@ import 'package:event_ticket/pages/auth/register_screen.dart';
 import 'package:event_ticket/pages/event/add_event_screen.dart';
 import 'package:event_ticket/pages/event/edit_event_screen.dart';
 import 'package:event_ticket/pages/event/event_detail_screen.dart';
+import 'package:event_ticket/pages/event/event_list_screen.dart';
 import 'package:event_ticket/pages/event/search_event_screen.dart';
 import 'package:event_ticket/pages/forum/forum_detail_screen.dart';
 import 'package:event_ticket/pages/notification/notification_screen.dart';
@@ -71,6 +72,13 @@ final GoRouter router = GoRouter(
         final event = state.extra as Event;
         return EditEventScreen(event: event);
       },
+    ),
+    GoRoute(
+      path: Routes.eventList,
+      builder: (context, state) => EventListScreen(
+        title: state.uri.queryParameters['title'] ?? 'Events',
+        sortBy: state.uri.queryParameters['sortBy'] ?? 'date',
+      ),
     ),
     GoRoute(
       path: Routes.ticketDetail,

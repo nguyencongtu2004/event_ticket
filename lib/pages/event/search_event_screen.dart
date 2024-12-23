@@ -1,3 +1,4 @@
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/extensions/extension.dart';
 import 'package:event_ticket/models/category.dart';
 import 'package:event_ticket/models/event.dart';
@@ -98,7 +99,7 @@ class _SearchEventScreenState extends ConsumerState<SearchEventScreen> {
       });
     } catch (e) {
       setState(() => isSearching = false);
-      // Handle error if needed
+      context.showAnimatedToast(e.toString(), isError: true);
     }
   }
 
