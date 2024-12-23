@@ -6,6 +6,7 @@ import 'package:event_ticket/pages/auth/register_screen.dart';
 import 'package:event_ticket/pages/event/add_event_screen.dart';
 import 'package:event_ticket/pages/event/edit_event_screen.dart';
 import 'package:event_ticket/pages/event/event_detail_screen.dart';
+import 'package:event_ticket/pages/event/search_event_screen.dart';
 import 'package:event_ticket/pages/forum/forum_detail_screen.dart';
 import 'package:event_ticket/pages/notification/notification_screen.dart';
 import 'package:event_ticket/pages/profile/edit_profile_screen.dart';
@@ -103,6 +104,12 @@ final GoRouter router = GoRouter(
       path: Routes.notification,
       builder: (context, state) {
         return const NotificationScreen();
+      },
+    ),
+    GoRoute(
+      path: Routes.searchEvent,
+      builder: (context, state) {
+        return const SearchEventScreen();
       },
     ),
   ],

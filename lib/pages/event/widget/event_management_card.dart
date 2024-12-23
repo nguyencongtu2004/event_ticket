@@ -23,14 +23,18 @@ class EventManagementCard extends StatelessWidget {
           // Event image
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              event.images.isNotEmpty
-                  ? event.images.first
-                  : 'https://placehold.co/100.png',
-              width: 120,
-              height: 120,
-              fit: BoxFit.cover,
-            ),
+            child: event.images.isNotEmpty
+                ? Image.network(
+                    event.images.first,
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
+                  )
+                : Icon(
+                    Icons.image,
+                    color: Colors.grey.shade400,
+                    size: 120,
+                  ),
           ),
           const SizedBox(width: 16),
           // Event details

@@ -119,10 +119,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                 );
                               },
                             )
-                          : Image.network(
-                              'https://placehold.co/150.png',
-                              width: double.infinity,
-                              fit: BoxFit.cover,
+                          : Icon(
+                              Icons.image,
+                              color: Colors.grey.shade400,
+                              size: 100,
                             ),
                     ),
 
@@ -369,14 +369,26 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
               ).expand(),
               // Nút mua vé luôn ở dưới cùng
               if (widget.canEdit == false || widget.canEdit == null)
-                ElevatedButton(
-                  onPressed: onJoinEvent,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50),
-                  ),
-                  child: Text(
-                      'Buy Ticket ${(event?.price == null || event?.price == 0) ? 'For Free' : event!.price!.toCurrency()}'),
-                ).p(16)
+                if (event!.date!.isAfter(DateTime.now()))
+                  ElevatedButton(
+                    onPressed: onJoinEvent,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(50),
+                    ),
+                    child: Text(
+                        'Buy Ticket ${(event?.price == null || event?.price == 0) ? 'For Free' : event!.price!.toCurrency()}'),
+                  ).p(16)
+                else
+                  ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(50),
+                    ),
+                    child: const Text(
+                      'This event has started, you can no longer buy tickets',
+                      textAlign: TextAlign.center,
+                    ),
+                  ).p(16)
               // Nếu có quyền chỉnh sửa sự kiện
               else
                 ElevatedButton(

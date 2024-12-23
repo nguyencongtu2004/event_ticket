@@ -57,3 +57,9 @@ extension DoubleFormatting on double {
     return NumberFormat.currency(locale: locale, symbol: symbol).format(this);
   }
 }
+
+extension StringFormatting on String {
+  String capitalize() {
+    return this[0].toUpperCase() + substring(1);
+  }
+}

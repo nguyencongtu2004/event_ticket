@@ -17,19 +17,24 @@ class Routes {
 
   static const String editProfile = '/edit-profile';
 
+  // Event
   static const String eventDetail = '/event/:eventId';
   static String getEventDetailPath(String eventId) => '/event/$eventId';
   static const String editEvent = '/edit-event/:eventId';
   static String getEditEventPath(String eventId) => '/edit-event/$eventId';
   static const String createEvent = '/create-event';
+  static const String searchEvent = '/search-event';
 
+  // Ticket
   static const String ticketDetail = '/ticket/:ticketId';
   static String getTicketDetailPath(String ticketId) => '/ticket/$ticketId';
   static const String transferTicketSearch = '/transfer-ticket-search';
   static const String transferTicket = '/transfer-ticket';
 
+  // Forum
   static const String forumDetail = '/forum/:forumId';
   static String getForumDetailPath(String forumId) => '/forum/$forumId';
 
+  // Notification
   static const String notification = '/notification';
 }

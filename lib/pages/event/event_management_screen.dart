@@ -39,12 +39,11 @@ class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
   }
 
   Future<void> _initializeEvents() async {
-    //ref.invalidate(eventManagementProvider);
-    final asyncValue = await ref.read(eventManagementProvider.future);
+    final events = await ref.refresh(eventManagementProvider.future);
     if (mounted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          displayedEvents = List.from(asyncValue);
+          displayedEvents = List.from(events);
         });
       });
     }

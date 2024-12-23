@@ -1,3 +1,4 @@
+import 'package:event_ticket/pages/event/widget/event_card.dart';
 import 'package:event_ticket/pages/event/widget/event_list.dart';
 import 'package:event_ticket/providers/category_provider.dart';
 import 'package:event_ticket/providers/event_provider.dart';
@@ -20,6 +21,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   // Lưu danh sách ID của danh mục đã chọn
   List<String> selectedCategoryIds = [];
   int unreadNotificationCount = 0;
+  final _searchController = SearchController();
 
   void onSeeAllUpcomingEvents() {
     print('See all upcoming events');
@@ -32,6 +34,8 @@ class _EventScreenState extends ConsumerState<EventScreen> {
   void onEventTap(event) => context.push(Routes.getEventDetailPath(event.id));
 
   void onNotificationScreen() => context.push(Routes.notification);
+
+  void onSearchTap() => context.push(Routes.searchEvent);
 
   @override
   Widget build(BuildContext context) {
@@ -58,115 +62,172 @@ class _EventScreenState extends ConsumerState<EventScreen> {
       ],
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(eventProvider.future),
-        child: ListView(
-          children: [
-            // Thanh tìm kiếm
-            SearchAnchor.bar(
-              searchController: SearchController(),
-              barHintText: 'Search for events...',
-              onSubmitted: (_) => print('Search for events...'),
-              suggestionsBuilder: (context, searchController) {
-                return [
-                  const Text('Search for events...').px(16).py(8),
-                  const Text('Search for events...').px(16).py(8),
-                  const Text('Search for events...').px(16).py(8),
-                ];
-              },
-            ).px(16),
-            const SizedBox(height: 16),
-
-            // Danh mục (Categories)
-            SizedBox(
-              height: 50,
-              child: categoryAsyncValue.when(
-                data: (categories) => CarouselView.weighted(
-                  flexWeights: const [1, 2, 2, 1],
-                  onTap: (index) {
-                    final category = categories[index];
-                    setState(() {
-                      if (selectedCategoryIds.contains(category.id)) {
-                        selectedCategoryIds.remove(category.id);
-                      } else {
-                        selectedCategoryIds.add(category.id);
-                      }
-                    });
-                  },
-                  children: [
-                    ...categories.map(
-                      (category) {
-                        final isSelected =
-                            selectedCategoryIds.contains(category.id);
-                        return Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: isSelected ? Colors.blue : Colors.grey[300],
-                            // color: selectedCategoryIds.contains(category.id)
-                            //     ? Theme.of(context).colorScheme.primary
-                            //     : _getCategoryColor(category.id),
-                            // borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            category.name,
-                            style: TextStyle(
-                              color: selectedCategoryIds.contains(category.id)
-                                  ? Colors.white
-                                  : Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            softWrap: true,
-                            maxLines: 1,
-                            overflow: TextOverflow.fade,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                loading: () => null,
-                error: (_, __) => null,
+        child: eventAsyncValue.when(
+          data: (valueOrNull) => CustomScrollView(
+            slivers: [
+              // Search Bar
+              SliverToBoxAdapter(
+                child: SearchBar(
+                  controller: _searchController,
+                  hintText: 'Search for events...',
+                  leading: const Icon(Icons.search).px(8),
+                  enabled: false,
+                  backgroundColor: WidgetStateColor.resolveWith((states) =>
+                      states.contains(WidgetState.disabled)
+                          ? Colors.grey
+                          : Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest),
+                  textStyle: WidgetStateTextStyle.resolveWith((states) =>
+                      states.contains(WidgetState.disabled)
+                          ? Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(color: Colors.grey)
+                          : Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(color: Colors.black)),
+                  surfaceTintColor: WidgetStateColor.resolveWith((states) =>
+                      states.contains(WidgetState.disabled)
+                          ? Colors.grey
+                          : Colors.transparent),
+                ).px(16).py(16).onTap(onSearchTap),
               ),
-            ),
 
-            // Upcoming Events
-            EventList(
-              title: 'Upcoming Events',
-              eventsAsyncValue: eventAsyncValue,
-              filter: (event) =>
-                  event.date!.isAfter(DateTime.now()) &&
-                  (selectedCategoryIds.isEmpty ||
-                      event.category
-                          .any((cat) => selectedCategoryIds.contains(cat.id))),
-              seeAll: onSeeAllUpcomingEvents,
-              onEventTap: onEventTap,
-            ),
-            const SizedBox(height: 16),
-            // Popular Events
-            EventList(
-              title: 'Popular Events',
-              eventsAsyncValue: eventAsyncValue,
-              filter: (event) =>
-                  selectedCategoryIds.isEmpty ||
-                  event.category
-                      .any((cat) => selectedCategoryIds.contains(cat.id)),
-              sort: (a, b) => b.attendees.length.compareTo(a.attendees.length),
-              seeAll: onSeeAllPopularEvents,
-              onEventTap: onEventTap,
-            ),
-            const SizedBox(height: 16),
-            // All Events
-            EventList(
-              title: 'All Events',
-              eventsAsyncValue: eventAsyncValue,
-              filter: (event) =>
-                  selectedCategoryIds.isEmpty ||
-                  event.category
-                      .any((cat) => selectedCategoryIds.contains(cat.id)),
-              onEventTap: onEventTap,
-            ),
-          ],
-        ).pOnly(bottom: 16),
+              // Upcoming Events
+              SliverToBoxAdapter(
+                child: EventList(
+                  title: 'Upcoming Events',
+                  eventsAsyncValue: eventAsyncValue,
+                  filter: (event) => event.date!.isAfter(DateTime.now()),
+                  sort: (a, b) => a.date!.compareTo(b.date!),
+                  seeAll: onSeeAllUpcomingEvents,
+                  onEventTap: onEventTap,
+                ),
+              ),
+
+              // Popular Events
+              SliverToBoxAdapter(
+                child: EventList(
+                  title: 'Popular Events',
+                  eventsAsyncValue: eventAsyncValue,
+                  filter: (event) => event.date!.isAfter(DateTime.now()),
+                  sort: (a, b) => b.ticketsSold!.compareTo(a.ticketsSold!),
+                  seeAll: onSeeAllPopularEvents,
+                  onEventTap: onEventTap,
+                ),
+              ),
+
+              SliverToBoxAdapter(
+                child: Text(
+                  'All Events',
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ).px(16).py(8),
+              ),
+
+              // Categories
+              SliverToBoxAdapter(
+                child: categoryAsyncValue.when(
+                  data: (categories) => CarouselView.weighted(
+                    flexWeights: const [1, 2, 2, 1],
+                    onTap: (index) {
+                      final category = categories[index];
+                      setState(() {
+                        if (selectedCategoryIds.contains(category.id)) {
+                          selectedCategoryIds.remove(category.id);
+                        } else {
+                          selectedCategoryIds.add(category.id);
+                        }
+                      });
+                    },
+                    children: [
+                      ...categories.map(
+                        (category) {
+                          final isSelected =
+                              selectedCategoryIds.contains(category.id);
+                          return Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey[200],
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              category.name,
+                              style: TextStyle(
+                                color:
+                                    isSelected ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ).h(50).py(8),
+                  loading: () => const SizedBox.shrink(),
+                  error: (error, stackTrace) => const SizedBox.shrink(),
+                ),
+              ),
+
+              // All Events (Vertical List)
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final events = valueOrNull
+                        .where((event) =>
+                            selectedCategoryIds.isEmpty ||
+                            selectedCategoryIds.any(
+                                (id) => event.category.any((c) => c.id == id)))
+                        .toList();
+                    if (index >= events.length) return null;
+                    return EventCard(
+                      event: events[index],
+                      onTap: onEventTap,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          error: (error, stackTrace) => Center(child: Text('Error: $error')),
+          loading: () => Column(
+            children: [
+              SearchBar(
+                controller: _searchController,
+                hintText: 'Search for events...',
+                leading: const Icon(Icons.search).px(8),
+                enabled: false,
+                backgroundColor: WidgetStateColor.resolveWith((states) => states
+                        .contains(WidgetState.disabled)
+                    ? Colors.grey
+                    : Theme.of(context).colorScheme.surfaceContainerHighest),
+                textStyle: WidgetStateTextStyle.resolveWith((states) =>
+                    states.contains(WidgetState.disabled)
+                        ? Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(color: Colors.grey)
+                        : Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(color: Colors.black)),
+                surfaceTintColor: WidgetStateColor.resolveWith((states) =>
+                    states.contains(WidgetState.disabled)
+                        ? Colors.grey
+                        : Colors.transparent),
+              ).px(16).py(16).onTap(onSearchTap),
+              const Center(child: CircularProgressIndicator()).expand(),
+            ],
+          ),
+        ),
       ),
     );
   }

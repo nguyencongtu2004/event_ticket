@@ -1,7 +1,12 @@
 class Api {
   // 10.0.2.2 -> localhost for Android emulator
   // static const String baseUrl = 'http://10.0.2.2:3001/api/';
+
+  // Tú
   static const String baseUrl = 'https://b3510dzk-3001.asse.devtunnels.ms/api/';
+
+  // Tuân
+  // static const String baseUrl = 'https://xdv4ncqf-3001.asse.devtunnels.ms/api/';
 
   // Auth
   static const String login = 'auth/login';
@@ -28,6 +33,7 @@ class Api {
   static const String createEvent = 'events/create';
   static String deleteEvent(String eventId) => 'events/$eventId';
   static String updateEvent(String eventId) => 'events/$eventId';
+  static const String searchEvents = 'events/search';
 
   // ticket
   static const String bookTicket = 'ticket/book';
@@ -56,5 +62,6 @@ class Api {
   static const String getNotifications = 'notifications';
   static String markNotificationAsRead(String notificationId) =>
       'notifications/$notificationId/mark-as-read';
-  static const String markAllNotificationAsRead = 'notifications/mark-all-as-read';
+  static const String markAllNotificationAsRead =
+      'notifications/mark-all-as-read';
 }

@@ -11,6 +11,7 @@ class EventList extends StatelessWidget {
   final int Function(Event, Event)? sort;
   final Function()? seeAll;
   final Function(Event event) onEventTap;
+  final bool scrollVertical;
 
   const EventList({
     super.key,
@@ -20,6 +21,7 @@ class EventList extends StatelessWidget {
     this.sort,
     this.seeAll,
     required this.onEventTap,
+    this.scrollVertical = false,
   });
 
   @override
@@ -33,7 +35,9 @@ class EventList extends StatelessWidget {
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             if (seeAll != null)
               TextButton(
@@ -43,7 +47,7 @@ class EventList extends StatelessWidget {
           ],
         ).px(16).py(8),
 
-        // Danh sách sự kiện
+        // Event List
         eventsAsyncValue.when(
           data: (events) {
             var filteredEvents = events.where(filter).toList();
@@ -51,26 +55,38 @@ class EventList extends StatelessWidget {
               filteredEvents.sort(sort);
             }
 
-            return filteredEvents.isNotEmpty
-                ? SizedBox(
-                    height: 220,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: filteredEvents.length,
-                      itemBuilder: (context, index) {
-                        final event = filteredEvents[index];
-                        return EventCard(
-                          event: event,
-                          onTap: onEventTap,
-                        );
-                      },
-                    ),
+            if (filteredEvents.isEmpty) {
+              return const Center(child: Text('No events available.')).py(16);
+            }
+
+            return scrollVertical
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: filteredEvents.length,
+                    itemBuilder: (context, index) {
+                      final event = filteredEvents[index];
+                      return EventCard(
+                        event: event,
+                        onTap: onEventTap,
+                      ).px(16).py(8);
+                    },
                   )
-                : const Center(child: Text('Không có sự kiện nào.'));
+                : ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: filteredEvents.length,
+                    itemBuilder: (context, index) {
+                      final event = filteredEvents[index];
+                      return EventCard(
+                        event: event,
+                        onTap: onEventTap,
+                      ).w(220);
+                    },
+                  ).h(220);
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const SizedBox.shrink(),
           error: (error, stackTrace) =>
-              Center(child: Text('Đã xảy ra lỗi: $error')),
+              Center(child: Text('Error: $error')).py(16),
         ),
       ],
     );
