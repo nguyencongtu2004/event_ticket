@@ -16,7 +16,7 @@ class NotificationNotifier extends AsyncNotifier<List<Notification>> {
     } catch (e, st) {
       print('Error in NotificationNotifier.build: $e');
       print(st);
-      throw e; // Let AsyncValue handle the error state
+      return [];
     }
   }
 

@@ -16,7 +16,7 @@ class TransferTicketNotifier extends AsyncNotifier<List<TransferTicket>> {
       final transferTickets = (response.data as List)
           .map((e) => TransferTicket.fromJson(e as Map<String, dynamic>))
           .toList();
-      print(transferTickets);
+      
       // Trả về vé
       return transferTickets;
     } catch (e, st) {

@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:event_ticket/pages/check_in/check_in_screen.dart';
 import 'package:event_ticket/pages/event/event_management_screen.dart';
 import 'package:event_ticket/pages/event/event_screen.dart';
@@ -6,9 +9,6 @@ import 'package:event_ticket/pages/profile/profile_screen.dart';
 import 'package:event_ticket/pages/ticket/ticket_screen.dart';
 import 'package:event_ticket/providers/navigation_index_provider.dart';
 import 'package:event_ticket/providers/role_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/enum.dart';
 
@@ -19,6 +19,11 @@ final shellRoute = ShellRoute(
       builder: (context, ref, _) {
         final roleAsync = ref.watch(roleProvider);
         final currentIndex = ref.watch(navigationIndexProvider);
+
+        // Đồng bộ navigation index với path
+        ref
+            .read(navigationIndexProvider.notifier)
+            .setIndexForRoute(state.uri.path);
 
         return roleAsync.when(
           data: (role) {
@@ -99,12 +104,7 @@ final shellRoute = ShellRoute(
       path: Routes.ticket,
       builder: (context, state) {
         final detailId = state.uri.queryParameters['detailId'];
-        return Consumer(
-          builder: (context, ref, _) {
-            ref.read(navigationIndexProvider.notifier).setIndex(1);
-            return TicketScreen(detailId: detailId);
-          },
-        );
+        return TicketScreen(detailId: detailId);
       },
       pageBuilder: (context, state) {
         final detailId = state.uri.queryParameters['detailId'];

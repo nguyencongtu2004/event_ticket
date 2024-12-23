@@ -1,4 +1,5 @@
 import 'package:event_ticket/enum.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class Notification {
   String id;
@@ -43,6 +44,11 @@ class Notification {
         'isRead': isRead,
         'createdAt': createdAt?.toIso8601String(),
       };
+
+  RemoteMessage toRemoteMessage() => RemoteMessage(
+        data: data ?? {},
+        notification: RemoteNotification(title: title, body: body),
+      );
 
   @override
   String toString() => 'Notification: ${toJson().toString()}';

@@ -17,13 +17,13 @@ import 'package:event_ticket/pages/ticket/transfer_ticket_screen.dart';
 import 'package:event_ticket/pages/ticket/transfer_ticket_search_screen.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/router/shell_route.dart';
-import 'package:flutter/material.dart';
+import 'package:event_ticket/service/navigator_service.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter router = GoRouter(
   debugLogDiagnostics: true,
   initialLocation: Routes.splash,
-  navigatorKey: GlobalKey<NavigatorState>(),
+  navigatorKey: navigatorKey,
   routes: [
     shellRoute,
     GoRoute(

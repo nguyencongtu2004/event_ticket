@@ -1,7 +1,9 @@
 import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/pages/notification/widget/notification_card.dart';
 import 'package:event_ticket/providers/notification_provider.dart';
+import 'package:event_ticket/service/firebase_service.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:event_ticket/models/notification.dart';
@@ -15,12 +17,14 @@ class NotificationScreen extends ConsumerStatefulWidget {
 
 class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   Future<void> onTap(Notification notification) async {
-    if (notification.isRead != true) {
-      final message = await ref
-          .read(notificationProvider.notifier)
-          .markAsRead(notification);
+    final simulatedMessage = notification.toRemoteMessage();
 
-      context.showAnimatedToast(message);
+    FirebaseService.handleNotificationNavigation(
+      simulatedMessage,
+      fromBackground: false,
+    );
+    if (notification.isRead == false) {
+      ref.read(notificationProvider.notifier).markAsRead(notification);
     }
   }
 
