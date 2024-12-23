@@ -162,10 +162,12 @@ class _SearchEventScreenState extends ConsumerState<SearchEventScreen> {
                   onPressed: () {
                     searchController.clear();
                   },
+                  tooltip: 'Clear search',
                 ),
                 IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: performSearch,
+                  tooltip: 'Search events',
                 ),
               ],
             )

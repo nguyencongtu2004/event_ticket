@@ -256,6 +256,7 @@ class _ForumDetailScreenState extends State<ForumDetailScreen> {
                     IconButton(
                       icon: const Icon(Icons.cancel),
                       onPressed: () => setState(() => replyingMessage = null),
+                      tooltip: 'Cancel reply',
                     ),
                   ],
                 ),
@@ -284,6 +285,7 @@ class _ForumDetailScreenState extends State<ForumDetailScreen> {
                     IconButton(
                       icon: const Icon(Icons.send),
                       onPressed: () => onSend(),
+                      tooltip: 'Send message',
                     ),
                 ],
               ),

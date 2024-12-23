@@ -30,6 +30,7 @@ class ProfileScreen extends ConsumerWidget {
         IconButton(
           icon: const Icon(Icons.edit),
           onPressed: () => context.push(Routes.editProfile),
+          tooltip: 'Edit profile',
         ),
       ],
       body: RefreshIndicator(

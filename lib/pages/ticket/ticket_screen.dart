@@ -59,6 +59,7 @@ class _TicketScreenState extends ConsumerState<TicketScreen>
           child: IconButton(
             icon: const Icon(Icons.airplane_ticket_outlined),
             onPressed: onTransferTicketScreen,
+            tooltip: 'Transfer tickets',
           ),
         )
       ],

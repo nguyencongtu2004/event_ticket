@@ -69,6 +69,7 @@ class TicketCard extends StatelessWidget {
                       icon: const Icon(Icons.event),
                       color: Colors.blue.shade400,
                       onPressed: onCalendar,
+                      tooltip: 'Add reminder to calendar',
                     ),
                   ],
                 ),

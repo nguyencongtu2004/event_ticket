@@ -20,6 +20,7 @@ enum NotificationType {
   ticketBooking,
   ticketCancel,
   ticketTransfer,
+  commentReply,
   unknown
 }
 
@@ -136,6 +137,8 @@ extension NotificationTypeExtension on NotificationType {
         return 'ticket_cancel';
       case NotificationType.ticketTransfer:
         return 'ticket_transfer';
+      case NotificationType.commentReply:
+        return 'comment_reply';
       case NotificationType.unknown:
         return 'unknown';
     }

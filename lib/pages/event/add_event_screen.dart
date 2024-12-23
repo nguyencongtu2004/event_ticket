@@ -261,6 +261,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
                               _selectedImages.remove(image);
                             });
                           },
+                          tooltip: 'Remove image',
                         ),
                       ),
                     ],

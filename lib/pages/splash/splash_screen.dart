@@ -1,6 +1,4 @@
 import 'package:event_ticket/enum.dart';
-import 'package:event_ticket/providers/category_provider.dart';
-import 'package:event_ticket/providers/user_provider.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/service/auth_service.dart';
 import 'package:event_ticket/service/firebase_service.dart';

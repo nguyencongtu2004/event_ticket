@@ -63,6 +63,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
           child: IconButton(
             icon: const Icon(Icons.notifications),
             onPressed: onNotificationScreen,
+            tooltip: 'Notifications',
           ),
         )
       ],

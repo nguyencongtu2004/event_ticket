@@ -234,6 +234,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
           onPressed: () async {
             await _updateEvent();
           },
+          tooltip: 'Update event',
         ),
       ],
       body: DefaultTabController(
@@ -293,6 +294,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
                               imagesToDelete.add(image);
                             });
                           },
+                          tooltip: 'Remove image',
                         ),
                       ),
                     ],
@@ -313,6 +315,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
                               _selectedImages.remove(image);
                             });
                           },
+                          tooltip: 'Remove image',
                         ),
                       ),
                     ],
