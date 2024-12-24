@@ -45,7 +45,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       print('New Message: ${message.data}');
 
       // TODO: fix không cập nhật số thông báo
-      ref.refresh(notificationProvider.future);
+      //ref.refresh(notificationProvider.future);
     });
 
     // Lấy role của người dùng và chuyển hướng đến trang tương ứng

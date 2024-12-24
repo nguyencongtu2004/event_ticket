@@ -31,6 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late final TextEditingController confirmPasswordController =
       TextEditingController();
   final _authRequest = AuthRequest();
+  var _isLoading = false;
 
   @override
   void initState() {
@@ -50,6 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     Response response;
     try {
+      setState(() => _isLoading = true);
       response = await _authRequest.register(
         name: name,
         email: email,
@@ -57,6 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         confirmPassword: confirmPassword,
         role: role,
       );
+      setState(() => _isLoading = false);
       if (response.statusCode == 201) {
         // Chuyển hướng đến trang chính
         if (mounted) {
@@ -76,6 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (mounted) {
         context.showAnimatedToast('Register failed: $e', isError: true);
       }
+      setState(() => _isLoading = false);
     }
   }
 
@@ -139,9 +143,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ],
           ),
           // Login Button
-          ElevatedButton(
-            onPressed: handleRegister,
-            child: const Text('Register'),
+          ElevatedButton.icon(
+            onPressed: _isLoading ? null : handleRegister,
+            icon: _isLoading
+                ? const CircularProgressIndicator().w(20).h(20)
+                : const Icon(Icons.login),
+            label: const Text('Register'),
           ),
           TextButton(
             onPressed: () {

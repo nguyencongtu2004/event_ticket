@@ -102,7 +102,7 @@ class _TransferTicketSearchScreenState
           SearchBar(
             onChanged: _onSearchChanged,
             hintText: 'Search for a user...',
-            leading: const Icon(Icons.search),
+            leading: const Icon(Icons.search).p(12),
           ).p16(),
 
           // Suggestions dropdown

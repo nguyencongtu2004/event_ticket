@@ -28,7 +28,11 @@ class Ticket {
     this.cancelReason,
     this.buyer,
     this.checkInTime,
-  });
+  }) {
+    if (paymentData?.resultCode != null && paymentData?.resultCode == 0) {
+      paymentStatus = PaymentStatus.paid;
+    }
+  }
 
   Ticket copyWith({
     String? id,

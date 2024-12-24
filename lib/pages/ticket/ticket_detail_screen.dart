@@ -231,8 +231,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                   _buildPaymentInformation(context),
                   _buildEventInformation(context),
                   if (isShowBottomSheet &&
-                      ticket!.status != TicketStatus.cancelled &&
-                      ticket!.status != TicketStatus.checkedIn)
+                      ticket!.status == TicketStatus.booked)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -403,7 +402,8 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                           children: [
                             const Icon(Icons.location_on),
                             const SizedBox(width: 8),
-                            Text('Location: ${ticket!.event?.location ?? "N/A"}'),
+                            Text(
+                                'Location: ${ticket!.event?.location ?? "N/A"}'),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -411,7 +411,8 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                           children: [
                             const Icon(Icons.location_on),
                             const SizedBox(width: 8),
-                            Text('Status: ${ticket!.event!.status?.value ?? "N/A"}'),
+                            Text(
+                                'Status: ${ticket!.event!.status?.value ?? "N/A"}'),
                           ],
                         ),
                         const SizedBox(height: 8),

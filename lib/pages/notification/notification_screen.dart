@@ -3,7 +3,6 @@ import 'package:event_ticket/pages/notification/widget/notification_card.dart';
 import 'package:event_ticket/providers/notification_provider.dart';
 import 'package:event_ticket/service/firebase_service.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart' hide Notification;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:event_ticket/models/notification.dart';

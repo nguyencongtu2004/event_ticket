@@ -23,10 +23,11 @@ final shellRoute = ShellRoute(
         return roleAsync.when(
           data: (role) {
             // Đồng bộ navigation index với path
-            ref
-                .read(navigationIndexProvider.notifier)
-                .setIndexForRoute(role, state.uri.path);
-            
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ref
+                  .read(navigationIndexProvider.notifier)
+                  .setIndexForRoute(role, state.uri.path);
+            });
             return Scaffold(
               body: child,
               bottomNavigationBar: NavigationBar(

@@ -31,6 +31,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
   final _authRequest = AuthRequest();
+  var _isLoading = false;
 
   @override
   void initState() {
@@ -45,11 +46,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final password = passwordController.text;
     //final role = isOrganizer ? Roles.eventCreator.value : Roles.ticketBuyer.value;
     try {
+      setState(() => _isLoading = true);
       final response = await _authRequest.login(
         email: email,
         password: password,
         //role: role,
       );
+      setState(() => _isLoading = false);
 
       if (response.statusCode == 200) {
         final token = response.data['token'];
@@ -85,6 +88,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         context.showAnimatedToast('Login failed: $e', isError: true);
       }
+      setState(() => _isLoading = false);
     }
   }
 
@@ -133,9 +137,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           //   ],
           // ),
           // Login Button
-          ElevatedButton(
-            onPressed: handleLogin,
-            child: const Text('Login'),
+          ElevatedButton.icon(
+            onPressed: _isLoading ? null : handleLogin,
+            icon: _isLoading
+                ? const CircularProgressIndicator().w(20).h(20)
+                : const Icon(Icons.login),
+            label: const Text('Login'),
           ),
           TextButton(
             onPressed: () {

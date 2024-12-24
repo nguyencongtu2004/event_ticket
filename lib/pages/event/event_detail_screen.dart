@@ -1,7 +1,7 @@
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/models/ticket.dart';
-import 'package:event_ticket/providers/navigation_index_provider.dart';
 import 'package:event_ticket/providers/ticket_provider.dart';
 import 'package:event_ticket/requests/event_request.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
@@ -34,13 +34,14 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   final _eventRequest = EventRequest();
   final _ticketRequest = TicketRequest();
   var eventNotfound = false;
+  var _isJoining = false;
 
   Future<void> onJoinEvent() async {
+    setState(() => _isJoining = true);
     final response = await _ticketRequest.bookTicket(event!.id);
-
+    setState(() => _isJoining = false);
     if (response.statusCode != 201) {
-      print('Error buying ticket: ${response.data}');
-      return;
+      return context.showAnimatedToast(response.data['message']);
     }
 
     final ticket = Ticket.fromJson(response.data as Map<String, dynamic>);
@@ -55,15 +56,11 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     } else {
       // TODO: add new ticket to provider
       ref.invalidate(ticketProvider);
-      ref.read(navigationIndexProvider.notifier).setIndex(1);
       context.go(Routes.ticket);
     }
   }
 
-  void onEditEvent() {
-    print('Edit event');
-    context.push(Routes.editEvent, extra: event);
-  }
+  void onEditEvent() => context.push(Routes.editEvent, extra: event);
 
   @override
   void initState() {
@@ -411,16 +408,21 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         : isEventInFuture
             ? 'Buy Ticket ${(event.price == null || event.price == 0) ? 'For Free' : event.price!.toCurrency()}'
             : 'This event has started, you can no longer buy tickets';
-    final onPress = isEventInFuture && !isEventCancelled ? onJoinEvent : null;
+    final onPress = isEventInFuture && !isEventCancelled && !_isJoining
+        ? onJoinEvent
+        : null;
 
-    return ElevatedButton(
+    return ElevatedButton.icon(
       onPressed: onPress,
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size.fromHeight(50),
-      ),
-      child: Text(
+      icon: _isJoining
+          ? const CircularProgressIndicator().w(20).h(20)
+          : const Icon(Icons.attach_money),
+      label: Text(
         buttonText,
         textAlign: TextAlign.center,
+      ),
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size.fromHeight(50),
       ),
     );
   }

@@ -11,6 +11,7 @@ import 'package:event_ticket/providers/category_provider.dart';
 import 'package:event_ticket/providers/event_management_provider.dart';
 import 'package:event_ticket/requests/user_request.dart';
 import 'package:event_ticket/extensions/extension.dart';
+import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/avatar.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:go_router/go_router.dart';
 
 class EditEventScreen extends ConsumerStatefulWidget {
   const EditEventScreen({super.key, required this.event});
@@ -30,6 +32,7 @@ class EditEventScreen extends ConsumerStatefulWidget {
 
 class _EditEventScreenState extends ConsumerState<EditEventScreen> {
   final _userRequest = UserRequest();
+  var _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
   int currentIndex = 0; // Biến trạng thái cho tab hiện tại
@@ -202,13 +205,14 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
       FormData formData = FormData.fromMap(eventData);
 
       // Call API to update event
+      setState(() => _isLoading = true);
       final updated = await ref
           .read(eventManagementProvider.notifier)
           .updateEvent(widget.event.id, formData);
+      setState(() => _isLoading = false);
       if (mounted) {
         if (updated) {
-          Navigator.of(context).pop(true);
-          Navigator.of(context).pop(true);
+          context.go(Routes.eventManagement);
         } else {
           context.showAnimatedToast('Failed to update event', isError: true);
         }
@@ -229,13 +233,15 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
     return TicketScaffold(
       title: 'Edit Event ${widget.event.name}',
       appBarActions: [
-        IconButton(
-          icon: const Icon(Icons.check),
-          onPressed: () async {
-            await _updateEvent();
-          },
-          tooltip: 'Update event',
-        ),
+        if (_isLoading)
+          const CircularProgressIndicator().w(20).h(20).p(12)
+        else
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () async {
+              await _updateEvent();
+            },
+          ),
       ],
       body: DefaultTabController(
         length: 2,
@@ -265,7 +271,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
           ],
         ),
       ),
-    ).hero('addEvent');
+    );
   }
 
   Widget _buildGeneralInformationTab() {

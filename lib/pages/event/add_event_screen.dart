@@ -27,6 +27,7 @@ class AddEventScreen extends ConsumerStatefulWidget {
 
 class _AddEventScreenState extends ConsumerState<AddEventScreen> {
   final _userRequest = UserRequest();
+  var _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
   int currentIndex = 0; // Biến trạng thái cho tab hiện tại
@@ -172,9 +173,11 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
       FormData formData = FormData.fromMap(eventData);
 
       // Call API to create event
+      setState(() => _isLoading = true);
       final created = await ref
           .read(eventManagementProvider.notifier)
           .createEvent(formData);
+      setState(() => _isLoading = false);
       if (mounted) {
         if (created) {
           Navigator.of(context).pop(true);
@@ -183,7 +186,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
         }
       }
     } else {
-      VxToast.show(context, msg: 'Please fill in all required fields');
+      context.showAnimatedToast('Please fill in all required fields');
     }
   }
 
@@ -198,12 +201,15 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
     return TicketScaffold(
       title: 'Create Event ${_nameController.text}',
       appBarActions: [
-        IconButton(
-          icon: const Icon(Icons.check),
-          onPressed: () async {
-            await _createEvent();
-          },
-        ),
+        if (_isLoading)
+          const CircularProgressIndicator().w(20).h(20).p(12)
+        else
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () async {
+              await _createEvent();
+            },
+          ),
       ],
       body: DefaultTabController(
         length: 2,

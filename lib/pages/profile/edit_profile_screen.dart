@@ -24,6 +24,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late User editedUser;
   File? _selectedImage;
+  var _isLoading = false;
   final _universityRequest = UniversityRequest();
   List<University> availableUniversities = [];
 
@@ -125,9 +126,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             .id,
       );
       // Gửi thông tin cập nhật đến UserNotifier
+      setState(() => _isLoading = true);
       final isSuccess = await ref
           .read(userProvider.notifier)
           .updateUser(editedUser, _selectedImage);
+      setState(() => _isLoading = false);
 
       if (isSuccess) {
         Navigator.of(context).pop();
@@ -284,9 +287,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _saveProfile,
-                      child: const Text('Save'),
+                    ElevatedButton.icon(
+                      onPressed: _isLoading ? null : _saveProfile,
+                      icon: _isLoading
+                          ? const CircularProgressIndicator().w(20).h(20)
+                          : const Icon(Icons.save),
+                      label: const Text('Save'),
                     ),
                   ],
                 ),
