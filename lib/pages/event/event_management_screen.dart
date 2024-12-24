@@ -9,55 +9,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class EventManagementScreen extends ConsumerStatefulWidget {
+class EventManagementScreen extends ConsumerWidget {
   const EventManagementScreen({super.key});
 
-  @override
-  ConsumerState<EventManagementScreen> createState() =>
-      _EventManagementScreenState();
-}
-
-class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
-  List<Event> displayedEvents = []; // Danh sách hiển thị
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeEvents();
-  }
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   _initializeEvents();
-  // }
-
-  @override
-  void dispose() {
-    print('Disposing EventManagementScreen');
-    super.dispose();
-  }
-
-  Future<void> _initializeEvents() async {
-    final events = await ref.refresh(eventManagementProvider.future);
-    if (mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          displayedEvents = List.from(events);
-        });
-      });
-    }
-  }
-
   Future<void> onEventTap(BuildContext context, Event event) async {
-    // Mở trang chi tiết sự kiện
     final bool? updated =
         await context.push(Routes.getEventDetailPath(event.id), extra: true);
     if (updated != null && updated) {
       context.showAnimatedToast('Event updated successfully!');
-
-      // Refresh danh sách sự kiện
-      await _initializeEvents();
     }
   }
 
@@ -65,27 +24,55 @@ class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
     final bool? created = await context.push<bool>(Routes.createEvent);
     if (created != null && created) {
       context.showAnimatedToast('Event created successfully!');
-
-      // Refresh danh sách sự kiện
-      await _initializeEvents();
+      ref.refresh(eventManagementProvider.future);
     }
   }
 
-  void onDeleteEvent(Event event) {
-    // Xóa thật sự trong provider
-    ref.read(eventManagementProvider.notifier).deleteEvent(event.id);
-    print('Event permanently deleted: ${event.name}');
-    // Không cần làm gì thêm vì `displayedEvents` đã được cập nhật
+  void onDissmissed({
+    required Event removedEvent,
+    required BuildContext context,
+    required WidgetRef ref,
+  }) {
+    //final removedEvent = events[index];
+
+    // Xóa lạc quan
+    final previousState = ref
+        .read(eventManagementProvider.notifier)
+        .optimisticUpdateOnDelete(removedEvent.id);
+
+    // Hiển thị SnackBar
+    showUndoSnackBar(
+      context,
+      removedEvent,
+      () {
+        // Hoàn tác xóa
+        ref.read(eventManagementProvider.notifier).restoreEvent(previousState);
+      },
+      () async {
+        // Xác nhận xóa từ server
+        final success = await ref
+            .read(eventManagementProvider.notifier)
+            .deleteEvent(removedEvent.id);
+
+        if (!success) {
+          context.showAnimatedToast('Failed to delete event!');
+          // Khôi phục nếu xóa thất bại
+          ref
+              .read(eventManagementProvider.notifier)
+              .restoreEvent(previousState);
+        } else {
+          context.showAnimatedToast('Event deleted successfully!');
+        }
+      },
+    );
   }
 
-  void onUndoDelete(Event event, int index) {
-    setState(() {
-      displayedEvents.insert(index, event);
-    });
-  }
-
-  void showUndoSnackBar(BuildContext context, Event event, VoidCallback onUndo,
-      VoidCallback onConfirmDelete) {
+  void showUndoSnackBar(
+    BuildContext context,
+    Event event,
+    VoidCallback onUndo,
+    VoidCallback onConfirmDelete,
+  ) {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     scaffoldMessenger
         .showSnackBar(
@@ -94,7 +81,7 @@ class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
             action: SnackBarAction(
               label: 'Undo',
               onPressed: () {
-                onUndo(); // Call onUndo to cancel deletion
+                onUndo();
                 scaffoldMessenger.hideCurrentSnackBar();
               },
             ),
@@ -110,18 +97,27 @@ class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final eventState = ref.watch(eventManagementProvider);
+
     return TicketScaffold(
       title: 'Event Management',
       body: RefreshIndicator(
-        onRefresh: () => _initializeEvents(),
-        child: displayedEvents.isEmpty
-            ? SizedBox(
+        onRefresh: () => ref.refresh(eventManagementProvider.future),
+        child: eventState.when(
+          data: (events) {
+            if (events.isEmpty) {
+              return SizedBox(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height - 100,
                 child: const Text('No events available').centered(),
-              ).scrollVertical().centered()
-            : _buildEventList(),
+              ).scrollVertical().centered();
+            }
+            return _buildEventList(context, ref, events);
+          },
+          loading: () => const CircularProgressIndicator().centered(),
+          error: (e, st) => Text('Error: $e').centered(),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'addEvent',
@@ -131,31 +127,21 @@ class _EventManagementScreenState extends ConsumerState<EventManagementScreen> {
     );
   }
 
-  Widget _buildEventList() {
+  Widget _buildEventList(
+      BuildContext context, WidgetRef ref, List<Event> events) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: displayedEvents.length,
+      itemCount: events.length,
       itemBuilder: (context, index) {
-        final event = displayedEvents[index];
+        final event = events[index];
         return Dismissible(
           key: ValueKey(event.id),
           direction: DismissDirection.endToStart,
-          onDismissed: (direction) {
-            final removedEvent = displayedEvents[index]; // Lưu item bị vuốt
-
-            setState(() {
-              displayedEvents.removeAt(index); // Xóa khỏi danh sách hiển thị
-            });
-
-            // Hiển thị snackbar để hoàn tác
-            showUndoSnackBar(
-              context,
-              removedEvent,
-              () => onUndoDelete(
-                  removedEvent, index), // Thêm lại item nếu hoàn tác
-              () => onDeleteEvent(removedEvent), // Xóa thật nếu không hoàn tác
-            );
-          },
+          onDismissed: (_) => onDissmissed(
+            removedEvent: event,
+            context: context,
+            ref: ref,
+          ),
           background: Container(
             color: Colors.red,
             alignment: Alignment.centerRight,

@@ -403,7 +403,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                           children: [
                             const Icon(Icons.location_on),
                             const SizedBox(width: 8),
-                            Text('Location: ${ticket!.event!.location}'),
+                            Text('Location: ${ticket!.event?.location ?? "N/A"}'),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -411,7 +411,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                           children: [
                             const Icon(Icons.location_on),
                             const SizedBox(width: 8),
-                            Text('Status: ${ticket!.event!.status!.value}'),
+                            Text('Status: ${ticket!.event!.status?.value ?? "N/A"}'),
                           ],
                         ),
                         const SizedBox(height: 8),

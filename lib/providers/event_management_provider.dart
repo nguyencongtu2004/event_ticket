@@ -9,78 +9,75 @@ class EventManagementNotifier extends AsyncNotifier<List<Event>> {
   @override
   Future<List<Event>> build() async {
     try {
-      // Đặt trạng thái đang tải
       state = const AsyncValue.loading();
-
-      // Gọi API để lấy dữ liệu
       final response = await _eventRequest.getManagementEvents();
       final events = (response.data as List)
           .map((e) => Event.fromJson(e as Map<String, dynamic>))
           .toList();
-
-      // Trả về dữ liệu người dùng
       return events;
     } catch (e, st) {
-      // Xử lý lỗi và trả về trạng thái lỗi
       state = AsyncValue.error(e, st);
-      print('Error in EventNotifier.build: $e');
+      print('Error in EventManagementNotifier.build: $e');
       print(st);
       return [];
     }
   }
 
-  Future<bool> createEvent(FormData formdata) async {
+  Future<bool> createEvent(FormData formData) async {
     try {
-      // Gọi API để tạo sự kiện
-      final response = await _eventRequest.createEvent(formdata);
-
-      if (response.statusCode != 201) {
-        return false;
+      final response = await _eventRequest.createEvent(formData);
+      if (response.statusCode == 201) {
+        state = AsyncValue.data(await build());
+        return true;
       }
-
-      // Cập nhật danh sách sự kiện
-      state = AsyncValue.data(await build());
-      return true;
+      return false;
     } catch (e) {
-      print('Error in EventNotifier.createEvent: $e');
+      print('Error in EventManagementNotifier.createEvent: $e');
       return false;
     }
   }
 
   Future<bool> deleteEvent(String eventId) async {
     try {
-      // Gọi API để xóa sự kiện
       final response = await _eventRequest.deleteEvent(eventId);
-
-      if (response.statusCode != 200) {
-        return false;
+      if (response.statusCode == 200) {
+        state = AsyncValue.data(
+          state.value!.where((event) => event.id != eventId).toList(),
+        );
+        return true;
       }
-      state = AsyncValue.data(
-          state.value!.where((event) => event.id != eventId).toList());
-
-      return true;
+      return false;
     } catch (e) {
-      print('Error in EventNotifier.deleteEvent: $e');
+      print('Error in EventManagementNotifier.deleteEvent: $e');
       return false;
     }
   }
 
-  Future<bool> updateEvent(String eventId, FormData formdata) async {
+  Future<bool> updateEvent(String eventId, FormData formData) async {
     try {
-      // Gọi API để cập nhật sự kiện
-      final response = await _eventRequest.updateEvent(eventId, formdata);
-
-      if (response.statusCode != 200) {
-        return false;
+      final response = await _eventRequest.updateEvent(eventId, formData);
+      if (response.statusCode == 200) {
+        state = AsyncValue.data(await build());
+        return true;
       }
-
-      // Cập nhật danh sách sự kiện
-      state = AsyncValue.data(await build());
-      return true;
+      return false;
     } catch (e) {
-      print('Error in EventNotifier.updateEvent: $e');
+      print('Error in EventManagementNotifier.updateEvent: $e');
       return false;
     }
+  }
+
+  List<Event>? optimisticUpdateOnDelete(String eventId) {
+    final previousState = state.value;
+    state = AsyncValue.data(
+      state.value!.where((event) => event.id != eventId).toList(),
+    );
+    return previousState;
+  }
+
+  void restoreEvent(List<Event>? previousState) {
+    // Thêm lại sự kiện đã xóa
+    state = AsyncValue.data(previousState ?? []);
   }
 }
 
