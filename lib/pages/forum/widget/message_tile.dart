@@ -91,7 +91,9 @@ class MessageTile extends ConsumerWidget {
     final user = ref.read(userProvider).value;
     return GestureDetector(
       onLongPress: () {
-        if (user?.id == null || message.sender?.id == null) return;
+        if (user?.id == null ||
+            message.sender?.id == null ||
+            message.isDeleted!) return;
         if (user!.id == message.sender!.id) {
           showOptionLongPress(context);
         }
@@ -149,6 +151,15 @@ class MessageTile extends ConsumerWidget {
                           fontWeight: FontWeight.bold,
                         ),
                   ).onInkTap(onReply),
+                  if (message.isEdited ?? false) ...[
+                    const SizedBox(width: 16),
+                    Text(
+                      'Edited',
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+                  ]
                 ],
               ),
             ],

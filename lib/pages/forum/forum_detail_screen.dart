@@ -143,6 +143,7 @@ class _ForumDetailScreenState extends State<ForumDetailScreen> {
           messages[index] = messages[index].copyWith(
             content: newContent,
             isEdited: true,
+            isDeleted: false,
           );
         }
       });
@@ -266,6 +267,10 @@ class _ForumDetailScreenState extends State<ForumDetailScreen> {
   Widget _buildMessageTree(Message message,
       {double leftPadding = 0, bool isLastChild = true}) {
     final childMessages = _getChildMessages(message.id);
+
+    if (message.isDeleted! && childMessages.isEmpty) {
+      return const SizedBox(width: double.infinity);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
