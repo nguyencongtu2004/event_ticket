@@ -42,7 +42,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     // Đăng ký callback khi có thông báo
     FirebaseService.registerOnMessageCallback((message) {
-      print('Message: ${message.data}');
+      print('New Message: ${message.data}');
 
       // TODO: fix không cập nhật số thông báo
       ref.refresh(notificationProvider.future);

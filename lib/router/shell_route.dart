@@ -20,13 +20,13 @@ final shellRoute = ShellRoute(
         final roleAsync = ref.watch(roleProvider);
         final currentIndex = ref.watch(navigationIndexProvider);
 
-        // Đồng bộ navigation index với path
-        ref
-            .read(navigationIndexProvider.notifier)
-            .setIndexForRoute(state.uri.path);
-
         return roleAsync.when(
           data: (role) {
+            // Đồng bộ navigation index với path
+            ref
+                .read(navigationIndexProvider.notifier)
+                .setIndexForRoute(role, state.uri.path);
+            
             return Scaffold(
               body: child,
               bottomNavigationBar: NavigationBar(

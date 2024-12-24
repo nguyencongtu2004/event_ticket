@@ -7,7 +7,7 @@ class Message {
   final User? sender;
   final String? conversasionId;
   final String? parentMessageId;
-  final bool? isEditted;
+  final bool? isEdited;
 
   Message({
     required this.id,
@@ -16,7 +16,7 @@ class Message {
     this.sender,
     this.conversasionId,
     this.parentMessageId,
-    this.isEditted,
+    this.isEdited,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) => Message(
@@ -26,7 +26,7 @@ class Message {
         sender: json['sender'] != null ? User.fromJson(json['sender']) : null,
         conversasionId: json['conversasionId'],
         parentMessageId: json['parentMessageId'],
-        isEditted: json['isEditted'],
+        isEdited: json['isEdited'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -36,8 +36,27 @@ class Message {
         'sender': sender?.toJson(),
         'conversasionId': conversasionId,
         'parentMessageId': parentMessageId,
-        'isEditted': isEditted,
+        'isEdited': isEdited,
       };
+
+  Message copyWith({
+    String? id,
+    String? content,
+    DateTime? time,
+    User? sender,
+    String? conversasionId,
+    String? parentMessageId,
+    bool? isEdited,
+  }) =>
+      Message(
+        id: id ?? this.id,
+        content: content ?? this.content,
+        time: time ?? this.time,
+        sender: sender ?? this.sender,
+        conversasionId: conversasionId ?? this.conversasionId,
+        parentMessageId: parentMessageId ?? this.parentMessageId,
+        isEdited: isEdited ?? this.isEdited,
+      );
 
   @override
   String toString() {

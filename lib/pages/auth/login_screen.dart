@@ -84,12 +84,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // Hiển thị thông báo lỗi
       if (mounted) {
         context.showAnimatedToast('Login failed: $e', isError: true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đăng nhập thất bại: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
       }
     }
   }

@@ -40,7 +40,16 @@ class _ForumDetailScreenState extends State<ForumDetailScreen> {
   void initState() {
     super.initState();
     getMessages();
-    _scrollController.addListener(_scrollListener);
+
+    // Load more messages when scrolling to the bottom
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (!isLoading && hasMore) {
+          getMessages(page: page + 1);
+        }
+      }
+    });
   }
 
   @override
@@ -48,15 +57,6 @@ class _ForumDetailScreenState extends State<ForumDetailScreen> {
     _scrollController.dispose();
     _messageController.dispose();
     super.dispose();
-  }
-
-  void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      if (!isLoading && hasMore) {
-        getMessages(page: page + 1);
-      }
-    }
   }
 
   Future<void> getMessages({int page = 1, int limit = 10}) async {
@@ -134,75 +134,36 @@ class _ForumDetailScreenState extends State<ForumDetailScreen> {
     });
   }
 
-  // Hàm đệ quy để lấy tất cả tin nhắn con
-  List<Message> _getChildMessages(String parentId) {
-    return messages.where((m) => m.parentMessageId == parentId).toList();
+  Future<void> onEditMessage(String messageId, String newContent) async {
+    final response = await _messageRequest.editMessage(messageId, newContent);
+    if (response.statusCode == 200) {
+      setState(() {
+        final index = messages.indexWhere((m) => m.id == messageId);
+        if (index != -1) {
+          messages[index] = messages[index].copyWith(
+            content: newContent,
+            isEdited: true,
+          );
+        }
+      });
+    } else {
+      if (mounted) {
+        context.showAnimatedToast(response.data['message']);
+      }
+    }
   }
 
-  // Hàm đệ quy để hiển thị tin nhắn và các tin nhắn con
-  Widget _buildMessageTree(Message message,
-      {double leftPadding = 0, bool isLastChild = true}) {
-    final childMessages = _getChildMessages(message.id);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MessageTile(
-          message: message,
-          onReply: () => onReply(message),
-        ),
-        if (childMessages.isNotEmpty)
-          Container(
-            // Giảm padding để đường kẻ gần với avatar hơn
-            padding: EdgeInsets.only(left: leftPadding + 20),
-            child: Stack(
-              clipBehavior: Clip.none, // Cho phép vẽ ra ngoài container
-              children: [
-                // Vẽ đường kết nối
-                Positioned(
-                  // Điều chỉnh vị trí để đường kẻ bắt đầu từ avatar
-                  left: 20,
-                  // Điều chỉnh để đường kẻ bắt đầu từ avatar message trước
-                  top: 20,
-                  bottom: 0,
-                  child: Container(
-                    width: 2,
-                    color: Colors.grey.withValues(alpha: 0.5),
-                  ),
-                ),
-                Column(
-                  children: childMessages.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final childMessage = entry.value;
-                    final isLast = index == childMessages.length - 1;
-
-                    return Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        // Đường ngang nối với avatar
-                        Positioned(
-                          left: 0,
-                          top: 24, // Căn chỉnh với avatar của message
-                          child: Container(
-                            width: 50, // Độ dài đường ngang
-                            height: 2,
-                            color: Colors.grey.withValues(alpha: 0.5),
-                          ),
-                        ),
-                        _buildMessageTree(
-                          childMessage,
-                          leftPadding: 16,
-                          isLastChild: isLast,
-                        ),
-                      ],
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
-          ),
-      ],
-    ).py(4); // Giảm khoảng cách giữa các message
+  Future<void> onDeleteMessage(String messageId) async {
+    final response = await _messageRequest.deleteMessage(messageId);
+    if (response.statusCode == 200) {
+      setState(() {
+        messages.removeWhere((m) => m.id == messageId);
+      });
+    } else {
+      if (mounted) {
+        context.showAnimatedToast(response.data['message']);
+      }
+    }
   }
 
   @override
@@ -295,6 +256,80 @@ class _ForumDetailScreenState extends State<ForumDetailScreen> {
       ).px(16),
     );
   }
+
+  // Hàm đệ quy để lấy tất cả tin nhắn con
+  List<Message> _getChildMessages(String parentId) {
+    return messages.where((m) => m.parentMessageId == parentId).toList();
+  }
+
+  // Hàm đệ quy để hiển thị tin nhắn và các tin nhắn con
+  Widget _buildMessageTree(Message message,
+      {double leftPadding = 0, bool isLastChild = true}) {
+    final childMessages = _getChildMessages(message.id);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        MessageTile(
+          key: ValueKey(message.id),
+          message: message,
+          onReply: () => onReply(message),
+          onEdit: (newContent) => onEditMessage(message.id, newContent),
+          onDelete: () => onDeleteMessage(message.id),
+        ),
+        if (childMessages.isNotEmpty)
+          Container(
+            // Giảm padding để đường kẻ gần với avatar hơn
+            padding: EdgeInsets.only(left: leftPadding + 20),
+            child: Stack(
+              clipBehavior: Clip.none, // Cho phép vẽ ra ngoài container
+              children: [
+                // Vẽ đường kết nối
+                Positioned(
+                  // Điều chỉnh vị trí để đường kẻ bắt đầu từ avatar
+                  left: 20,
+                  // Điều chỉnh để đường kẻ bắt đầu từ avatar message trước
+                  top: 20,
+                  bottom: 0,
+                  child: Container(
+                    width: 2,
+                    color: Colors.grey.withValues(alpha: 0.5),
+                  ),
+                ),
+                Column(
+                  children: childMessages.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final childMessage = entry.value;
+                    final isLast = index == childMessages.length - 1;
+
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        // Đường ngang nối với avatar
+                        Positioned(
+                          left: 0,
+                          top: 24, // Căn chỉnh với avatar của message
+                          child: Container(
+                            width: 50, // Độ dài đường ngang
+                            height: 2,
+                            color: Colors.grey.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        _buildMessageTree(
+                          childMessage,
+                          leftPadding: 16,
+                          isLastChild: isLast,
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+      ],
+    ).py(4); // Giảm khoảng cách giữa các message
+  }
 }
 
 // Custom painter for thread connections (ngâm cứu sau)
@@ -315,7 +350,7 @@ class ThreadConnectionPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final double spacing = size.height / childCount;
-    final double radius = 8.0;
+    const double radius = 8.0;
 
     for (var i = 0; i < childCount; i++) {
       final double startY =
