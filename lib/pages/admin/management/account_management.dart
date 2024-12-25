@@ -31,6 +31,7 @@ class _AccountManagementScreenState extends State<AccountManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return const TicketScaffold(
+      title: 'Account Management',
       body: Center(
         child: Text('Account Management'),
       ),

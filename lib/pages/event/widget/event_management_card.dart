@@ -36,7 +36,7 @@ class EventManagementCard extends StatelessWidget {
                     size: 120,
                   ),
           ),
-          const SizedBox(width: 16),
+
           // Event details
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +66,7 @@ class EventManagementCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
             ],
-          ).expand(),
+          ).px(8).expand(),
         ],
       ),
     ).onTap(onTap ?? () {});

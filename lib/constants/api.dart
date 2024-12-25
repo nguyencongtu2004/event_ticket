@@ -52,6 +52,7 @@ class Api {
   static String deleteEvent(String eventId) => 'events/$eventId';
   static String updateEvent(String eventId) => 'events/$eventId';
   static const String searchEvents = 'events/search';
+  static String getEventAttendees(String eventId) => 'events/$eventId/participants';
 
   // ticket
   static const String bookTicket = 'ticket/book';

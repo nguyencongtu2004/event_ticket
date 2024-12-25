@@ -2,6 +2,7 @@ import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
@@ -13,7 +14,7 @@ class AdminScreen extends StatelessWidget {
       body: ListView(
         children: [
           Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: ListTile(
               leading: const Icon(Icons.person),
               trailing: const Icon(Icons.chevron_right),
@@ -25,10 +26,10 @@ class AdminScreen extends StatelessWidget {
               ),
               subtitle: const Text('Manage user accounts'),
               onTap: () => context.push(Routes.accountManagement),
-            ),
+            ).py(8),
           ),
           Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: ListTile(
               leading: const Icon(Icons.school),
               trailing: const Icon(Icons.chevron_right),
@@ -40,10 +41,10 @@ class AdminScreen extends StatelessWidget {
               ),
               subtitle: const Text('Manage universities'),
               onTap: () => context.push(Routes.universityManagement),
-            ),
+            ).py(8),
           ),
           Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: ListTile(
               leading: const Icon(Icons.event),
               trailing: const Icon(Icons.chevron_right),
@@ -54,8 +55,8 @@ class AdminScreen extends StatelessWidget {
                     ),
               ),
               subtitle: const Text('Manage events'),
-              onTap: () => context.push(Routes.eventManagement),
-            ),
+              onTap: () => context.push(Routes.eventManagementFullScreen),
+            ).py(8),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/models/ticket.dart';
+import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/providers/ticket_provider.dart';
 import 'package:event_ticket/requests/event_request.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
@@ -75,13 +76,13 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       final response = await _eventRequest.getEventDetail(widget.eventId);
 
       if (response.statusCode == 200) {
-        setState(() {
-          event = Event.fromJson(response.data as Map<String, dynamic>);
+        setState(() =>
+            event = Event.fromJson(response.data as Map<String, dynamic>));
+        getAttendees(event!.id).then((value) {
+          setState(() => event = event!.copyWith(attendees: value));
         });
       } else {
-        setState(() {
-          eventNotfound = true;
-        });
+        setState(() => eventNotfound = true);
       }
     } catch (e, st) {
       print('Error in EventDetailScreen.getEventDetail: $e');
@@ -92,11 +93,23 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     }
   }
 
+  Future<List<User>> getAttendees(String eventId) async {
+    final response = await EventRequest().getEventAttendees(eventId);
+    if (response.statusCode == 200) {
+      return (response.data as List).map((e) => User.fromJson(e)).toList();
+    } else {
+      context.showAnimatedToast(response.data['message']);
+      return [];
+    }
+  }
+
   void onForumTap() {
     print('Forum tapped: ${Routes.forum} extra: ${event?.conversation}');
     context.push(Routes.getForumDetailPath(event!.conversation!.id),
         extra: event?.conversation);
   }
+
+  void onStatusTap() => context.push(Routes.eventParticipants, extra: event);
 
   @override
   Widget build(BuildContext context) {
@@ -286,9 +299,21 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                                     'Participants',
                                     '${event!.attendees.length}',
                                   ),
+                                  Text(
+                                    'Details',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                    textAlign: TextAlign.end,
+                                  ).w(double.infinity),
                                 ],
                               ),
-                            ),
+                            ).onTap(onStatusTap),
                             const SizedBox(height: 16),
 
                             // Trạng thái sự kiện
@@ -389,12 +414,13 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                     _getBottomButton(event!).p(16)
                   // Nếu có quyền chỉnh sửa sự kiện
                   else
-                    ElevatedButton(
+                    ElevatedButton.icon(
                       onPressed: onEditEvent,
+                      icon: const Icon(Icons.edit),
+                      label: const Text('Edit Event'),
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                       ),
-                      child: const Text('Edit Event'),
                     ).p(16),
                 ]),
     );

@@ -8,6 +8,7 @@ class Routes {
   static const String ticket = '/ticket';
   static const String profile = '/profile';
   static const String eventManagement = '/event-management';
+  static const String eventManagementFullScreen = '/event-management-full-screen';
   static const String event = '/event';
   static const String checkIn = '/check-in';
   static const String forum = '/forum';
@@ -25,6 +26,7 @@ class Routes {
   static const String createEvent = '/create-event';
   static const String searchEvent = '/search-event';
   static const String eventList = '/event-list';
+  static const String eventParticipants = '/event-participants';
   static String getEventListPath({required String title, required String sortBy}) => 
       '/event-list?title=$title&sortBy=$sortBy';
 

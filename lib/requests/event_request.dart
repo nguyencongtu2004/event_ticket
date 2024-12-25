@@ -62,4 +62,9 @@ class EventRequest extends HttpService {
     );
     return response;
   }
+
+  Future<Response> getEventAttendees(String eventId) async {
+    final response = await get(url: Api.getEventAttendees(eventId));
+    return response;
+  }
 }

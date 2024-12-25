@@ -212,7 +212,9 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         if (updated) {
-          context.go(Routes.eventManagement);
+          //context.go(Routes.eventManagement);
+          Navigator.of(context).pop(true);
+          Navigator.of(context).pop(true);
         } else {
           context.showAnimatedToast('Failed to update event', isError: true);
         }

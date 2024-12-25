@@ -130,7 +130,7 @@ class EventManagementScreen extends ConsumerWidget {
   Widget _buildEventList(
       BuildContext context, WidgetRef ref, List<Event> events) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 80),
       itemCount: events.length,
       itemBuilder: (context, index) {
         final event = events[index];

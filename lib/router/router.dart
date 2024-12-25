@@ -12,6 +12,8 @@ import 'package:event_ticket/pages/event/add_event_screen.dart';
 import 'package:event_ticket/pages/event/edit_event_screen.dart';
 import 'package:event_ticket/pages/event/event_detail_screen.dart';
 import 'package:event_ticket/pages/event/event_list_screen.dart';
+import 'package:event_ticket/pages/event/event_management_screen.dart';
+import 'package:event_ticket/pages/event/participant_screen.dart';
 import 'package:event_ticket/pages/event/search_event_screen.dart';
 import 'package:event_ticket/pages/forum/forum_detail_screen.dart';
 import 'package:event_ticket/pages/notification/notification_screen.dart';
@@ -86,6 +88,13 @@ final GoRouter router = GoRouter(
       ),
     ),
     GoRoute(
+      path: Routes.eventParticipants,
+      builder: (context, state) {
+        final event = state.extra as Event;
+        return ParticipantScreen(event: event);
+      },
+    ),
+    GoRoute(
       path: Routes.ticketDetail,
       builder: (context, state) {
         final ticketId = state.pathParameters['ticketId']!;
@@ -101,9 +110,7 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: Routes.transferTicket,
-      builder: (context, state) {
-        return const TransferTicketScreen();
-      },
+      builder: (context, state) => const TransferTicketScreen(),
     ),
     GoRoute(
       path: Routes.forumDetail,
@@ -115,15 +122,11 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: Routes.notification,
-      builder: (context, state) {
-        return const NotificationScreen();
-      },
+      builder: (context, state) => const NotificationScreen(),
     ),
     GoRoute(
       path: Routes.searchEvent,
-      builder: (context, state) {
-        return const SearchEventScreen();
-      },
+      builder: (context, state) => const SearchEventScreen(),
     ),
     GoRoute(
       path: Routes.accountManagement,
@@ -133,9 +136,7 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: Routes.universityManagement,
-      builder: (context, state) {
-        return const UniversityManagementScreen();
-      },
+      builder: (context, state) => const UniversityManagementScreen(),
     ),
     GoRoute(
       path: Routes.facultyManagement,
@@ -150,6 +151,10 @@ final GoRouter router = GoRouter(
         final faculty = state.extra as Faculty;
         return MajorManagementScreen(faculty: faculty);
       },
+    ),
+    GoRoute(
+      path: Routes.eventManagementFullScreen,
+      builder: (context, state) => const EventManagementScreen(),
     ),
   ],
 );
