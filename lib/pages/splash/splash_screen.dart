@@ -50,11 +50,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     // Lấy role của người dùng và chuyển hướng đến trang tương ứng
     final role = await AuthService.getRole();
-    print(role.name);
-    if (role == Roles.ticketBuyer) {
-      context.go(Routes.event);
-    } else {
-      context.go(Routes.eventManagement);
+    
+    // Chuyển hướng đến trang chính
+    switch (role) {
+      case Roles.eventCreator:
+        context.go(Routes.eventManagement);
+        break;
+      case Roles.ticketBuyer:
+        context.go(Routes.event);
+        break;
+      case Roles.admin:
+        context.go(Routes.admin);
+        break;
     }
   }
 

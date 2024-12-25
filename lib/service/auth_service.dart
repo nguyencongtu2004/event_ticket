@@ -23,7 +23,7 @@ class AuthService {
 
   static Future<bool> setRole(Roles role) async {
     final prefs = await _getPrefs();
-    return prefs.setString('role', role.name);
+    return prefs.setString('role', role.name); // set name of role
   }
 
   static Future<Roles> getRole() async {

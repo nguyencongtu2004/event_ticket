@@ -93,7 +93,9 @@ class MessageTile extends ConsumerWidget {
       onLongPress: () {
         if (user?.id == null ||
             message.sender?.id == null ||
-            message.isDeleted!) return;
+            message.isDeleted!) {
+          return;
+        }
         if (user!.id == message.sender!.id) {
           showOptionLongPress(context);
         }

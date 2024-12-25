@@ -56,26 +56,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       if (response.statusCode == 200) {
         final token = response.data['token'];
-        final isEventCreator =
-            response.data['user']['role'] == Roles.eventCreator.value;
+        final role = Roles.values.firstWhere(
+            (r) => r.value == (response.data['user']['role'] as String));
 
         // Đồng bộ FCM token vào server
         FirebaseService.syncFCMToken();
 
         // Lưu token và role vào shared preferences
         await AuthService.setAuthBearerToken(token);
-        await AuthService.setRole(
-            isEventCreator ? Roles.eventCreator : Roles.ticketBuyer);
-        print('Token: $token');
+        await AuthService.setRole(role);
 
         // invalidate tất cả provider (trừ categoryProvider)
         invalidateAllProvidersExceptCategory(ref);
 
         // Chuyển hướng đến trang chính
-        if (isEventCreator) {
-          context.go(Routes.eventManagement);
-        } else {
-          context.go(Routes.event);
+        switch (role) {
+          case Roles.eventCreator:
+            context.go(Routes.eventManagement);
+            break;
+          case Roles.ticketBuyer:
+            context.go(Routes.event);
+            break;
+          case Roles.admin:
+            context.go(Routes.admin);
+            break;
         }
       } else {
         // Hiển thị thông báo lỗi

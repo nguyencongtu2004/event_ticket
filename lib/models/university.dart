@@ -16,9 +16,11 @@ class University {
     return University(
       id: json['_id'],
       name: json['name'],
-      faculties: (json['faculties'] as List)
-          .map((faculty) => Faculty.fromJson(faculty))
-          .toList(),
+      faculties: json['faculties'] == null
+          ? null
+          : (json['faculties'] as List)
+              .map((faculty) => Faculty.fromJson(faculty))
+              .toList(),
     );
   }
 }
@@ -40,9 +42,11 @@ class Faculty {
     return Faculty(
       id: json['_id'],
       name: json['name'],
-      majors: (json['majors'] as List)
-          .map((major) => Major.fromJson(major))
-          .toList(),
+      majors: json['majors'] == null
+          ? null
+          : (json['majors'] as List)
+              .map((major) => Major.fromJson(major))
+              .toList(),
     );
   }
 }

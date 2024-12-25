@@ -5,6 +5,9 @@ class Api {
   // Tú
   static const String baseUrl = 'https://b3510dzk-3001.asse.devtunnels.ms/api/';
 
+  // 2ANS
+  // static const String baseUrl = 'https://rmlq6088-3001.asse.devtunnels.ms/api/';
+
   // Tuân
   // static const String baseUrl = 'https://xdv4ncqf-3001.asse.devtunnels.ms/api/';
 
@@ -17,11 +20,26 @@ class Api {
   static const String getUserInfo = 'users/information';
   static const String updateUserInfo = 'users/update';
   static const String search = 'users/search';
+  static const String getAllUsers = 'users/all';
+  static String deleteUser(String userId) => 'users/$userId/delete';
 
   // University
+  static const String getUniversitiesWithAll = 'universities/all';
+
   static const String getUniversities = 'universities';
+  static const String createUniversity = 'universities';
+  static String updateUniversity(String universityId) =>
+      'universities/$universityId';
+  static String deleteUniversity(String universityId) =>
+      'universities/$universityId';
+
   static String getFacultiesByUniversityId(String universityId) =>
       'universities/$universityId/faculties';
+  static const String createFaculty = 'faculties';
+  static String updateFaculty(String id) => 'faculties/$id';
+  static String deleteFaculty(String id) => 'faculties/$id';
+  static String getMajorsByFacultyId(String facultyId) =>
+      'faculties/$facultyId/majors';
 
   // Category
   static const String getCategories = 'categories';

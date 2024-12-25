@@ -1,6 +1,11 @@
 import 'package:event_ticket/models/conversasion.dart';
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/models/ticket.dart';
+import 'package:event_ticket/models/university.dart';
+import 'package:event_ticket/pages/admin/management/account_management.dart';
+import 'package:event_ticket/pages/admin/management/faculty_management.dart';
+import 'package:event_ticket/pages/admin/management/major_management.dart';
+import 'package:event_ticket/pages/admin/management/university_management.dart';
 import 'package:event_ticket/pages/auth/login_screen.dart';
 import 'package:event_ticket/pages/auth/register_screen.dart';
 import 'package:event_ticket/pages/event/add_event_screen.dart';
@@ -118,6 +123,32 @@ final GoRouter router = GoRouter(
       path: Routes.searchEvent,
       builder: (context, state) {
         return const SearchEventScreen();
+      },
+    ),
+    GoRoute(
+      path: Routes.accountManagement,
+      builder: (context, state) {
+        return const AccountManagementScreen();
+      },
+    ),
+    GoRoute(
+      path: Routes.universityManagement,
+      builder: (context, state) {
+        return const UniversityManagementScreen();
+      },
+    ),
+    GoRoute(
+      path: Routes.facultyManagement,
+      builder: (context, state) {
+        final university = state.extra as University;
+        return FacultyManagementScreen(university: university);
+      },
+    ),
+    GoRoute(
+      path: Routes.majorManagement,
+      builder: (context, state) {
+        final faculty = state.extra as Faculty;
+        return MajorManagementScreen(faculty: faculty);
       },
     ),
   ],

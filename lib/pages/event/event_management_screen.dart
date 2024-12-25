@@ -24,7 +24,7 @@ class EventManagementScreen extends ConsumerWidget {
     final bool? created = await context.push<bool>(Routes.createEvent);
     if (created != null && created) {
       context.showAnimatedToast('Event created successfully!');
-      ref.refresh(eventManagementProvider.future);
+      return ref.refresh(eventManagementProvider.future);
     }
   }
 

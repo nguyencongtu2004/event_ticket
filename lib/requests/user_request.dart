@@ -42,4 +42,23 @@ class UserRequest extends HttpService {
       return [];
     }
   }
+
+  //admin
+  Future<Response> getAllUsers({Roles? role}) async {
+    final response = await get(
+      url: Api.getAllUsers,
+      queryParameters: {
+        if (role != null) 'role': role.value,
+      },
+    );
+
+    return response;
+  }
+
+  // admin
+  Future<Response> deleteUser(String userId) async {
+    final response = await delete(url: Api.deleteUser(userId));
+
+    return response;
+  }
 }

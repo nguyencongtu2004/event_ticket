@@ -372,7 +372,7 @@ class ThreadConnectionPainter extends CustomPainter {
       // Draw curved line to the child avatar
       path.arcToPoint(
         Offset(20, startY),
-        radius: Radius.circular(radius),
+        radius: const Radius.circular(radius),
         clockwise: true,
       );
 

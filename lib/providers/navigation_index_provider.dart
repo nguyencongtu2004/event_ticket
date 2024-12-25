@@ -41,6 +41,17 @@ class NavigationIndexNotifier extends StateNotifier<int> {
         default:
           state = 0; // Default nếu không khớp
       }
+    } else if (role == Roles.admin) {
+      switch (path) {
+        case Routes.admin:
+          state = 0;
+          break;
+        case Routes.profile:
+          state = 1;
+          break;
+        default:
+          state = 0; // Default nếu không khớp
+      }
     } else {
       state = 0; // Default nếu không khớp
     }

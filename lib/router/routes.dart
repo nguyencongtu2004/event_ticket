@@ -40,4 +40,11 @@ class Routes {
 
   // Notification
   static const String notification = '/notification';
+
+  // Admin
+  static const String admin = '/admin';
+  static const String accountManagement = '/account-management';
+  static const String universityManagement = '/university-management';
+  static const String facultyManagement = '/faculty-management';
+  static const String majorManagement = '/major-management';
 }

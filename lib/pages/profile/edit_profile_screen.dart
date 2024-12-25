@@ -45,7 +45,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       selectedMajor = user.major;
     }
 
-    _universityRequest.getUniversities().then((response) {
+    _universityRequest.getUniversitiesWithAll().then((response) {
       setState(() {
         availableUniversities = List<University>.from(
             response.data.map((e) => University.fromJson(e)));

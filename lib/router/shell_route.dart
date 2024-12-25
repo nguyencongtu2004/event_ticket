@@ -1,3 +1,4 @@
+import 'package:event_ticket/pages/admin/admin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +14,7 @@ import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/enum.dart';
 
 final shellRoute = ShellRoute(
-  navigatorKey: GlobalKey<NavigatorState>(),
+  //navigatorKey: navigatorKey,
   builder: (context, state, child) {
     return Consumer(
       builder: (context, ref, _) {
@@ -61,6 +62,15 @@ final shellRoute = ShellRoute(
                         context.go(Routes.profile);
                         break;
                     }
+                  } else if (role == Roles.admin) {
+                    switch (index) {
+                      case 0:
+                        context.go(Routes.admin);
+                        break;
+                      case 1:
+                        context.go(Routes.profile);
+                        break;
+                    }
                   }
                 },
                 destinations: role == Roles.ticketBuyer
@@ -74,22 +84,29 @@ final shellRoute = ShellRoute(
                         NavigationDestination(
                             icon: Icon(Icons.person), label: 'Profile'),
                       ]
-                    : const [
-                        NavigationDestination(
-                            icon: Icon(Icons.manage_accounts),
-                            label: 'Event Management'),
-                        NavigationDestination(
-                            icon: Icon(Icons.check_circle), label: 'Check-in'),
-                        NavigationDestination(
-                            icon: Icon(Icons.person), label: 'Profile'),
-                      ],
+                    : role == Roles.eventCreator
+                        ? const [
+                            NavigationDestination(
+                                icon: Icon(Icons.manage_accounts),
+                                label: 'Event Management'),
+                            NavigationDestination(
+                                icon: Icon(Icons.check_circle),
+                                label: 'Check-in'),
+                            NavigationDestination(
+                                icon: Icon(Icons.person), label: 'Profile'),
+                          ]
+                        : const [
+                            NavigationDestination(
+                                icon: Icon(Icons.admin_panel_settings),
+                                label: 'Admin'),
+                            NavigationDestination(
+                                icon: Icon(Icons.person), label: 'Profile'),
+                          ],
               ),
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(
-            child: Text('Error: $error'),
-          ),
+          error: (error, stack) => Center(child: Text('Error: $error')),
         );
       },
     );
@@ -135,6 +152,12 @@ final shellRoute = ShellRoute(
       builder: (context, state) => const ForumScreen(),
       pageBuilder: (context, state) =>
           const NoTransitionPage(child: ForumScreen()),
+    ),
+    GoRoute(
+      path: Routes.admin,
+      builder: (context, state) => const AdminScreen(),
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: AdminScreen()),
     ),
   ],
 );
