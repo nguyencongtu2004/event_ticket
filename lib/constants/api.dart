@@ -40,6 +40,7 @@ class Api {
   static String deleteFaculty(String id) => 'faculties/$id';
   static String getMajorsByFacultyId(String facultyId) =>
       'faculties/$facultyId/majors';
+  static const String createMajor = 'faculties/majors';
 
   // Category
   static const String getCategories = 'categories';

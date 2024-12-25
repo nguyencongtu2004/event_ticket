@@ -23,6 +23,17 @@ class University {
               .toList(),
     );
   }
+
+  @override
+  String toString() => 'University(id: $id, name: $name)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is University && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class Faculty {
@@ -49,6 +60,17 @@ class Faculty {
               .toList(),
     );
   }
+
+  @override
+  String toString() => 'Faculty(id: $id, name: $name)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Faculty && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class Major {
@@ -68,4 +90,15 @@ class Major {
       name: json['name'],
     );
   }
+
+  @override
+  String toString() => 'Major(id: $id, name: $name)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Major && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }

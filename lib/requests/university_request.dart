@@ -97,24 +97,14 @@ class UniversityRequest extends HttpService {
 
   // admin
   Future<Response> createMajor(String facultyId, String name) async {
-    return Response(
-      requestOptions: RequestOptions(path: 'temp'),
-      data: {
+    final response = await post(
+      url: Api.createMajor,
+      body: {
         'facultyId': facultyId,
         'name': name,
-        'message': 'ok',
       },
-      statusCode: 201,
     );
-
-    // final response = await post(
-    //   url: Api.createMajor,
-    //   body: {
-    //     'facultyId': facultyId,
-    //     'name': name,
-    //   },
-    // );
-    // return response;
+    return response;
   }
 
   // admin

@@ -11,7 +11,6 @@ import 'package:event_ticket/providers/category_provider.dart';
 import 'package:event_ticket/providers/event_management_provider.dart';
 import 'package:event_ticket/requests/user_request.dart';
 import 'package:event_ticket/extensions/extension.dart';
-import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/avatar.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:go_router/go_router.dart';
 
 class EditEventScreen extends ConsumerStatefulWidget {
   const EditEventScreen({super.key, required this.event});

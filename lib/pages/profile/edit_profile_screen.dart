@@ -28,9 +28,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _universityRequest = UniversityRequest();
   List<University> availableUniversities = [];
 
-  String? selectedUniversity;
-  String? selectedFaculty;
-  String? selectedMajor;
+  University? selectedUniversity;
+  Faculty? selectedFaculty;
+  Major? selectedMajor;
   List<Faculty> filteredFaculties = [];
   List<Major> filteredMajors = [];
 
@@ -57,7 +57,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   void _updateFilteredFaculties() {
     final university = availableUniversities.firstWhere(
-      (u) => u.name == selectedUniversity,
+      (u) => u == selectedUniversity,
       orElse: () => University.fromNull(),
     );
 
@@ -66,11 +66,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
       // Giữ lại khoa đã chọn nếu tồn tại trong danh sách khoa mới
       if (selectedFaculty != null &&
-          filteredFaculties.any((f) => f.name == selectedFaculty)) {
+          filteredFaculties.any((f) => f == selectedFaculty)) {
         selectedFaculty = selectedFaculty;
       } else {
-        selectedFaculty =
-            filteredFaculties.first.name; // Reset cái đầu tiên nếu không khớp
+        // Chỉ gán giá trị đầu tiên nếu danh sách không trống
+        selectedFaculty = filteredFaculties.isNotEmpty
+            ? filteredFaculties.first
+            : Faculty.fromNull();
       }
 
       _updateFilteredMajors(); // Cập nhật ngành theo khoa mới
@@ -79,7 +81,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   void _updateFilteredMajors() {
     final faculty = filteredFaculties.firstWhere(
-      (f) => f.name == selectedFaculty,
+      (f) => f == selectedFaculty,
       orElse: () => Faculty.fromNull(),
     );
 
@@ -88,11 +90,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
       // Giữ lại ngành đã chọn nếu tồn tại trong danh sách ngành mới
       if (selectedMajor != null &&
-          filteredMajors.any((m) => m.name == selectedMajor)) {
+          filteredMajors.any((m) => m == selectedMajor)) {
         selectedMajor = selectedMajor;
       } else {
+        // Chỉ gán giá trị đầu tiên nếu danh sách không trống
         selectedMajor =
-            filteredMajors.first.name; // Reset cái đầu tiên nếu không khớp
+            filteredMajors.isNotEmpty ? filteredMajors.first : Major.fromNull();
       }
     });
   }
@@ -111,20 +114,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      editedUser = editedUser.copyWith(
-        university: availableUniversities
-            .firstWhere((u) => u.name == selectedUniversity,
-                orElse: () => University.fromNull())
-            .id,
-        faculty: filteredFaculties
-            .firstWhere((f) => f.name == selectedFaculty,
-                orElse: () => Faculty.fromNull())
-            .id,
-        major: filteredMajors
-            .firstWhere((m) => m.name == selectedMajor,
-                orElse: () => Major.fromNull())
-            .id,
-      );
+      
       // Gửi thông tin cập nhật đến UserNotifier
       setState(() => _isLoading = true);
       final isSuccess = await ref
@@ -179,14 +169,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
+                    DropdownButtonFormField<University>(
                       value: selectedUniversity,
                       isExpanded: true,
                       decoration:
                           const InputDecoration(labelText: 'University'),
                       items: availableUniversities
                           .map((university) => DropdownMenuItem(
-                                value: university.name,
+                                value: university,
                                 child: Text(
                                   university.name ?? '',
                                   overflow: TextOverflow.ellipsis,
@@ -202,12 +192,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
+                    DropdownButtonFormField<Faculty>(
                       value: selectedFaculty,
                       decoration: const InputDecoration(labelText: 'Faculty'),
                       items: filteredFaculties
                           .map((faculty) => DropdownMenuItem(
-                                value: faculty.name,
+                                value: faculty,
                                 child: Text(
                                   faculty.name ?? '',
                                   overflow: TextOverflow.ellipsis,
@@ -223,12 +213,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
+                    DropdownButtonFormField<Major>(
                       value: selectedMajor,
                       decoration: const InputDecoration(labelText: 'Major'),
                       items: filteredMajors
                           .map((major) => DropdownMenuItem(
-                                value: major.name,
+                                value: major,
                                 child: Text(
                                   major.name ?? '',
                                   overflow: TextOverflow.ellipsis,

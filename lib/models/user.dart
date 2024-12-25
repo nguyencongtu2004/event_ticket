@@ -1,4 +1,7 @@
 import 'package:event_ticket/enum.dart';
+import 'package:event_ticket/models/event.dart';
+import 'package:event_ticket/models/ticket.dart';
+import 'package:event_ticket/models/university.dart';
 
 class User {
   final String id;
@@ -9,11 +12,13 @@ class User {
   final DateTime? birthday;
   final Genders? gender;
   final String? phone;
-  final String? university;
-  final String? faculty;
-  final String? major;
+  final University? university;
+  final Faculty? faculty;
+  final Major? major;
   final String? studentId;
   final String? token;
+  final List<Event>? eventsCreated;
+  final List<Ticket>? ticketsBought;
 
   User({
     required this.id,
@@ -29,6 +34,8 @@ class User {
     this.major,
     this.studentId,
     this.token,
+    this.eventsCreated,
+    this.ticketsBought,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -46,11 +53,24 @@ class User {
           ? Genders.values.firstWhere((e) => e.name == json['gender'])
           : null,
       phone: json['phone'],
-      university: json['university'],
-      faculty: json['faculty'],
-      major: json['major'],
+      university: json['university'] != null
+          ? University.fromJson(json['university'])
+          : null,
+      faculty:
+          json['faculty'] != null ? Faculty.fromJson(json['faculty']) : null,
+      major: json['major'] != null ? Major.fromJson(json['major']) : null,
       studentId: json['studentId'],
       token: json['token'],
+      eventsCreated: json['eventsCreated'] != null
+          ? (json['eventsCreated'] as List)
+              .map((e) => Event.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : null,
+      ticketsBought: json['ticketsBought'] != null
+          ? (json['ticketsBought'] as List)
+              .map((e) => Ticket.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : null,
     );
   }
 
@@ -64,11 +84,13 @@ class User {
       'birthday': birthday?.toIso8601String(),
       'gender': gender?.name,
       'phone': phone,
-      'university': university,
-      'faculty': faculty,
-      'major': major,
+      'university': university?.id,
+      'faculty': faculty?.id,
+      'major': major?.id,
       'studentId': studentId,
       'token': token,
+      'eventsCreated': eventsCreated?.map((e) => e.toJson()).toList(),
+      'ticketsBought': ticketsBought?.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -82,11 +104,13 @@ class User {
     DateTime? birthday,
     Genders? gender,
     String? phone,
-    String? university,
-    String? faculty,
-    String? major,
+    University? university,
+    Faculty? faculty,
+    Major? major,
     String? studentId,
     String? token,
+    List<Event>? eventsCreated,
+    List<Ticket>? ticketsBought,
   }) {
     return User(
       id: id ?? this.id,
@@ -102,6 +126,8 @@ class User {
       major: major ?? this.major,
       studentId: studentId ?? this.studentId,
       token: token ?? this.token,
+      eventsCreated: eventsCreated ?? this.eventsCreated,
+      ticketsBought: ticketsBought ?? this.ticketsBought,
     );
   }
 

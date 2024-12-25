@@ -1,7 +1,4 @@
-import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/event.dart';
-import 'package:event_ticket/models/user.dart';
-import 'package:event_ticket/requests/event_request.dart';
 import 'package:event_ticket/wrapper/avatar.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
