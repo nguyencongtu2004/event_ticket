@@ -1,4 +1,3 @@
-import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/user.dart';
 import 'package:event_ticket/pages/admin/management/register_form_bottom_sheet.dart';
@@ -8,7 +7,6 @@ import 'package:event_ticket/requests/user_request.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 class AccountManagementScreen extends ConsumerStatefulWidget {
   const AccountManagementScreen({super.key});
