@@ -23,7 +23,6 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // State variables
   bool isOrganizer = false;
   final TextEditingController nameController = TextEditingController();
   late final TextEditingController emailController;
@@ -32,6 +31,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController();
   final _authRequest = AuthRequest();
   var _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void initState() {
@@ -40,7 +41,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     passwordController = TextEditingController(text: widget.password);
   }
 
-  // Placeholder function
   void handleRegister() async {
     final name = nameController.text;
     final email = emailController.text;
@@ -61,7 +61,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       setState(() => _isLoading = false);
       if (response.statusCode == 201) {
-        // Chuyển hướng đến trang chính
         if (mounted) {
           context.go(Routes.login, extra: {
             'email': emailController.text,
@@ -69,13 +68,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           });
         }
       } else {
-        // Hiển thị thông báo lỗi
         if (mounted) {
           context.showAnimatedToast(response.data['message'], isError: true);
         }
       }
     } catch (e) {
-      // Hiển thị thông báo lỗi
       if (mounted) {
         context.showAnimatedToast('Register failed: $e', isError: true);
       }
@@ -86,81 +83,158 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return TicketScaffold(
-      title: 'Register',
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextField(
-            controller: nameController,
-            decoration: const InputDecoration(
-              labelText: 'Name',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.name,
-          ),
-          const SizedBox(height: 20),
-
-          // Email Input
-          TextField(
-            controller: emailController,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 20),
-
-          // Password Input
-          TextField(
-            controller: passwordController,
-            decoration: const InputDecoration(
-              labelText: 'Password',
-              border: OutlineInputBorder(),
-            ),
-            obscureText: true,
-          ),
-          const SizedBox(height: 20),
-          // Confirm Password Input
-          TextField(
-            controller: confirmPasswordController,
-            decoration: const InputDecoration(
-              labelText: 'Confirm Password',
-              border: OutlineInputBorder(),
-            ),
-            obscureText: true,
-          ),
-          const SizedBox(height: 20),
-          // Role Switch
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Switch(
-                  value: isOrganizer,
-                  onChanged: (value) => setState(() => isOrganizer = value)),
-              const SizedBox(width: 8),
-              const Text('Register as Event Organizer'),
+              // Tiêu đề
+              Text(
+                'Create Account',
+                textAlign: TextAlign.center,
+                style: context.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: context.primaryColor,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Sign up to get started',
+                textAlign: TextAlign.center,
+                style: context.textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Tên
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'Full Name',
+                  prefixIcon: const Icon(Icons.person_outline),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                keyboardType: TextInputType.name,
+              ),
+              const SizedBox(height: 16),
+
+              // Email
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: const Icon(Icons.email_outlined),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 16),
+
+              // Mật khẩu
+              TextField(
+                controller: passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                obscureText: _obscurePassword,
+              ),
+              const SizedBox(height: 16),
+
+              // Xác nhận mật khẩu
+              TextField(
+                controller: confirmPasswordController,
+                decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscureConfirmPassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                obscureText: _obscureConfirmPassword,
+              ),
+              const SizedBox(height: 16),
+
+              // Chuyển đổi vai trò
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Register as Event Organizer'),
+                  Switch(
+                    value: isOrganizer,
+                    onChanged: (value) => setState(() => isOrganizer = value),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Nút đăng ký
+              ElevatedButton(
+                onPressed: _isLoading ? null : handleRegister,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: _isLoading
+                    ? CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.primary)
+                        .wh(24, 24)
+                    : const Text('Register'),
+              ),
+              const SizedBox(height: 16),
+
+              // Liên kết đăng nhập
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Already have an account?'),
+                  TextButton(
+                    onPressed: () {
+                      context.go(Routes.login, extra: {
+                        'email': emailController.text,
+                        'password': passwordController.text,
+                      });
+                    },
+                    child: const Text('Login'),
+                  ),
+                ],
+              ),
             ],
           ),
-          // Login Button
-          ElevatedButton.icon(
-            onPressed: _isLoading ? null : handleRegister,
-            icon: _isLoading
-                ? const CircularProgressIndicator().w(20).h(20)
-                : const Icon(Icons.login),
-            label: const Text('Register'),
-          ),
-          TextButton(
-            onPressed: () {
-              context.go(Routes.login, extra: {
-                'email': emailController.text,
-                'password': passwordController.text,
-              });
-            },
-            child: const Text('Already have an account? Login'),
-          ),
-        ],
-      ).p(16).scrollVertical(),
+        ),
+      ),
     );
   }
 }
