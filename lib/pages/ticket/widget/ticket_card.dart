@@ -2,7 +2,6 @@ import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/extensions/extension.dart';
 import 'package:flutter/material.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 class TicketCard extends StatelessWidget {
   const TicketCard({required this.ticket, super.key});
@@ -24,7 +23,7 @@ class TicketCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withValues(alpha: 0.3),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),

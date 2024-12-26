@@ -313,16 +313,75 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
               ),
         ),
         const SizedBox(height: 8),
-        Text('Booking Code: ${ticket!.bookingCode}'),
-        Text('Status: ${ticket!.status!.value}'),
-        if (ticket!.cancelReason != null)
-          Text('Cancel Reason: ${ticket!.cancelReason ?? "N/A"}'),
-        if (ticket!.createdAt != null)
-          Text('Created At: ${ticket!.createdAt!.toFullDate()}'),
-        Text('Buyer: ${ticket!.buyer?.name ?? "N/A"}'),
-        Text('Email: ${ticket!.buyer?.email ?? "N/A"}'),
+        Card(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildInfoRow(context,
+                  icon: Icons.confirmation_number_outlined,
+                  label: 'Booking Code',
+                  value: ticket!.bookingCode ?? 'N/A'),
+              const SizedBox(height: 8),
+              _buildInfoRow(context,
+                  icon: Icons.check_circle_outline,
+                  label: 'Status',
+                  value: ticket!.status!.value),
+              if (ticket!.cancelReason != null) ...[
+                const SizedBox(height: 8),
+                _buildInfoRow(context,
+                    icon: Icons.cancel_outlined,
+                    label: 'Cancel Reason',
+                    value: ticket!.cancelReason ?? 'N/A'),
+              ],
+              const SizedBox(height: 8),
+              _buildInfoRow(context,
+                  icon: Icons.calendar_today_outlined,
+                  label: 'Created At',
+                  value: ticket!.createdAt?.toFullDate() ?? 'N/A'),
+              const SizedBox(height: 8),
+              _buildInfoRow(context,
+                  icon: Icons.person_outline,
+                  label: 'Buyer',
+                  value: ticket!.buyer?.name ?? 'N/A'),
+              const SizedBox(height: 8),
+              _buildInfoRow(context,
+                  icon: Icons.email_outlined,
+                  label: 'Email',
+                  value: ticket!.buyer?.email ?? 'N/A'),
+            ],
+          ).p(16),
+        ),
       ],
-    ).p16();
+    ).p(16);
+  }
+
+  // Helper method to create consistent info rows
+  Widget _buildInfoRow(BuildContext context,
+      {required IconData icon, required String label, required String value}) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
+          size: 20,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: Theme.of(context).textTheme.bodyMedium,
+              children: [
+                TextSpan(
+                  text: '$label: ',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(text: value),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildPaymentInformation(BuildContext context) {
@@ -338,20 +397,87 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                     ),
               ),
               const SizedBox(height: 8),
-              Text(
-                  'Amount: ${ticket!.paymentData!.amount!.toDouble().toCurrency()}'),
+              Card(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildPaymentInfoRow(
+                      context,
+                      icon: Icons.monetization_on_outlined,
+                      label: 'Amount',
+                      value:
+                          ticket!.paymentData!.amount!.toDouble().toCurrency(),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildPaymentInfoRow(
+                      context,
+                      icon: ticket!.paymentData!.resultCode == 0
+                          ? Icons.check_circle_outline
+                          : Icons.error_outline,
+                      label: 'Status',
+                      value: ticket!.paymentData!.resultCode == 0
+                          ? 'Payment Successful'
+                          : (ticket!.paymentData!.message ?? 'Payment Failed'),
+                      valueColor: ticket!.paymentData!.resultCode == 0
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                  ],
+                ).p(16),
+              ),
               if (ticket!.paymentData!.resultCode != 0) ...[
-                Text(
-                    'Payment Status: ${ticket!.paymentData!.message ?? "N/A"}'),
-                const SizedBox(height: 8),
-                ElevatedButton(
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
                   onPressed: () => onBuyerTap(),
-                  child: const Text('Pay Now'),
-                ).w(double.infinity).px(16),
-              ] else
-                const Text('Payment Status: Success'),
+                  icon: const Icon(Icons.payment),
+                  label: const Text('Pay Now'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                ),
+              ],
             ],
-          ).p16();
+          ).p(16);
+  }
+
+  // Helper method to create consistent payment info rows
+  Widget _buildPaymentInfoRow(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+    Color? valueColor,
+  }) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
+          size: 24,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: Theme.of(context).textTheme.bodyMedium,
+              children: [
+                TextSpan(
+                  text: '$label: ',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(
+                  text: value,
+                  style: TextStyle(
+                    color: valueColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildEventInformation(BuildContext context) {

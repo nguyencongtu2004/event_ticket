@@ -55,7 +55,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         print('Could not launch $url: $e');
       }
     } else {
-      // TODO: add new ticket to provider
       ref.invalidate(ticketProvider);
       context.go(Routes.ticket);
     }

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CheckedInTicketProvider extends AsyncNotifier<List<Ticket>> {
   final _ticketRequest = TicketRequest();
-  final List<String> refusedBookingCodes = [];
+  final List<String> _refusedBookingCodes = [];
 
   @override
   Future<List<Ticket>> build() async {
@@ -18,7 +18,7 @@ class CheckedInTicketProvider extends AsyncNotifier<List<Ticket>> {
 
   // Check if a ticket is refused
   bool isTicketRefused(String bookingCode) {
-    return refusedBookingCodes.contains(bookingCode);
+    return _refusedBookingCodes.contains(bookingCode);
   }
 
   // Check-in a ticket
@@ -34,7 +34,7 @@ class CheckedInTicketProvider extends AsyncNotifier<List<Ticket>> {
     } else if (response.statusCode == 400 ||
         response.statusCode == 404 ||
         response.statusCode == 403) {
-      refusedBookingCodes.add(bookingCode);
+      _refusedBookingCodes.add(bookingCode);
       return response.data['message'];
     }
 
