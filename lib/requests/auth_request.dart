@@ -73,4 +73,12 @@ class AuthRequest extends HttpService {
 
     return response;
   }
+
+  Future<Response> forgetPassword(String email) async {
+    final response = await put(
+      url: Api.forgetPassword,
+      body: {'email': email},
+    );
+    return response;
+  }
 }

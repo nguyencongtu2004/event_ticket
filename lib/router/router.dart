@@ -8,6 +8,7 @@ import 'package:event_ticket/pages/admin/management/major_management.dart';
 import 'package:event_ticket/pages/admin/management/university_management.dart';
 import 'package:event_ticket/pages/auth/login_screen.dart';
 import 'package:event_ticket/pages/auth/register_screen.dart';
+import 'package:event_ticket/pages/auth/forgot_password_screen.dart';
 import 'package:event_ticket/pages/event/add_event_screen.dart';
 import 'package:event_ticket/pages/event/edit_event_screen.dart';
 import 'package:event_ticket/pages/event/event_detail_screen.dart';
@@ -168,6 +169,10 @@ final GoRouter router = GoRouter(
         final event = state.extra as Event;
         return ReportEventScreen(event: event);
       },
+    ),
+    GoRoute(
+      path: Routes.forgotPassword,
+      builder: (context, state) => const ForgotPasswordScreen(),
     ),
   ],
 );

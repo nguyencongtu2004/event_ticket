@@ -65,7 +65,7 @@ class ProfileScreen extends ConsumerWidget {
                     _buildDetailSection(context, valueOrNull),
                     ElevatedButton.icon(
                       onPressed: () => onLogout(context, ref),
-                      icon: const Icon(Icons.logout),
+                      icon: const Icon(Icons.logout, color: Colors.white),
                       label: const Text('Logout'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red.shade400,

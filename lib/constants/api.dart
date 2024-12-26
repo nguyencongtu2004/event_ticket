@@ -15,6 +15,7 @@ class Api {
   static const String login = 'auth/login';
   static const String register = 'auth/register';
   static const String fcmToken = 'auth/fcm-token';
+  static const String forgetPassword = 'auth/forget-password';
 
   // User
   static const String getUserInfo = 'users/information';

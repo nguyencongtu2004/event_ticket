@@ -3,13 +3,14 @@ import 'package:event_ticket/service/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'theme.dart';
 
 void main() async {
   // Đặt hướng đứng cho ứng dụng
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  // Khoi tạo Firebase
+  // Khởi tạo Firebase
   await FirebaseService.init();
 
   // Chạy app
@@ -27,7 +28,10 @@ class TicketApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routerConfig: router,
       locale: const Locale('vi', 'VN'),
-      //theme: theme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      // Có thể thay đổi thành ThemeMode.system để theo hệ thống
+      themeMode: ThemeMode.light,
     );
   }
 }
