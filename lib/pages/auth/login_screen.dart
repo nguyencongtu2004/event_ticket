@@ -117,8 +117,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Email Input
               TextField(
-                controller: emailController..text = 'congtu2132004@gmail.com',
-                // controller: emailController,
+                // controller: emailController..text = 'congtu2132004@gmail.com',
+                controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
                   prefixIcon: const Icon(Icons.email_outlined),
@@ -132,8 +132,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Password Input
               TextField(
-                controller: passwordController..text = '12345678',
-                // controller: passwordController,
+                // controller: passwordController..text = '12345678',
+                controller: passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   prefixIcon: const Icon(Icons.lock_outline),
