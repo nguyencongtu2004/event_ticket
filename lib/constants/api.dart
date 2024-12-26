@@ -85,4 +85,9 @@ class Api {
       'notifications/$notificationId/mark-as-read';
   static const String markAllNotificationAsRead =
       'notifications/mark-all-as-read';
+
+  // Report
+  static const String getTotalRevenueChart = 'revenues/chart';
+  static String getRevenueChartByEventId(String eventId) =>
+      'revenues/chart/$eventId';
 }

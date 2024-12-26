@@ -49,4 +49,8 @@ class Routes {
   static const String universityManagement = '/university-management';
   static const String facultyManagement = '/faculty-management';
   static const String majorManagement = '/major-management';
+
+  // Report
+  static const String report = '/report';
+  static const String reportEvent = '/report-event';
 }

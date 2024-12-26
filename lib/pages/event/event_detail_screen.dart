@@ -62,6 +62,8 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
 
   void onEditEvent() => context.push(Routes.editEvent, extra: event);
 
+  void onStatisticsTap() => context.push(Routes.reportEvent, extra: event);
+
   @override
   void initState() {
     super.initState();
@@ -410,22 +412,15 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                   ).expand(),
                   // Nút mua vé luôn ở dưới cùng
                   if (widget.canEdit == false || widget.canEdit == null)
-                    _getBottomButton(event!).p(16)
+                    _getBuyerBottomButton(event!).p(16)
                   // Nếu có quyền chỉnh sửa sự kiện
                   else
-                    ElevatedButton.icon(
-                      onPressed: onEditEvent,
-                      icon: const Icon(Icons.edit),
-                      label: const Text('Edit Event'),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                      ),
-                    ).p(16),
+                    _getCreatorBottomButton().p(16),
                 ]),
     );
   }
 
-  Widget _getBottomButton(Event event) {
+  Widget _getBuyerBottomButton(Event event) {
     final isEventCancelled = event.status == EventStatus.cancelled;
     final isEventInFuture = event.date!.isAfter(DateTime.now());
     final buttonText = isEventCancelled
@@ -450,6 +445,25 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         minimumSize: const Size.fromHeight(50),
       ),
     );
+  }
+
+  Widget _getCreatorBottomButton() {
+    return Row(
+      spacing: 16,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        ElevatedButton.icon(
+          onPressed: onStatisticsTap,
+          icon: const Icon(Icons.bar_chart_rounded),
+          label: const Text('Statistics'),
+        ).expand(),
+        ElevatedButton.icon(
+          onPressed: onEditEvent,
+          icon: const Icon(Icons.edit),
+          label: const Text('Edit Event'),
+        ).expand(),
+      ],
+    ).expand();
   }
 
   // Hàm lấy màu sắc theo trạng thái sự kiện

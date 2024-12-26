@@ -18,6 +18,8 @@ import 'package:event_ticket/pages/event/search_event_screen.dart';
 import 'package:event_ticket/pages/forum/forum_detail_screen.dart';
 import 'package:event_ticket/pages/notification/notification_screen.dart';
 import 'package:event_ticket/pages/profile/edit_profile_screen.dart';
+import 'package:event_ticket/pages/report/report_event_screen.dart';
+import 'package:event_ticket/pages/report/report_screen.dart';
 import 'package:event_ticket/pages/splash/splash_screen.dart';
 import 'package:event_ticket/pages/ticket/ticket_detail_screen.dart';
 import 'package:event_ticket/pages/ticket/transfer_ticket_screen.dart';
@@ -155,6 +157,17 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: Routes.eventManagementFullScreen,
       builder: (context, state) => const EventManagementScreen(),
+    ),
+    GoRoute(
+      path: Routes.report,
+      builder: (context, state) => const ReportScreen(),
+    ),
+    GoRoute(
+      path: Routes.reportEvent,
+      builder: (context, state) {
+        final event = state.extra as Event;
+        return ReportEventScreen(event: event);
+      },
     ),
   ],
 );

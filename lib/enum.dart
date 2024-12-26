@@ -24,6 +24,8 @@ enum NotificationType {
   unknown
 }
 
+enum ChartIntervals { day, week, month, year }
+
 //////////////////////////
 // get value
 
@@ -141,6 +143,21 @@ extension NotificationTypeExtension on NotificationType {
         return 'comment_reply';
       case NotificationType.unknown:
         return 'unknown';
+    }
+  }
+}
+
+extension ChartIntervalsExtension on ChartIntervals {
+  String get value {
+    switch (this) {
+      case ChartIntervals.day:
+        return 'day';
+      case ChartIntervals.week:
+        return 'week';
+      case ChartIntervals.month:
+        return 'month';
+      case ChartIntervals.year:
+        return 'year';
     }
   }
 }
