@@ -7,10 +7,18 @@ import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:velocity_x/velocity_x.dart';
 
-class ForumScreen extends ConsumerWidget {
+class ForumScreen extends ConsumerStatefulWidget {
   const ForumScreen({super.key});
+
+  @override
+  createState() => _ForumScreenState();
+}
+
+class _ForumScreenState extends ConsumerState<ForumScreen> {
+  static const showAddConversasion = false;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   void onConversasionTap(BuildContext context, Conversasion conversasion) {
     context.push(Routes.getForumDetailPath(conversasion.id),
@@ -18,101 +26,187 @@ class ForumScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final asyncValue = ref.watch(forumProvider);
     return TicketScaffold(
-      title: 'Forum',
+      title: 'Forums',
+      appBarActions: [
+        if (showAddConversasion)
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            onPressed: () {
+              // TODO: Implement create new conversation
+            },
+            tooltip: 'Create New Forum',
+          ),
+      ],
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(forumProvider.future),
-        child: switch (asyncValue) {
-          AsyncValue<List<Conversasion>>(:final valueOrNull?) =>
-            _buildConversasionList(context, ref, valueOrNull),
-          AsyncValue(:final error?) => _buildErrorState(error),
-          _ =>  const CircularProgressIndicator().centered(),
-        },
+        child: CustomScrollView(
+          slivers: [
+            SliverPersistentHeader(
+              floating: true,
+              delegate: _SearchBarDelegate(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildSearchBar(),
+                ),
+              ),
+            ),
+            switch (asyncValue) {
+              AsyncValue<List<Conversasion>>(:final valueOrNull) =>
+                valueOrNull != null
+                    ? _buildConversasionList(context, ref, valueOrNull)
+                    : SliverToBoxAdapter(child: _buildEmptyState(context)),
+              // ignore: dead_code, unreachable_switch_case
+              AsyncValue(:final error) => SliverToBoxAdapter(
+                  child: _buildErrorState(error!),
+                ),
+              // ignore: dead_code, unreachable_switch_case
+              _ => const SliverToBoxAdapter(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+            }
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return SearchBar(
+      hintText: 'Search forums...',
+      controller: _searchController,
+      onChanged: (value) {
+        setState(() {
+          _searchQuery = value.trim();
+        });
+      },
+      leading: const Icon(Icons.search),
+      trailing: _searchQuery.isNotEmpty
+          ? [
+              IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _searchController.clear();
+                  setState(() {
+                    _searchQuery = '';
+                  });
+                },
+              )
+            ]
+          : null,
     );
   }
 
   Widget _buildConversasionList(
       BuildContext context, WidgetRef ref, List<Conversasion>? conversations) {
+    // First check if the conversations list is null or empty
     if (conversations == null || conversations.isEmpty) {
-      return _buildEmptyState(context);
+      return SliverToBoxAdapter(
+        child: _buildEmptyState(context),
+      );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: conversations.length,
-      itemBuilder: (context, index) {
-        final item = conversations[index];
-        return Card(
-          elevation: 2,
-          margin: const EdgeInsets.only(bottom: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () => onConversasionTap(context, item),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    final filteredConversations = conversations
+        .where((conv) =>
+            conv.title != null &&
+            conv.title!.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
+
+    if (filteredConversations.isEmpty) {
+      return SliverToBoxAdapter(
+        child: _buildEmptyState(context),
+      );
+    }
+
+    // Return the list of filtered conversations
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final item = filteredConversations[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: _buildConversationCard(context, item),
+            );
+          },
+          childCount: filteredConversations.length,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConversationCard(BuildContext context, Conversasion item) {
+    return Card(
+      elevation: 3,
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15),
+        onTap: () => onConversasionTap(context, item),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          item.title ?? 'No title',
-                          style: const TextStyle(
-                            fontSize: 16,
+                  Expanded(
+                    child: Text(
+                      item.title ?? 'Untitled Conversation',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
+                            color: Colors.black87,
                           ),
-                        ),
-                      ),
-                      _buildTypeChip(context, item.type),
-                    ],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 16,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        item.createdAt?.toDDMMYYYY() ?? '',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      if (item.members != null && item.members!.isNotEmpty) ...[
-                        Icon(
-                          Icons.people,
-                          size: 16,
-                          color: Colors.grey[600],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${item.members!.length} members',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+                  _buildTypeChip(context, item.type),
                 ],
               ),
-            ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    Icons.access_time_rounded,
+                    size: 16,
+                    color: Colors.grey[600],
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    item.createdAt?.toDDMMYYYY() ?? 'Unknown Date',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                  ),
+                  const SizedBox(width: 16),
+                  if (item.type == ConversasionType.private) ...[
+                    Icon(
+                      Icons.people_rounded,
+                      size: 16,
+                      color: Colors.grey[600],
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${item.members?.length ?? 0} members',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -120,24 +214,27 @@ class ForumScreen extends ConsumerWidget {
     if (type == null) return const SizedBox.shrink();
 
     Color chipColor;
+    String chipText;
     switch (type) {
       case ConversasionType.private:
-        chipColor = Colors.yellow;
+        chipColor = Colors.deepPurple;
+        chipText = 'Private';
         break;
       case ConversasionType.public:
         chipColor = Colors.green;
+        chipText = 'Public';
         break;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: chipColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: chipColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        type.toString().split('.').last,
-        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+        chipText,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: chipColor,
               fontWeight: FontWeight.bold,
             ),
@@ -147,34 +244,53 @@ class ForumScreen extends ConsumerWidget {
 
   Widget _buildEmptyState(BuildContext context) {
     return ListView(
+      shrinkWrap: true,
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height - 100,
+          height: MediaQuery.of(context).size.height - 300,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.forum_outlined,
-                size: 64,
+                Icons.forum_rounded,
+                size: 80,
                 color: Colors.grey[400],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               Text(
-                'No conversations yet',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
+                'No Conversations Found',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
-                'Be the first to start a conversation!',
-                style: TextStyle(
-                  color: Colors.grey[500],
-                ),
+                _searchQuery.isNotEmpty
+                    ? 'No forums match your search'
+                    : 'Start a conversation and connect with others!',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey[600],
+                    ),
               ),
+              const SizedBox(height: 20),
+              if (showAddConversasion)
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: Implement create new conversation
+                  },
+                  icon: const Icon(Icons.add, color: Colors.white),
+                  label: const Text('Create Forum'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -190,30 +306,65 @@ class ForumScreen extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.error_outline,
-              size: 48,
+              Icons.error_rounded,
+              size: 64,
               color: Colors.red[300],
             ),
             const SizedBox(height: 16),
             Text(
-              'Oops! Something went wrong',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey[800],
-                fontWeight: FontWeight.w500,
-              ),
+              'Oops! Something Went Wrong',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Colors.grey[800],
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
               error.toString(),
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.grey[600],
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => ref.refresh(forumProvider.future),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
               ),
+              child: const Text('Try Again'),
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+// Delegate để tạo header tìm kiếm nổi
+class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _SearchBarDelegate({required this.child});
+
+  @override
+  double get minExtent => 80;
+
+  @override
+  double get maxExtent => 80;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
   }
 }
