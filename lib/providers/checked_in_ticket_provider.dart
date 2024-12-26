@@ -40,6 +40,23 @@ class CheckedInTicketProvider extends AsyncNotifier<List<Ticket>> {
 
     return null;
   }
+
+  Future<String?> checkInByStudentId(String studentId) async {
+    print(studentId);
+    final response = await _ticketRequest.checkInTicketByStudentId(studentId);
+
+    if (response.statusCode == 200) {
+      final ticket = Ticket.fromJson(response.data as Map<String, dynamic>);
+      state = AsyncValue.data([...state.value!, ticket]);
+      return 'Check-in successful for ${ticket.buyer?.name}';
+    } else if (response.statusCode == 400 ||
+        response.statusCode == 404 ||
+        response.statusCode == 403) {
+      return response.data['message'];
+    }
+
+    return null;
+  }
 }
 
 final checkedInTicketProvider =

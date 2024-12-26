@@ -44,6 +44,15 @@ class TicketRequest extends HttpService {
     return response;
   }
 
+  Future<Response> checkInTicketByStudentId(String studentId) async {
+    final response = await post(
+      url: Api.checkInByStudentId,
+      body: {'studentId': studentId},
+    );
+
+    return response;
+  }
+
   Future<Response> transferTicket(String ticketId, String newOwnerId) async {
     final response = await post(
       url: Api.transferTicket(ticketId),

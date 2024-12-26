@@ -61,6 +61,7 @@ class Api {
   static String getTicketDetail(String ticketId) => 'ticket/$ticketId';
   static String cancelTicket(String ticketId) => 'ticket/$ticketId/cancel';
   static const String checkIn = 'ticket/check-in';
+  static const String checkInByStudentId = 'ticket/check-in-by-student-id';
   static String transferTicket(String ticketId) => 'ticket/$ticketId/transfer';
   static String confirmTransferTicket(String ticketId) =>
       'ticket/$ticketId/confirm';
