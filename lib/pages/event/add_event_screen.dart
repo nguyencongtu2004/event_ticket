@@ -46,6 +46,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
   final FocusNode _dateFocus = FocusNode();
   final FocusNode _priceFocus = FocusNode();
   final FocusNode _maxAttendeesFocus = FocusNode();
+  final FocusNode _timeFocus = FocusNode();
 
   List<File> _selectedImages = [];
   DateTime? _selectedDate = DateTime.now().add(const Duration(days: 7));
@@ -70,6 +71,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
     _dateFocus.dispose();
     _priceFocus.dispose();
     _maxAttendeesFocus.dispose();
+    _timeFocus.dispose();
     super.dispose();
   }
 
@@ -116,6 +118,25 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
     }
   }
 
+  void _pickTime(BuildContext context) async {
+    final selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (selectedTime != null) {
+      setState(() {
+        // Convert selectedTime to DateTime
+        _selectedDate = DateTime(
+          _selectedDate!.year,
+          _selectedDate!.month,
+          _selectedDate!.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
+      });
+    }
+  }
+
   void _onSearchChanged() {
     // Debounce logic
     if (_debounce?.isActive ?? false) _debounce?.cancel();
@@ -158,7 +179,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
         'location': _locationController.text,
         'price': _priceController.text,
         'maxAttendees': _maxAttendeesController.text,
-        'date': DateFormat('yyyy-MM-dd').format(_selectedDate!),
+        'date': _selectedDate!.toUtc().toIso8601String(),
         'categoryId': _selectedCategory!.id,
         'collaborators':
             json.encode(selectedUsers.map((user) => user.id).toList()),
@@ -408,6 +429,21 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
                   ? _selectedDate!.toDDMMYYYY()
                   : 'No date selected'),
               leading: const Icon(Icons.calendar_today),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Time
+          GestureDetector(
+            onTap: () => _pickTime(context),
+            child: ListTile(
+              focusNode: _timeFocus,
+              contentPadding: const EdgeInsets.only(left: 12),
+              title: const Text('Select Time'),
+              subtitle: Text(_selectedDate != null
+                  ? _selectedDate!.toHHMM()
+                  : 'No time selected'),
+              leading: const Icon(Icons.access_time),
             ),
           ),
           const SizedBox(height: 16),

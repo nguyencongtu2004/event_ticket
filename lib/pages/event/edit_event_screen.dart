@@ -49,6 +49,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
   final FocusNode _dateFocus = FocusNode();
   final FocusNode _priceFocus = FocusNode();
   final FocusNode _maxAttendeesFocus = FocusNode();
+  final FocusNode _timeFocus = FocusNode();
 
   List<File> _selectedImages = [];
   List<String> _existImages = [];
@@ -94,6 +95,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
     _dateFocus.dispose();
     _priceFocus.dispose();
     _maxAttendeesFocus.dispose();
+    _timeFocus.dispose();
     super.dispose();
   }
 
@@ -136,6 +138,25 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
     if (selectedDate != null) {
       setState(() {
         _selectedDate = selectedDate;
+      });
+    }
+  }
+
+  void _pickTime(BuildContext context) async {
+    final selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (selectedTime != null) {
+      setState(() {
+        // Convert selectedTime to DateTime
+        _selectedDate = DateTime(
+          _selectedDate!.year,
+          _selectedDate!.month,
+          _selectedDate!.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
       });
     }
   }
@@ -184,7 +205,8 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
         'maxAttendees': _maxAttendeesController.text.isEmpty
             ? null
             : _maxAttendeesController.text,
-        'date': DateFormat('yyyy-MM-dd').format(_selectedDate!),
+        // 'date': DateFormat('yyyy-MM-dd').format(_selectedDate!),
+        'date': _selectedDate!.toUtc().toIso8601String(),
         'categoryId': json.encode([_selectedCategory!.id]),
         'collaborators':
             json.encode(selectedUsers.map((user) => user.id).toList()),
@@ -462,6 +484,21 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
                   ? _selectedDate!.toDDMMYYYY()
                   : 'No date selected'),
               leading: const Icon(Icons.calendar_today),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Time
+          GestureDetector(
+            onTap: () => _pickTime(context),
+            child: ListTile(
+              focusNode: _timeFocus,
+              contentPadding: const EdgeInsets.only(left: 12),
+              title: const Text('Select Time'),
+              subtitle: Text(_selectedDate != null
+                  ? _selectedDate!.toHHMM()
+                  : 'No time selected'),
+              leading: const Icon(Icons.access_time),
             ),
           ),
           const SizedBox(height: 16),
