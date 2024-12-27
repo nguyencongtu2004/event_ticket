@@ -109,33 +109,21 @@ class UniversityRequest extends HttpService {
 
   // admin
   Future<Response> updateMajor(String majorId, String name) async {
-    return Response(
-      requestOptions: RequestOptions(path: 'temp'),
-      data: {
+    final response = await put(
+      url: Api.updateMajor(majorId),
+      body: {
         'name': name,
       },
-      statusCode: 200,
     );
-    // final response = await put(
-    //   url: Api.updateMajor(majorId),
-    //   body: {
-    //     'name': name,
-    //   },
-    // );
-    // return response;
+    return response;
   }
 
   // admin
   Future<Response> deleteMajor(String majorId) async {
-    return Response(
-      requestOptions: RequestOptions(path: 'temp'),
-      data: {},
-      statusCode: 200,
+    final response = await delete(
+      url: Api.deleteMajor(majorId),
     );
-    // final response = await delete(
-    //   url: Api.deleteMajor(majorId),
-    // );
 
-    // return response;
+    return response;
   }
 }

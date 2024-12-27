@@ -56,7 +56,6 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
         if (message != null) {
           context.showAnimatedToast(message);
         }
-
       },
       onError: (error) {
         context.showAnimatedToast(error);
@@ -209,8 +208,9 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Event: ${ticket.event?.name ?? 'N/A'}'),
-                                Text(
-                                    'Check-in Time: ${ticket.checkInTime!.toFullDate()}'),
+                                if (ticket.checkInTime != null)
+                                  Text(
+                                      'Check-in Time: ${ticket.checkInTime!.toFullDate()}'),
                               ],
                             ),
                           );

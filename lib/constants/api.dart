@@ -42,6 +42,8 @@ class Api {
   static String getMajorsByFacultyId(String facultyId) =>
       'faculties/$facultyId/majors';
   static const String createMajor = 'faculties/majors';
+  static String updateMajor(String id) => 'faculties/major/$id';
+  static String deleteMajor(String id) => 'faculties/major/$id';
 
   // Category
   static const String getCategories = 'categories';

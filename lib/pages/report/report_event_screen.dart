@@ -169,7 +169,7 @@ class _ReportEventScreenState extends State<ReportEventScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -255,7 +255,7 @@ class _ReportEventScreenState extends State<ReportEventScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -289,7 +289,7 @@ class _ReportEventScreenState extends State<ReportEventScreen> {
               _buildStatItem(
                 icon: Icons.category,
                 label: 'Category',
-                value: widget.event.category.isNotEmpty
+                value: widget.event.category.isNotEmpty == true
                     ? widget.event.category.map((c) => c.name).join(', ')
                     : 'No Category',
               ),
@@ -348,7 +348,9 @@ class _ReportEventScreenState extends State<ReportEventScreen> {
     double calculateSafeInterval(List<int> data) {
       if (data.isEmpty) return 1.0;
 
-      final maxValue = data.reduce((a, b) => a > b ? a : b);
+      final maxValue =
+          data.isNotEmpty ? data.reduce((a, b) => a > b ? a : b) : 0;
+
       if (maxValue == 0) return 1.0;
 
       final interval = maxValue / 5;
@@ -362,80 +364,86 @@ class _ReportEventScreenState extends State<ReportEventScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           title.text.titleLarge(context).make(),
-          SizedBox(
-            width: max(MediaQuery.of(context).size.width, data.length * 50.0),
-            height: 300,
-            child: LineChart(
-              LineChartData(
-                gridData: const FlGridData(show: true),
-                titlesData: FlTitlesData(
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        final index = value.toInt();
-                        if (index < 0 ||
-                            index >=
-                                (_chartData?.chartData?.labels?.length ?? 0)) {
-                          return const Text('');
-                        }
-                        return SizedBox(
-                          height: 90, // Tăng chiều cao
-                          child: RotatedBox(
-                            quarterTurns: 3,
-                            child: Center(
-                              child: Text(
-                                _chartData!.chartData!.labels![index],
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  overflow: TextOverflow.ellipsis,
+          if (data.isEmpty)
+            const Center(child: Text('No data available'))
+          else
+            SizedBox(
+              width: max(MediaQuery.of(context).size.width, data.length * 50.0),
+              height: 300,
+              child: LineChart(
+                LineChartData(
+                  gridData: const FlGridData(show: true),
+                  titlesData: FlTitlesData(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          final index = value.toInt();
+                          final labels = _chartData?.chartData?.labels ?? [];
+                          if (index < 0 || index >= labels.length) {
+                            return const Text('');
+                          }
+                          return SizedBox(
+                            height: 90,
+                            child: RotatedBox(
+                              quarterTurns: 3,
+                              child: Center(
+                                child: Text(
+                                  labels[index],
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
                                 ),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
                               ),
                             ),
-                          ),
-                        );
-                      },
-                      interval: 1,
-                      reservedSize: 70, // Tăng kích thước dự trữ
+                          );
+                        },
+                        interval: 1,
+                        reservedSize: 70,
+                      ),
                     ),
-                  ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      interval: calculateSafeInterval(data),
-                      reservedSize: 50, // Tăng khoảng trống để hiển thị số
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: calculateSafeInterval(data),
+                        reservedSize: 50,
+                      ),
                     ),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
                   ),
-                  topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false)),
+                  borderData: FlBorderData(show: true),
+                  lineBarsData: [
+                    LineChartBarData(
+                      isCurved: true,
+                      color: color,
+                      barWidth: 3,
+                      isStrokeCapRound: true,
+                      dotData: const FlDotData(show: true),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        color: color.withValues(alpha: 0.2),
+                      ),
+                      spots: data.isNotEmpty
+                          ? data.asMap().entries.map((entry) {
+                              return FlSpot(
+                                  entry.key.toDouble(), entry.value.toDouble());
+                            }).toList()
+                          : [],
+                    ),
+                  ],
+                  minY: 0,
+                  maxY: data.isNotEmpty
+                      ? (data.reduce((a, b) => a > b ? a : b) * 1.2).toDouble()
+                      : 1.0,
                 ),
-                borderData: FlBorderData(show: true),
-                lineBarsData: [
-                  LineChartBarData(
-                    isCurved: true,
-                    color: color,
-                    barWidth: 3,
-                    isStrokeCapRound: true,
-                    dotData: const FlDotData(show: true),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      color: color.withValues(alpha: 0.2),
-                    ),
-                    spots: data.asMap().entries.map((entry) {
-                      return FlSpot(
-                          entry.key.toDouble(), entry.value.toDouble());
-                    }).toList(),
-                  ),
-                ],
-                minY: 0,
-                maxY: (data.reduce((a, b) => a > b ? a : b) * 1.2).toDouble(),
               ),
-            ),
-          ).scrollHorizontal(),
+            ).scrollHorizontal(),
         ],
       ).p(16),
     );
