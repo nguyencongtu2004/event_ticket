@@ -78,13 +78,19 @@ class FirebaseService {
   }
 
   static Future<void> deleteFCMTokenOnServer() async {
+    const String webPushKey =
+        'BLn_QRm18dAPaitPzlPdu3zXOt1f9LjPy426Yj6KZkONj0BE6eWNWgYvM_H_uUrf5Thd3718XXThQ0tJ6Gg1w88';
     // Lấy token
-    String? token = await fcm.getToken();
+    try {
+      String? token = await fcm.getToken(vapidKey: webPushKey);
 
-    // Xóa token trên server nếu có
-    if (token != null) {
-      print("Xóa FCM Token: $token");
-      _authRequest.deleteFCMTokenOnServer(token);
+      // Xóa token trên server nếu có
+      if (token != null) {
+        print("Xóa FCM Token: $token");
+        _authRequest.deleteFCMTokenOnServer(token);
+      }
+    } catch (e) {
+      print("Lỗi khi lấy token: $e");
     }
   }
 
