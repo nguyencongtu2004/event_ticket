@@ -7,6 +7,7 @@ import 'package:event_ticket/requests/user_request.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class AccountManagementScreen extends ConsumerStatefulWidget {
   const AccountManagementScreen({super.key});
@@ -21,6 +22,7 @@ class _AccountManagementScreenState
   final _userRequest = UserRequest();
   late Future<List<User>> _usersFuture;
   bool _isFirstLoad = true;
+  Widget? _sidePanelContent;
 
   @override
   void initState() {
@@ -84,94 +86,144 @@ class _AccountManagementScreenState
   }
 
   void onSeeDetails(User user) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => UserDetailBottomSheet(user: user),
-    );
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 800) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => UserDetailBottomSheet(user: user),
+      ).then((_) => setState(() => _sidePanelContent = null));
+      return;
+    } else {
+      setState(() => _sidePanelContent = UserDetailBottomSheet(
+          user: user, onClose: () => setState(() => _sidePanelContent = null)));
+    }
   }
 
   void onEditUser(User user) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => UserFormBottomSheet(
-        user: user,
-        onSuccess: _refreshUsers,
-      ),
-    );
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 800) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => UserFormBottomSheet(
+          user: user,
+          onSuccess: _refreshUsers,
+        ),
+      ).then((_) => setState(() => _sidePanelContent = null));
+      return;
+    } else {
+      setState(() {
+        _sidePanelContent = UserFormBottomSheet(
+          user: user,
+          onSuccess: () {
+            _refreshUsers();
+            setState(() => _sidePanelContent = null);
+          },
+          onClose: () => setState(() => _sidePanelContent = null),
+        );
+      });
+    }
   }
 
   void onRegisterUser() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => RegisterFormBottomSheet(
-        onSuccess: _refreshUsers,
-      ),
-    );
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 800) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => RegisterFormBottomSheet(
+          onSuccess: _refreshUsers,
+        ),
+      ).then((_) => setState(() => _sidePanelContent = null));
+      return;
+    } else {
+      setState(() => _sidePanelContent = RegisterFormBottomSheet(
+            onSuccess: () {
+              _refreshUsers();
+              setState(() => _sidePanelContent = null);
+            },
+            onClose: () => setState(() => _sidePanelContent = null),
+          ));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return TicketScaffold(
-      title: 'Account Management',
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'addUser',
-        onPressed: onRegisterUser,
-        child: const Icon(Icons.add),
-      ),
-      body: FutureBuilder<List<User>>(
-        future: _usersFuture,
-        builder: (context, snapshot) {
-          if (_isFirstLoad &&
-              snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return LayoutBuilder(builder: (context, constraints) {
+      final isLargeScreen = constraints.maxWidth > 800;
+      return Row(
+        children: [
+          TicketScaffold(
+              title: 'Account Management',
+              floatingActionButton: FloatingActionButton(
+                heroTag: 'addUser',
+                onPressed: onRegisterUser,
+                child: const Icon(Icons.add),
+              ),
+              body: FutureBuilder<List<User>>(
+                future: _usersFuture,
+                builder: (context, snapshot) {
+                  if (_isFirstLoad &&
+                      snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
 
-          final users = snapshot.data ?? [];
+                  final users = snapshot.data ?? [];
 
-          return RefreshIndicator(
-            onRefresh: _refreshUsers,
-            child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 80),
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                final user = users[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage:
-                        user.avatar != null ? NetworkImage(user.avatar!) : null,
-                    child: user.avatar == null
-                        ? Text(user.name?[0].toUpperCase() ?? '')
-                        : null,
-                  ),
-                  title: Text(user.name ?? ''),
-                  subtitle: Text(user.email ?? ''),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () => onEditUser(user),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => onDeleteUser(user),
-                      ),
-                    ],
-                  ),
-                  onTap: () => onSeeDetails(user),
-                );
-              },
+                  return RefreshIndicator(
+                    onRefresh: _refreshUsers,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 80),
+                      itemCount: users.length,
+                      itemBuilder: (context, index) {
+                        final user = users[index];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: user.avatar != null
+                                ? NetworkImage(user.avatar!)
+                                : null,
+                            child: user.avatar == null
+                                ? Text(user.name?[0].toUpperCase() ?? '')
+                                : null,
+                          ),
+                          title: Text(user.name ?? ''),
+                          subtitle: Text(user.email ?? ''),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.blue),
+                                onPressed: () => onEditUser(user),
+                              ),
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => onDeleteUser(user),
+                              ),
+                            ],
+                          ),
+                          onTap: () => onSeeDetails(user),
+                        );
+                      },
+                    ),
+                  );
+                },
+              )).expand(),
+          if (isLargeScreen && _sidePanelContent != null)
+            Material(
+              child: SizedBox(
+                width: 400,
+                child: _sidePanelContent,
+              ),
             ),
-          );
-        },
-      ),
-    );
+        ],
+      );
+    });
   }
 }

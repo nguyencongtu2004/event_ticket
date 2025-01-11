@@ -6,10 +6,12 @@ import 'package:velocity_x/velocity_x.dart';
 
 class UserDetailBottomSheet extends StatelessWidget {
   final User user;
+  final Function? onClose;
 
   const UserDetailBottomSheet({
     super.key,
     required this.user,
+    this.onClose,
   });
 
   @override
@@ -42,7 +44,13 @@ class UserDetailBottomSheet extends StatelessWidget {
             user.ticketsBought?.length.toString() ?? '0'),
         const SizedBox(height: 16),
         ElevatedButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (onClose != null) {
+              onClose!();
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
           child: const Text('Close'),
         ),
       ],

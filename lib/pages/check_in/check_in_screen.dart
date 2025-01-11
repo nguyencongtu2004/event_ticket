@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:event_ticket/extensions/context_extesion.dart';
+import 'package:event_ticket/pages/check_in/widget/check_list.dart';
 import 'package:event_ticket/providers/checked_in_ticket_provider.dart';
-import 'package:event_ticket/extensions/extension.dart';
 import 'package:event_ticket/service/nfc_service.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -171,56 +171,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
-      builder: (context) {
-        return Consumer(
-          builder: (context, ref, _) {
-            final checkedInTicket =
-                ref.watch(checkedInTicketProvider).value ?? [];
-            return checkedInTicket.isEmpty
-                ? const Text('No checked-in tickets').py(16).centered()
-                : Column(
-                    children: [
-                      Text(
-                        'Checked-in tickets',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const Divider().py(4),
-                      ListView.builder(
-                        itemCount: checkedInTicket.length,
-                        itemBuilder: (context, index) {
-                          final ticket = checkedInTicket[index];
-                          return ListTile(
-                            leading: CircleAvatar(
-                              radius: 25,
-                              backgroundImage:
-                                  NetworkImage(ticket.buyer?.avatar ?? ''),
-                              onBackgroundImageError: (_, __) =>
-                                  const Icon(Icons.person),
-                              child: ticket.buyer?.avatar == null
-                                  ? const Icon(Icons.person)
-                                  : null,
-                            ),
-                            title: Text(
-                              'Attendee: ${ticket.buyer?.name ?? 'N/A'}',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Event: ${ticket.event?.name ?? 'N/A'}'),
-                                if (ticket.checkInTime != null)
-                                  Text(
-                                      'Check-in Time: ${ticket.checkInTime!.toFullDate()}'),
-                              ],
-                            ),
-                          );
-                        },
-                      ).expand(),
-                    ],
-                  );
-          },
-        );
-      },
+      builder: (context) => const CheckList(),
     );
   }
 
@@ -276,62 +227,88 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_isNfcMode ? 'NFC Check-In' : 'QR Check-In'),
-        actions: [
-          _buildNfcToggleButton(),
-          IconButton(
-            icon: const Icon(Icons.list),
-            onPressed: () => _showCheckedInList(context),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isLargeScreen = constraints.maxWidth > 900;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(_isNfcMode ? 'NFC Check-In' : 'QR Check-In'),
+            actions: [
+              _buildNfcToggleButton(),
+              if (!isLargeScreen)
+                IconButton(
+                  icon: const Icon(Icons.list),
+                  onPressed: () => _showCheckedInList(context),
+                ),
+            ],
           ),
-        ],
-      ),
-      body: _isNfcMode
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.nfc,
-                    size: 200,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Hold your NFC card near the device',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ],
+          body: Row(
+            children: [
+              Expanded(
+                child: _isNfcMode
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.nfc,
+                              size: 200,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              'Hold your NFC card near the device',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ],
+                        ),
+                      )
+                    : Stack(
+                        children: [
+                          Positioned.fill(
+                            child: _buildPausedState(context),
+                          ),
+                          MobileScanner(
+                            controller: _controller,
+                            onDetect: _handleBarcode,
+                          ),
+                          if (_isScanning)
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              height: 80,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: _toggleScanning,
+                                    child:
+                                        Text(_isScanning ? 'Pause' : 'Resume'),
+                                  ).w(120).py(12).centered(),
+                                ],
+                              ),
+                            )
+                        ],
+                      ),
               ),
-            )
-          : Stack(
-              children: [
-                Positioned.fill(
-                  child: _buildPausedState(context),
-                ),
-                MobileScanner(
-                  controller: _controller,
-                  onDetect: _handleBarcode,
-                ),
-                if (_isScanning)
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 80,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButton(
-                          onPressed: _toggleScanning,
-                          child: Text(_isScanning ? 'Pause' : 'Resume'),
-                        ).w(120).py(12).centered(),
-                      ],
-                    ),
-                  )
-              ],
-            ),
+              if (isLargeScreen)
+                Column(
+                  children: [
+                    Text(
+                      'Checked-in tickets',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ).p(16),
+                    const Divider(),
+                    const CheckList().expand(),
+                  ],
+                ).w(400),
+            ],
+          ),
+        );
+      },
     );
   }
 

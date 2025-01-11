@@ -29,81 +29,137 @@ final shellRoute = ShellRoute(
                   .read(navigationIndexProvider.notifier)
                   .setIndexForRoute(role, state.uri.path);
             });
-            return Scaffold(
-              body: child,
-              bottomNavigationBar: NavigationBar(
-                selectedIndex: currentIndex,
-                onDestinationSelected: (index) {
-                  ref.read(navigationIndexProvider.notifier).setIndex(index);
-                  if (role == Roles.ticketBuyer) {
-                    switch (index) {
-                      case 0:
-                        context.go(Routes.event);
-                        break;
-                      case 1:
-                        context.go(Routes.ticket);
-                        break;
-                      case 2:
-                        context.go(Routes.forum);
-                        break;
-                      case 3:
-                        context.go(Routes.profile);
-                        break;
-                    }
-                  } else if (role == Roles.eventCreator) {
-                    switch (index) {
-                      case 0:
-                        context.go(Routes.eventManagement);
-                        break;
-                      case 1:
-                        context.go(Routes.checkIn);
-                        break;
-                      case 2:
-                        context.go(Routes.profile);
-                        break;
-                    }
-                  } else if (role == Roles.admin) {
-                    switch (index) {
-                      case 0:
-                        context.go(Routes.admin);
-                        break;
-                      case 1:
-                        context.go(Routes.profile);
-                        break;
-                    }
+            return LayoutBuilder(builder: (context, constraints) {
+              final isLargeScreen = constraints.maxWidth > 600;
+
+              void onDestinationSelected(int index) {
+                ref.read(navigationIndexProvider.notifier).setIndex(index);
+                if (role == Roles.ticketBuyer) {
+                  switch (index) {
+                    case 0:
+                      context.go(Routes.event);
+                      break;
+                    case 1:
+                      context.go(Routes.ticket);
+                      break;
+                    case 2:
+                      context.go(Routes.forum);
+                      break;
+                    case 3:
+                      context.go(Routes.profile);
+                      break;
                   }
-                },
-                destinations: role == Roles.ticketBuyer
-                    ? const [
-                        NavigationDestination(
-                            icon: Icon(Icons.event), label: 'Event'),
-                        NavigationDestination(
-                            icon: Icon(Icons.airplane_ticket), label: 'Ticket'),
-                        NavigationDestination(
-                            icon: Icon(Icons.forum), label: 'Forum'),
-                        NavigationDestination(
-                            icon: Icon(Icons.person), label: 'Profile'),
-                      ]
-                    : role == Roles.eventCreator
-                        ? const [
-                            NavigationDestination(
-                                icon: Icon(Icons.manage_accounts),
-                                label: 'Event Management'),
-                            NavigationDestination(
-                                icon: Icon(Icons.check_circle),
-                                label: 'Check-in'),
-                            NavigationDestination(
-                                icon: Icon(Icons.person), label: 'Profile'),
-                          ]
-                        : const [
-                            NavigationDestination(
-                                icon: Icon(Icons.admin_panel_settings),
-                                label: 'Admin'),
-                            NavigationDestination(
-                                icon: Icon(Icons.person), label: 'Profile'),
-                          ],
-              ),
-            );
+                } else if (role == Roles.eventCreator) {
+                  switch (index) {
+                    case 0:
+                      context.go(Routes.eventManagement);
+                      break;
+                    case 1:
+                      context.go(Routes.checkIn);
+                      break;
+                    case 2:
+                      context.go(Routes.profile);
+                      break;
+                  }
+                } else if (role == Roles.admin) {
+                  switch (index) {
+                    case 0:
+                      context.go(Routes.admin);
+                      break;
+                    case 1:
+                      context.go(Routes.profile);
+                      break;
+                  }
+                }
+              }
+
+              final destinations = role == Roles.ticketBuyer
+                  ? const [
+                      NavigationDestination(
+                          icon: Icon(Icons.event), label: 'Event'),
+                      NavigationDestination(
+                          icon: Icon(Icons.airplane_ticket), label: 'Ticket'),
+                      NavigationDestination(
+                          icon: Icon(Icons.forum), label: 'Forum'),
+                      NavigationDestination(
+                          icon: Icon(Icons.person), label: 'Profile'),
+                    ]
+                  : role == Roles.eventCreator
+                      ? const [
+                          NavigationDestination(
+                              icon: Icon(Icons.manage_accounts),
+                              label: 'Event Management'),
+                          NavigationDestination(
+                              icon: Icon(Icons.check_circle),
+                              label: 'Check-in'),
+                          NavigationDestination(
+                              icon: Icon(Icons.person), label: 'Profile'),
+                        ]
+                      : const [
+                          NavigationDestination(
+                              icon: Icon(Icons.admin_panel_settings),
+                              label: 'Admin'),
+                          NavigationDestination(
+                              icon: Icon(Icons.person), label: 'Profile'),
+                        ];
+
+              final navigationRailDestinations = role == Roles.ticketBuyer
+                  ? const [
+                      NavigationRailDestination(
+                          icon: Icon(Icons.event), label: Text('Event')),
+                      NavigationRailDestination(
+                          icon: Icon(Icons.airplane_ticket),
+                          label: Text('Ticket')),
+                      NavigationRailDestination(
+                          icon: Icon(Icons.forum), label: Text('Forum')),
+                      NavigationRailDestination(
+                          icon: Icon(Icons.person), label: Text('Profile')),
+                    ]
+                  : role == Roles.eventCreator
+                      ? const [
+                          NavigationRailDestination(
+                              icon: Icon(Icons.manage_accounts),
+                              label: Text('Event Management')),
+                          NavigationRailDestination(
+                              icon: Icon(Icons.check_circle),
+                              label: Text('Check-in')),
+                          NavigationRailDestination(
+                              icon: Icon(Icons.person), label: Text('Profile')),
+                        ]
+                      : const [
+                          NavigationRailDestination(
+                              icon: Icon(Icons.admin_panel_settings),
+                              label: Text('Admin')),
+                          NavigationRailDestination(
+                              icon: Icon(Icons.person), label: Text('Profile')),
+                        ];
+
+              return Scaffold(
+                body: isLargeScreen
+                    ? Row(
+                        children: [
+                          NavigationRail(
+                            selectedIndex: currentIndex,
+                            onDestinationSelected: onDestinationSelected,
+                            destinations: navigationRailDestinations,
+                            labelType: NavigationRailLabelType.all,
+                            groupAlignment: -0.8,
+                          ),
+                          Expanded(
+                            child: child,
+                          ),
+                        ],
+                      )
+                    : child,
+                bottomNavigationBar: isLargeScreen
+                    ? null
+                    : NavigationBar(
+                        selectedIndex: currentIndex,
+                        onDestinationSelected: onDestinationSelected,
+                        destinations: destinations,
+                      ),
+              );
+            });
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stack) => Center(child: Text('Error: $error')),

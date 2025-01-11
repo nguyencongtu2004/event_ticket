@@ -157,6 +157,6 @@ class EventManagementScreen extends ConsumerWidget {
           ),
         );
       },
-    );
+    ).w(600).centered();
   }
 }

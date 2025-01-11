@@ -60,27 +60,49 @@ class _EventListScreenState extends ConsumerState<EventListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return TicketScaffold(
-      title: widget.title,
-      body: RefreshIndicator(
-        onRefresh: _loadEvents,
-        child: isLoading
-            ? const CircularProgressIndicator().centered()
-            : events.isEmpty
-                ? Text(
-                    'No events found',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ).centered()
-                : ListView.builder(
-                    itemCount: events.length,
-                    itemBuilder: (context, index) {
-                      return EventCard(
-                        event: events[index],
-                        onTap: (event) => onEventTap(event),
-                      );
-                    },
-                  ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isLargeScreen = constraints.maxWidth > 600;
+        return TicketScaffold(
+          title: widget.title,
+          body: RefreshIndicator(
+            onRefresh: _loadEvents,
+            child: isLoading
+                ? const CircularProgressIndicator().centered()
+                : events.isEmpty
+                    ? Text(
+                        'No events found',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ).centered()
+                    : isLargeScreen
+                        ? Wrap(
+                            spacing: 16,
+                            runSpacing: 16,
+                            children: events
+                                .map((event) => ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        minWidth: 300,
+                                        maxWidth: 400,
+                                      ),
+                                      child: EventCard(
+                                        event: event,
+                                        onTap: onEventTap,
+                                      ),
+                                    ))
+                                .toList(),
+                          )
+                        : ListView.builder(
+                            itemCount: events.length,
+                            itemBuilder: (context, index) {
+                              return EventCard(
+                                event: events[index],
+                                onTap: (event) => onEventTap(event),
+                              );
+                            },
+                          ),
+          ),
+        );
+      },
     );
   }
 }

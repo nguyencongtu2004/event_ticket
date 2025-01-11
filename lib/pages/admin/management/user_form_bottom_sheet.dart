@@ -11,11 +11,13 @@ import 'package:velocity_x/velocity_x.dart';
 class UserFormBottomSheet extends StatefulWidget {
   final User? user;
   final Function onSuccess;
+  final Function? onClose;
 
   const UserFormBottomSheet({
     super.key,
     this.user,
     required this.onSuccess,
+    this.onClose,
   });
 
   @override
@@ -143,9 +145,15 @@ class _UserFormBottomSheetState extends State<UserFormBottomSheet> {
 
     if (response.statusCode == 200) {
       if (mounted) {
-        Navigator.pop(context);
         if (response.data['message'] != null) {
           context.showAnimatedToast(response.data['message']);
+        } else {
+          context.showAnimatedToast('Updated successfully');
+        }
+        if (widget.onClose != null) {
+          widget.onClose!();
+        } else {
+          Navigator.pop(context);
         }
         widget.onSuccess();
       }

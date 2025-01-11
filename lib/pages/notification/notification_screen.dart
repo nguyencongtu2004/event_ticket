@@ -51,8 +51,12 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(notificationProvider.future),
         child: switch (asyncValue) {
-          AsyncValue<List<Notification>>(:final valueOrNull?) =>
-            _buildNotificationList(context, valueOrNull),
+          AsyncValue<List<Notification>>(:final valueOrNull?) => Center(
+              child: SizedBox(
+                width: 600,
+                child: _buildNotificationList(context, valueOrNull),
+              ),
+            ),
           AsyncValue(:final error?) => Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),

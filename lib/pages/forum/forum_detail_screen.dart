@@ -254,7 +254,7 @@ class _ForumDetailScreenState extends State<ForumDetailScreen> {
             ],
           ).pOnly(bottom: 16, top: 4),
         ],
-      ).px(16),
+      ).w(600).px(16).centered(),
     );
   }
 

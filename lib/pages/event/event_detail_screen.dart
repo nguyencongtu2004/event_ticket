@@ -123,301 +123,324 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
             ).centered()
           : event == null
               ? const Center(child: CircularProgressIndicator())
-              : Column(children: [
-                  RefreshIndicator(
-                    onRefresh: () => getEventDetail(),
-                    child: ListView(
-                      // shrinkWrap: true, // chiếm ít không gian nhất có thể (tốn tài nguyên)
-                      children: [
-                        // Hình ảnh có thể cuộn ngang
-                        SizedBox(
-                          height: 200,
-                          child: event!.images.isNotEmpty
-                              ? PageView.builder(
-                                  itemCount: event!.images.length,
-                                  itemBuilder: (context, index) {
-                                    return Image.network(
-                                      event!.images[index],
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                    );
-                                  },
-                                )
-                              : Icon(
-                                  Icons.image,
-                                  color: Colors.grey.shade400,
-                                  size: 100,
-                                ),
-                        ),
-
-                        // Thông tin chi tiết sự kiện
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isLargeScreen = constraints.maxWidth > 800;
+                    return Column(children: [
+                      RefreshIndicator(
+                        onRefresh: () => getEventDetail(),
+                        child: ListView(
                           children: [
-                            // Tên sự kiện
-                            Text(
-                              event!.name ?? 'Event Name',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            const SizedBox(height: 8),
-
-                            // Ngày và giờ
-                            Row(
-                              children: [
-                                const Icon(Icons.calendar_today,
-                                    color: Colors.blue),
-                                const SizedBox(width: 8),
-                                Text(
-                                  event!.date!.toFullDate(),
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-
-                            // Địa điểm
-                            Row(
-                              children: [
-                                const Icon(Icons.location_on,
-                                    color: Colors.blue),
-                                const SizedBox(width: 8),
-                                Text(
-                                  event!.location ?? 'Location',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Danh mục
-                            Wrap(
-                              spacing: 8,
-                              children: event!.category.map((category) {
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 4,
-                                    horizontal: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade50,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Text(
-                                    category.name,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelLarge!
-                                        .copyWith(
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Thông tin người tổ chức
-                            Row(
-                              children: [
-                                // Avatar hình tròn
-                                Avatar(event!.createdBy, radius: 20),
-                                const SizedBox(width: 8),
-
-                                // Tên người tổ chức
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Organized by',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelMedium!
-                                          .copyWith(
-                                            color: Colors.grey.shade600,
-                                          ),
-                                    ),
-                                    Text(
-                                      event!.createdBy?.name ?? 'Unknown',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium!
-                                          .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Thông tin vé và người tham gia
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerHighest
-                                    .withValues(alpha: 0.5),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
+                            if (isLargeScreen)
+                              // Layout cho màn hình lớn
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: _buildInfoTile(
-                                          context,
-                                          Icons.confirmation_number,
-                                          'Tickets Sold',
-                                          '${event!.ticketsSold}',
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      if (event?.maxAttendees != null)
-                                        Expanded(
-                                          child: _buildInfoTile(
-                                            context,
-                                            Icons.groups,
-                                            'Max Attendees',
-                                            '${event!.maxAttendees}',
-                                          ),
-                                        ),
-                                    ],
+                                  SizedBox(
+                                      width: MediaQuery.sizeOf(context).width *
+                                          0.1),
+                                  // Phần hình ảnh
+                                  Expanded(
+                                    flex: 2,
+                                    child: _buildEventImages(
+                                        isLargeScreen: isLargeScreen),
                                   ),
-                                  const SizedBox(height: 16),
-                                  _buildInfoTile(
-                                    context,
-                                    Icons.people,
-                                    'Participants',
-                                    '${event!.attendees.length}',
+                                  SizedBox(
+                                      width: MediaQuery.sizeOf(context).width *
+                                          0.005),
+                                  // Phần thông tin chi tiết
+                                  Expanded(
+                                    flex: 3,
+                                    child: _buildEventDetails(context),
                                   ),
-                                  Text(
-                                    'Details',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelMedium!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                        ),
-                                    textAlign: TextAlign.end,
-                                  ).w(double.infinity),
+                                  SizedBox(
+                                      width: MediaQuery.sizeOf(context).width *
+                                          0.1),
+                                ],
+                              )
+                            else
+                              // Layout cho màn hình nhỏ
+                              Column(
+                                children: [
+                                  _buildEventImages(
+                                      isLargeScreen: isLargeScreen),
+                                  _buildEventDetails(context),
                                 ],
                               ),
-                            ).onTap(onStatusTap),
-                            const SizedBox(height: 16),
-
-                            // Trạng thái sự kiện
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: _getStatusColor(event!.status!)
-                                    .withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: _getStatusColor(event!.status!),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    _getStatusIcon(event!.status!),
-                                    color: _getStatusColor(event!.status!),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    'Status:',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 4,
-                                      horizontal: 12,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: _getStatusColor(event!.status!),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Text(
-                                      event!.status!.name.toUpperCase(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelLarge!
-                                          .copyWith(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Đi đến forum
-                            if (event?.conversation != null &&
-                                event!.status != EventStatus.cancelled)
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: onForumTap,
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text('Go to Forum'),
-                                      SizedBox(width: 8),
-                                      Icon(Icons.forum),
-                                    ],
-                                  ),
-                                ),
-                              ),
-
-                            // Thông tin mô tả sự kiện
-                            Text(
-                              'About Event',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              event?.description ?? 'Description',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            const SizedBox(height: 16),
                           ],
-                        ).p(16),
-                      ],
-                    ),
-                  ).expand(),
-                  // Nút mua vé luôn ở dưới cùng
-                  if (widget.canEdit == false || widget.canEdit == null)
-                    _getBuyerBottomButton(event!).p(16)
-                  // Nếu có quyền chỉnh sửa sự kiện
-                  else
-                    _getCreatorBottomButton().p(16),
-                ]),
+                        ),
+                      ).expand(),
+                      // Nút mua vé luôn ở dưới cùng
+                      if (widget.canEdit == false || widget.canEdit == null)
+                        _getBuyerBottomButton(event!).p(16)
+                      // Nếu có quyền chỉnh sửa sự kiện
+                      else
+                        _getCreatorBottomButton().p(16),
+                    ]);
+                  },
+                ),
     );
+  }
+
+  // Widget hiển thị hình ảnh sự kiện
+  Widget _buildEventImages({bool isLargeScreen = false}) {
+    return SizedBox(
+      height: isLargeScreen ? MediaQuery.sizeOf(context).height * 0.85 : 300,
+      child: event!.images.isNotEmpty
+          ? ListView.builder(
+              scrollDirection: isLargeScreen ? Axis.vertical : Axis.horizontal,
+              itemCount: event!.images.length,
+              itemBuilder: (context, index) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    event!.images[index],
+                    width: isLargeScreen
+                        ? double.infinity
+                        : MediaQuery.sizeOf(context).width,
+                    height: isLargeScreen ? 300 : 300,
+                    fit: BoxFit.cover,
+                  ),
+                ).pOnly(bottom: 8);
+              },
+            )
+          : Icon(
+              Icons.image,
+              color: Colors.grey.shade400,
+              size: 100,
+            ),
+    );
+  }
+
+  // Widget hiển thị thông tin chi tiết sự kiện
+  Widget _buildEventDetails(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Tên sự kiện
+        Text(
+          event!.name ?? 'Event Name',
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 8),
+
+        // Ngày và giờ
+        Row(
+          children: [
+            const Icon(Icons.calendar_today, color: Colors.blue),
+            const SizedBox(width: 8),
+            Text(
+              event!.date!.toFullDate(),
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+
+        // Địa điểm
+        Row(
+          children: [
+            const Icon(Icons.location_on, color: Colors.blue),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                event!.location ?? 'Location',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Danh mục
+        Wrap(
+          spacing: 8,
+          children: event!.category.map((category) {
+            return Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 4,
+                horizontal: 8,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                category.name,
+                style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 16),
+
+        // Thông tin người tổ chức
+        Row(
+          children: [
+            Avatar(event!.createdBy, radius: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Organized by',
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                          color: Colors.grey.shade600,
+                        ),
+                  ),
+                  Text(
+                    event!.createdBy?.name ?? 'Unknown',
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Thông tin vé và người tham gia
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest
+                .withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: _buildInfoTile(
+                      context,
+                      Icons.confirmation_number,
+                      'Tickets Sold',
+                      '${event!.ticketsSold}',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  if (event?.maxAttendees != null)
+                    Expanded(
+                      child: _buildInfoTile(
+                        context,
+                        Icons.groups,
+                        'Max Attendees',
+                        '${event!.maxAttendees}',
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildInfoTile(
+                context,
+                Icons.people,
+                'Participants',
+                '${event!.attendees.length}',
+              ),
+              Text(
+                'Details',
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                textAlign: TextAlign.end,
+              ).w(double.infinity),
+            ],
+          ),
+        ).onTap(onStatusTap),
+        const SizedBox(height: 16),
+
+        // Trạng thái sự kiện
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _getStatusColor(event!.status!).withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: _getStatusColor(event!.status!),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                _getStatusIcon(event!.status!),
+                color: _getStatusColor(event!.status!),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Status:',
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(event!.status!),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  event!.status!.name.toUpperCase(),
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Đi đến forum
+        if (event?.conversation != null &&
+            event!.status != EventStatus.cancelled)
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: onForumTap,
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Go to Forum'),
+                  SizedBox(width: 8),
+                  Icon(Icons.forum),
+                ],
+              ),
+            ),
+          ),
+
+        // Thông tin mô tả sự kiện
+        Text(
+          'About Event',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          event?.description ?? 'Description',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        const SizedBox(height: 16),
+      ],
+    ).p(16);
   }
 
   Widget _getBuyerBottomButton(Event event) {
@@ -432,37 +455,47 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         ? onJoinEvent
         : null;
 
-    return ElevatedButton.icon(
-      onPressed: onPress,
-      icon: _isJoining
-          ? const CircularProgressIndicator().w(20).h(20)
-          : const Icon(Icons.attach_money),
-      label: Text(
-        buttonText,
-        textAlign: TextAlign.center,
-      ),
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size.fromHeight(50),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 400),
+        child: ElevatedButton.icon(
+          onPressed: onPress,
+          icon: _isJoining
+              ? const CircularProgressIndicator().w(20).h(20)
+              : const Icon(Icons.attach_money),
+          label: Text(
+            buttonText,
+            textAlign: TextAlign.center,
+          ),
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size.fromHeight(50),
+          ),
+        ),
       ),
     );
   }
 
   Widget _getCreatorBottomButton() {
-    return Row(
-      spacing: 16,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        ElevatedButton.icon(
-          onPressed: onStatisticsTap,
-          icon: const Icon(Icons.bar_chart_rounded),
-          label: const Text('Statistics'),
-        ).expand(),
-        ElevatedButton.icon(
-          onPressed: onEditEvent,
-          icon: const Icon(Icons.edit),
-          label: const Text('Edit Event'),
-        ).expand(),
-      ],
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 400),
+        child: Row(
+          spacing: 16,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton.icon(
+              onPressed: onStatisticsTap,
+              icon: const Icon(Icons.bar_chart_rounded),
+              label: const Text('Statistics'),
+            ).expand(),
+            ElevatedButton.icon(
+              onPressed: onEditEvent,
+              icon: const Icon(Icons.edit),
+              label: const Text('Edit Event'),
+            ).expand(),
+          ],
+        ),
+      ),
     ).expand();
   }
 

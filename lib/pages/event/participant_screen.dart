@@ -89,7 +89,7 @@ class _ParticipantScreenState extends State<ParticipantScreen> {
               ],
             ).expand(),
           ],
-        ),
+        ).w(600).centered(),
       ),
     );
   }

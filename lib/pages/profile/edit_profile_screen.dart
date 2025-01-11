@@ -114,7 +114,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      
+
       // Gửi thông tin cập nhật đến UserNotifier
       setState(() => _isLoading = true);
       final isSuccess = await ref
@@ -140,152 +140,44 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         data: (user) => user != null
             ? Form(
                 key: _formKey,
-                child: Column(
-                  children: [
-                    PickAvatar(
-                      user,
-                      radius: 70,
-                      selectedImage: _selectedImage,
-                      onTap: _pickImage,
-                      showCamera: true,
-                    ).centered(),
-                    const SizedBox(height: 24),
-                    TextFormField(
-                      initialValue: editedUser.name,
-                      decoration: const InputDecoration(labelText: 'Name'),
-                      onSaved: (value) {
-                        if (value != null) {
-                          editedUser = editedUser.copyWith(name: value);
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      initialValue: editedUser.phone,
-                      decoration:
-                          const InputDecoration(labelText: 'Phone number'),
-                      onSaved: (value) {
-                        editedUser = editedUser.copyWith(phone: value);
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<University>(
-                      value: selectedUniversity,
-                      isExpanded: true,
-                      decoration:
-                          const InputDecoration(labelText: 'University'),
-                      items: availableUniversities
-                          .map((university) => DropdownMenuItem(
-                                value: university,
-                                child: Text(
-                                  university.name ?? '',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedUniversity = value;
-                          editedUser = editedUser.copyWith(university: value);
-                          _updateFilteredFaculties();
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<Faculty>(
-                      value: selectedFaculty,
-                      decoration: const InputDecoration(labelText: 'Faculty'),
-                      items: filteredFaculties
-                          .map((faculty) => DropdownMenuItem(
-                                value: faculty,
-                                child: Text(
-                                  faculty.name ?? '',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedFaculty = value;
-                          editedUser = editedUser.copyWith(faculty: value);
-                          _updateFilteredMajors();
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<Major>(
-                      value: selectedMajor,
-                      decoration: const InputDecoration(labelText: 'Major'),
-                      items: filteredMajors
-                          .map((major) => DropdownMenuItem(
-                                value: major,
-                                child: Text(
-                                  major.name ?? '',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedMajor = value;
-                          editedUser = editedUser.copyWith(major: value);
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<Genders>(
-                      value: editedUser.gender,
-                      decoration: const InputDecoration(labelText: 'Gender'),
-                      items: Genders.values
-                          .map((gender) => DropdownMenuItem(
-                                value: gender,
-                                child: Text(gender.name.capitalized),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          editedUser = editedUser.copyWith(gender: value);
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      readOnly: true,
-                      controller: TextEditingController(
-                        text: editedUser.birthday != null
-                            ? editedUser.birthday!
-                                .toLocal()
-                                .toIso8601String()
-                                .split('T')
-                                .first
-                            : '',
+                child: LayoutBuilder(builder: (context, constraints) {
+                  final isLargeScreen = constraints.maxWidth > 800;
+                  return Column(
+                    children: [
+                      if (isLargeScreen) ...[
+                        Row(children: [
+                          PickAvatar(
+                            user,
+                            radius: 70,
+                            selectedImage: _selectedImage,
+                            onTap: _pickImage,
+                            showCamera: true,
+                          ).centered(),
+                          const SizedBox(width: 48),
+                          _buildTextField(context).expand(),
+                        ]).pOnly(top: 24, left: 24, right: 24)
+                      ] else ...[
+                        PickAvatar(
+                          user,
+                          radius: 70,
+                          selectedImage: _selectedImage,
+                          onTap: _pickImage,
+                          showCamera: true,
+                        ).centered(),
+                        const SizedBox(height: 24),
+                        _buildTextField(context),
+                      ],
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: _isLoading ? null : _saveProfile,
+                        icon: _isLoading
+                            ? const CircularProgressIndicator().w(20).h(20)
+                            : const Icon(Icons.save),
+                        label: const Text('Save'),
                       ),
-                      decoration:
-                          const InputDecoration(labelText: 'Date of birth'),
-                      onTap: () async {
-                        final DateTime? picked = await showDatePicker(
-                          context: context,
-                          initialDate: editedUser.birthday ?? DateTime.now(),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime.now(),
-                        );
-                        if (picked != null) {
-                          setState(() {
-                            editedUser = editedUser.copyWith(birthday: picked);
-                          });
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: _isLoading ? null : _saveProfile,
-                      icon: _isLoading
-                          ? const CircularProgressIndicator().w(20).h(20)
-                          : const Icon(Icons.save),
-                      label: const Text('Save'),
-                    ),
-                  ],
-                ),
+                    ],
+                  ).w(900).centered();
+                }),
               ).px(16).py(24).scrollVertical()
             : const Center(child: Text('User not found')),
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -293,6 +185,136 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           child: Text('Error: $error'),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField(BuildContext context) {
+    return Column(
+      children: [
+        TextFormField(
+          initialValue: editedUser.name,
+          decoration: const InputDecoration(labelText: 'Name'),
+          onSaved: (value) {
+            if (value != null) {
+              editedUser = editedUser.copyWith(name: value);
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          initialValue: editedUser.phone,
+          decoration: const InputDecoration(labelText: 'Phone number'),
+          onSaved: (value) {
+            editedUser = editedUser.copyWith(phone: value);
+          },
+        ),
+        const SizedBox(height: 16),
+        DropdownButtonFormField<University>(
+          value: selectedUniversity,
+          isExpanded: true,
+          decoration: const InputDecoration(labelText: 'University'),
+          items: availableUniversities
+              .map((university) => DropdownMenuItem(
+                    value: university,
+                    child: Text(
+                      university.name ?? '',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              selectedUniversity = value;
+              editedUser = editedUser.copyWith(university: value);
+              _updateFilteredFaculties();
+            });
+          },
+        ),
+        const SizedBox(height: 16),
+        DropdownButtonFormField<Faculty>(
+          value: selectedFaculty,
+          decoration: const InputDecoration(labelText: 'Faculty'),
+          items: filteredFaculties
+              .map((faculty) => DropdownMenuItem(
+                    value: faculty,
+                    child: Text(
+                      faculty.name ?? '',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              selectedFaculty = value;
+              editedUser = editedUser.copyWith(faculty: value);
+              _updateFilteredMajors();
+            });
+          },
+        ),
+        const SizedBox(height: 16),
+        DropdownButtonFormField<Major>(
+          value: selectedMajor,
+          decoration: const InputDecoration(labelText: 'Major'),
+          items: filteredMajors
+              .map((major) => DropdownMenuItem(
+                    value: major,
+                    child: Text(
+                      major.name ?? '',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              selectedMajor = value;
+              editedUser = editedUser.copyWith(major: value);
+            });
+          },
+        ),
+        const SizedBox(height: 16),
+        DropdownButtonFormField<Genders>(
+          value: editedUser.gender,
+          decoration: const InputDecoration(labelText: 'Gender'),
+          items: Genders.values
+              .map((gender) => DropdownMenuItem(
+                    value: gender,
+                    child: Text(gender.name.capitalized),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              editedUser = editedUser.copyWith(gender: value);
+            });
+          },
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          readOnly: true,
+          controller: TextEditingController(
+            text: editedUser.birthday != null
+                ? editedUser.birthday!
+                    .toLocal()
+                    .toIso8601String()
+                    .split('T')
+                    .first
+                : '',
+          ),
+          decoration: const InputDecoration(labelText: 'Date of birth'),
+          onTap: () async {
+            final DateTime? picked = await showDatePicker(
+              context: context,
+              initialDate: editedUser.birthday ?? DateTime.now(),
+              firstDate: DateTime(1900),
+              lastDate: DateTime.now(),
+            );
+            if (picked != null) {
+              setState(() {
+                editedUser = editedUser.copyWith(birthday: picked);
+              });
+            }
+          },
+        ),
+      ],
     );
   }
 }

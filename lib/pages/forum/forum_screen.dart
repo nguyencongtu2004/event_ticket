@@ -1,12 +1,14 @@
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/extensions/extension.dart';
 import 'package:event_ticket/models/conversasion.dart';
+import 'package:event_ticket/pages/forum/forum_detail_screen.dart';
 import 'package:event_ticket/providers/forum_provider.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class ForumScreen extends ConsumerStatefulWidget {
   const ForumScreen({super.key});
@@ -19,10 +21,15 @@ class _ForumScreenState extends ConsumerState<ForumScreen> {
   static const showAddConversasion = false;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  Conversasion? selectedConversasion;
 
   void onConversasionTap(BuildContext context, Conversasion conversasion) {
-    context.push(Routes.getForumDetailPath(conversasion.id),
-        extra: conversasion);
+    setState(() => selectedConversasion = conversasion);
+    if (MediaQuery.sizeOf(context).width < 800) {
+      context
+          .push(Routes.getForumDetailPath(conversasion.id), extra: conversasion)
+          .then((_) => setState(() => selectedConversasion = null));
+    }
   }
 
   @override
@@ -42,35 +49,61 @@ class _ForumScreenState extends ConsumerState<ForumScreen> {
       ],
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(forumProvider.future),
-        child: CustomScrollView(
-          slivers: [
-            SliverPersistentHeader(
-              floating: true,
-              delegate: _SearchBarDelegate(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: _buildSearchBar(),
-                ),
-              ),
-            ),
-            switch (asyncValue) {
-              AsyncValue<List<Conversasion>>(:final valueOrNull) =>
-                valueOrNull != null
-                    ? _buildConversasionList(context, ref, valueOrNull)
-                    : SliverToBoxAdapter(child: _buildEmptyState(context)),
-              // ignore: dead_code, unreachable_switch_case
-              AsyncValue(:final error) => SliverToBoxAdapter(
-                  child: _buildErrorState(error!),
-                ),
-              // ignore: dead_code, unreachable_switch_case
-              _ => const SliverToBoxAdapter(
-                  child: Center(
-                    child: CircularProgressIndicator(),
+        child: LayoutBuilder(builder: (context, constraints) {
+          final isLargeScreen = constraints.maxWidth > 800;
+          return Row(
+            children: [
+              CustomScrollView(
+                slivers: [
+                  SliverPersistentHeader(
+                    floating: true,
+                    delegate:
+                        _SearchBarDelegate(child: _buildSearchBar().p(16)),
                   ),
-                ),
-            }
-          ],
-        ),
+                  switch (asyncValue) {
+                    AsyncValue<List<Conversasion>>(:final valueOrNull) =>
+                      valueOrNull != null
+                          ? _buildConversasionList(context, ref, valueOrNull)
+                          : SliverToBoxAdapter(
+                              child: _buildEmptyState(context)),
+                    // ignore: dead_code, unreachable_switch_case
+                    AsyncValue(:final error) => SliverToBoxAdapter(
+                        child: _buildErrorState(error!),
+                      ),
+                    // ignore: dead_code, unreachable_switch_case
+                    _ => const SliverToBoxAdapter(
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                  }
+                ],
+              ).expand(),
+              if (isLargeScreen && selectedConversasion != null) ...[
+                const VerticalDivider(width: 1),
+                Stack(
+                  children: [
+                    ForumDetailScreen(
+                      key: ValueKey(selectedConversasion!.id),
+                      forumId: selectedConversasion!.id,
+                      conversasion: selectedConversasion,
+                    ),
+                    Positioned(
+                      top: 8,
+                      left: 12,
+                      child: IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () =>
+                            setState(() => selectedConversasion = null),
+                        tooltip: 'Close conversasion',
+                      ),
+                    ),
+                  ],
+                ).expand(),
+              ]
+            ],
+          )
+              .w(isLargeScreen && selectedConversasion != null ? 1200 : 600)
+              .centered();
+        }),
       ),
     );
   }
@@ -91,9 +124,7 @@ class _ForumScreenState extends ConsumerState<ForumScreen> {
                 icon: const Icon(Icons.clear),
                 onPressed: () {
                   _searchController.clear();
-                  setState(() {
-                    _searchQuery = '';
-                  });
+                  setState(() => _searchQuery = '');
                 },
               )
             ]
@@ -129,10 +160,7 @@ class _ForumScreenState extends ConsumerState<ForumScreen> {
         delegate: SliverChildBuilderDelegate(
           (context, index) {
             final item = filteredConversations[index];
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: _buildConversationCard(context, item),
-            );
+            return _buildConversationCard(context, item).py(4);
           },
           childCount: filteredConversations.length,
         ),
@@ -150,62 +178,59 @@ class _ForumScreenState extends ConsumerState<ForumScreen> {
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
         onTap: () => onConversasionTap(context, item),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      item.title ?? 'Untitled Conversation',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    item.title ?? 'Untitled Conversation',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  _buildTypeChip(context, item.type),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
+                ),
+                _buildTypeChip(context, item.type),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.access_time_rounded,
+                  size: 16,
+                  color: Colors.grey[600],
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  item.createdAt?.toDDMMYYYY() ?? 'Unknown Date',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                ),
+                const SizedBox(width: 16),
+                if (item.type == ConversasionType.private) ...[
                   Icon(
-                    Icons.access_time_rounded,
+                    Icons.people_rounded,
                     size: 16,
                     color: Colors.grey[600],
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    item.createdAt?.toDDMMYYYY() ?? 'Unknown Date',
+                    '${item.members?.length ?? 0} members',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.grey[600],
                         ),
                   ),
-                  const SizedBox(width: 16),
-                  if (item.type == ConversasionType.private) ...[
-                    Icon(
-                      Icons.people_rounded,
-                      size: 16,
-                      color: Colors.grey[600],
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${item.members?.length ?? 0} members',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                    ),
-                  ],
                 ],
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          ],
+        ).p(16),
       ),
     );
   }
@@ -229,7 +254,7 @@ class _ForumScreenState extends ConsumerState<ForumScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: chipColor.withOpacity(0.1),
+        color: chipColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(

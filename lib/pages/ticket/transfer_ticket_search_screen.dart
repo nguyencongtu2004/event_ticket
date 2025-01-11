@@ -120,7 +120,7 @@ class _TransferTicketSearchScreenState
               },
             ).expand(),
         ],
-      ),
+      ).w(600).centered(),
     );
   }
 }

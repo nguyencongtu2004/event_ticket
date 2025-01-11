@@ -56,30 +56,49 @@ class ProfileScreen extends ConsumerWidget {
       ],
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(userProvider.future),
-        child: ListView(
-          children: [
-            switch (userAsyncValue) {
-              AsyncValue<User?>(:final valueOrNull?) => Column(
-                  children: [
-                    UserInfo(user: valueOrNull).pOnly(bottom: 24),
-                    _buildDetailSection(context, valueOrNull),
-                    ElevatedButton.icon(
-                      onPressed: () => onLogout(context, ref),
-                      icon: const Icon(Icons.logout, color: Colors.white),
-                      label: const Text('Logout'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade400,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                      ),
-                    ).py(24),
-                  ],
-                ).wFull(context).pOnly(top: 24),
-              AsyncValue(:final error?) => Center(child: Text('Error: $error')),
-              _ => const Center(child: CircularProgressIndicator()),
-            },
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isLargeScreen = constraints.maxWidth > 800;
+            return ListView(
+              children: [
+                switch (userAsyncValue) {
+                  AsyncValue<User?>(:final valueOrNull?) => Column(
+                      children: [
+                        // Bố cục cho màn hình lớn
+                        if (isLargeScreen)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              UserInfo(user: valueOrNull).pOnly(right: 48),
+                              _buildDetailSection(context, valueOrNull)
+                                  .expand(),
+                            ],
+                          ).pOnly(top: 24, left: 24, right: 24)
+                        else ...[
+                          // Bố cục cho màn hình nhỏ
+                          UserInfo(user: valueOrNull).pOnly(bottom: 24),
+                          _buildDetailSection(context, valueOrNull),
+                        ],
+                        ElevatedButton.icon(
+                          onPressed: () => onLogout(context, ref),
+                          icon: const Icon(Icons.logout, color: Colors.white),
+                          label: const Text('Logout'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade400,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 12),
+                          ),
+                        ).py(24),
+                      ],
+                    ).w(900).centered(),
+                  AsyncValue(:final error?) =>
+                    Center(child: Text('Error: $error')),
+                  _ => const Center(child: CircularProgressIndicator()),
+                },
+              ],
+            );
+          },
         ),
       ),
     );

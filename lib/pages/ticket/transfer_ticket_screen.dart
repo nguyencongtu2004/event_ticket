@@ -8,6 +8,7 @@ import 'package:event_ticket/wrapper/ticket_scafford.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class TransferTicketScreen extends ConsumerWidget {
   const TransferTicketScreen({super.key});
@@ -60,7 +61,9 @@ class TransferTicketScreen extends ConsumerWidget {
         child: switch (asyncValue) {
           // Nếu có dữ liệu, hiển thị dữ liệu, kể cả trong lúc làm mới.
           AsyncValue<List<TransferTicket>>(:final valueOrNull?) =>
-            _buildTransferTicketList(context, ref, valueOrNull),
+            _buildTransferTicketList(context, ref, valueOrNull)
+                .w(600)
+                .centered(),
           // Nếu có lỗi, hiển thị lỗi.
           AsyncValue(:final error?) => Center(child: Text('Error: $error')),
           // Nếu không có dữ liệu, hiển thị trạng thái tải.
@@ -85,7 +88,7 @@ class TransferTicketScreen extends ConsumerWidget {
               children: [
                 ListTile(
                   onTap: () => onTicketTap(context, transferTicket),
-                  leading: Avatar(transferTicket.fromUser),
+                  leading: Avatar(transferTicket.fromUser, radius: 25),
                   title: Text(
                       'Event: ${transferTicket.ticket?.event?.name ?? 'N/A'}'),
                   subtitle: Text(
@@ -115,7 +118,7 @@ class TransferTicketScreen extends ConsumerWidget {
                           onAcceptTicket(context, ref, transferTicket),
                     ),
                   ],
-                ),
+                ).pOnly(bottom: 8),
               ],
             ),
           ),

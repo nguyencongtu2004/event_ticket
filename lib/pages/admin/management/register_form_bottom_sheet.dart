@@ -6,10 +6,12 @@ import 'package:velocity_x/velocity_x.dart';
 
 class RegisterFormBottomSheet extends StatefulWidget {
   final Function onSuccess;
+  final Function? onClose;
 
   const RegisterFormBottomSheet({
     super.key,
     required this.onSuccess,
+    this.onClose,
   });
 
   @override
@@ -54,7 +56,11 @@ class _RegisterFormBottomSheetState extends State<RegisterFormBottomSheet> {
     if (response.statusCode == 201) {
       if (mounted) {
         context.showAnimatedToast(response.data['message']);
-        Navigator.pop(context);
+        if (widget.onClose != null) {
+          widget.onClose!();
+        } else {
+          Navigator.of(context).pop();
+        }
         widget.onSuccess();
       }
     } else {
@@ -107,7 +113,7 @@ class _RegisterFormBottomSheetState extends State<RegisterFormBottomSheet> {
             TextFormField(
               controller: _passwordController,
               decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
+              // obscureText: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a password';

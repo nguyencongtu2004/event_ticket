@@ -20,11 +20,12 @@ extension ContextExtension on BuildContext {
 
   void showAnimatedToast(String message, {bool isError = false}) {
     final overlay = Overlay.of(this);
+    final width = MediaQuery.sizeOf(this).width;
     final overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
         bottom: 50,
+        width: width < 600 ? width - 20 : 600,
         left: 10,
-        right: 10,
         child: AnimatedSnackBar(
           message: message,
           isError: isError,
