@@ -3,6 +3,8 @@ import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/event.dart';
 import 'package:event_ticket/models/ticket.dart';
 import 'package:event_ticket/models/user.dart';
+import 'package:event_ticket/pages/event/participant_screen.dart';
+import 'package:event_ticket/pages/forum/forum_detail_screen.dart';
 import 'package:event_ticket/providers/ticket_provider.dart';
 import 'package:event_ticket/requests/event_request.dart';
 import 'package:event_ticket/requests/ticket_request.dart';
@@ -36,6 +38,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   final _ticketRequest = TicketRequest();
   var eventNotfound = false;
   var _isJoining = false;
+  Widget? panelWidget;
 
   Future<void> onJoinEvent() async {
     setState(() => _isJoining = true);
@@ -105,12 +108,32 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   }
 
   void onForumTap() {
-    print('Forum tapped: ${Routes.forum} extra: ${event?.conversation}');
-    context.push(Routes.getForumDetailPath(event!.conversation!.id),
-        extra: event?.conversation);
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 800) {
+      context
+          .push(
+            Routes.getForumDetailPath(event!.conversation!.id),
+            extra: event?.conversation,
+          )
+          .then((_) => setState(() => panelWidget = null));
+    } else {
+      setState(() => panelWidget = ForumDetailScreen(
+            forumId: event!.conversation!.id,
+            conversasion: event!.conversation,
+          ));
+    }
   }
 
-  void onStatusTap() => context.push(Routes.eventParticipants, extra: event);
+  void onStatusTap() {
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 800) {
+      context
+          .push(Routes.eventParticipants, extra: event)
+          .then((_) => setState(() => panelWidget = null));
+    } else {
+      setState(() => panelWidget = ParticipantScreen(event: event!));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,28 +159,35 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(
-                                      width: MediaQuery.sizeOf(context).width *
-                                          0.1),
                                   // Phần hình ảnh
-                                  Expanded(
-                                    flex: 2,
-                                    child: _buildEventImages(
-                                        isLargeScreen: isLargeScreen),
-                                  ),
-                                  SizedBox(
-                                      width: MediaQuery.sizeOf(context).width *
-                                          0.005),
+                                  _buildEventImages(
+                                    isLargeScreen: isLargeScreen,
+                                  ).expand(flex: 2),
+                                  const SizedBox(width: 24),
                                   // Phần thông tin chi tiết
-                                  Expanded(
-                                    flex: 3,
-                                    child: _buildEventDetails(context),
-                                  ),
-                                  SizedBox(
-                                      width: MediaQuery.sizeOf(context).width *
-                                          0.1),
+                                  _buildEventDetails(context).expand(flex: 3),
+                                  if (panelWidget != null) ...[
+                                    const VerticalDivider(width: 1),
+                                    Stack(
+                                      children: [
+                                        panelWidget!,
+                                        Positioned(
+                                          top: 8,
+                                          left: 12,
+                                          child: IconButton(
+                                            icon: const Icon(Icons.close),
+                                            onPressed: () => setState(
+                                                () => panelWidget = null),
+                                            tooltip: 'Close panel',
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                        .h(constraints.maxHeight * 0.9)
+                                        .expand(flex: 3)
+                                  ],
                                 ],
-                              )
+                              ).w(1200).px(24).centered()
                             else
                               // Layout cho màn hình nhỏ
                               Column(

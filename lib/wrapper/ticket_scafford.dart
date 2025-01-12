@@ -17,6 +17,7 @@ class TicketScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
 
   final noContent = const Center(child: Text('No content'));
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

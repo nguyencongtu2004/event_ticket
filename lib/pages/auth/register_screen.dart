@@ -92,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (isLargeScreen)
                 Expanded(
                   child: Container(
-                    color: context.primaryColor.withOpacity(0.1),
+                    color: context.primaryColor.withValues(alpha: 0.1),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

@@ -1,4 +1,6 @@
 import 'package:event_ticket/pages/admin/admin_screen.dart';
+import 'package:event_ticket/providers/user_provider.dart';
+import 'package:event_ticket/wrapper/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +14,7 @@ import 'package:event_ticket/providers/navigation_index_provider.dart';
 import 'package:event_ticket/providers/role_provider.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/enum.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 final shellRoute = ShellRoute(
   //navigatorKey: navigatorKey,
@@ -71,6 +74,18 @@ final shellRoute = ShellRoute(
                       break;
                   }
                 }
+              }
+
+              void goProfile() {
+                var index = 0;
+                if (role == Roles.ticketBuyer) {
+                  index = 3;
+                } else if (role == Roles.eventCreator) {
+                  index = 2;
+                } else if (role == Roles.admin) {
+                  index = 1;
+                }
+                onDestinationSelected(index);
               }
 
               final destinations = role == Roles.ticketBuyer
@@ -134,6 +149,8 @@ final shellRoute = ShellRoute(
                               icon: Icon(Icons.person), label: Text('Profile')),
                         ];
 
+              final user = ref.watch(userProvider).value;
+
               return Scaffold(
                 body: isLargeScreen
                     ? Row(
@@ -144,10 +161,9 @@ final shellRoute = ShellRoute(
                             destinations: navigationRailDestinations,
                             labelType: NavigationRailLabelType.all,
                             groupAlignment: -0.8,
+                            leading: Avatar(user, radius: 25).onTap(goProfile),
                           ),
-                          Expanded(
-                            child: child,
-                          ),
+                          Expanded(child: child),
                         ],
                       )
                     : child,

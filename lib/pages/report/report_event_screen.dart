@@ -72,92 +72,112 @@ class _ReportEventScreenState extends State<ReportEventScreen> {
   Widget build(BuildContext context) {
     return TicketScaffold(
       title: 'Event Report',
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // header của sự kiện
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildEventHeader(),
-              const SizedBox(height: 16),
-              _buildEventStats(),
-              const SizedBox(height: 16),
+      body: LayoutBuilder(builder: (context, constraints) {
+        final isLargeScreen = constraints.maxWidth > 600;
+        return Row(
+          children: [
+            if (isLargeScreen) ...[
+              // header của sự kiện
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildEventHeader(),
+                  const SizedBox(height: 16),
+                  _buildEventStats(),
+                ],
+              ).expand(flex: 1),
             ],
-          ),
-
-          // Phần biểu đồ và báo cáo chi tiết
-          if (_chartData == null)
-            SizedBox(
-              height: 200,
-              child: const CircularProgressIndicator().centered(),
-            )
-          else ...[
-            Column(
-              spacing: 8,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            ListView(
+              padding: const EdgeInsets.all(16),
               children: [
-                // Chọn khoàng ngày
-                'Date Range'.text.titleMedium(context).make(),
-                Row(children: [
-                  ChoiceChip(
-                    label: Text(_startDate != null && _endDate != null
-                        ? '${'${_startDate!.toLocal()}'.split(' ')[0]} - ${'${_endDate!.toLocal()}'.split(' ')[0]}'
-                        : 'Select Date'),
-                    selected: _startDate != null && _endDate != null,
-                    onSelected: (_) => _selectDateRange(),
-                  ).px(4),
-                ]).scrollHorizontal(),
+                if (!isLargeScreen) ...[
+                  // header của sự kiện
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildEventHeader(),
+                      const SizedBox(height: 16),
+                      _buildEventStats(),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ],
 
-                // Chọn khoàng thời gian
-                'Interval'.text.titleMedium(context).make(),
-                Row(
-                  children: ChartIntervals.values.map((interval) {
-                    return ChoiceChip(
-                      label: Text(interval.toString().split('.').last),
-                      selected: _selectedInterval == interval,
-                      onSelected: (_) {
-                        setState(() => _selectedInterval = interval);
-                        _fetchReportData();
-                      },
-                    ).px(4);
-                  }).toList(),
-                ).scrollHorizontal(),
+                // Phần biểu đồ và báo cáo chi tiết
+                if (_chartData == null)
+                  SizedBox(
+                    height: 200,
+                    child: const CircularProgressIndicator().centered(),
+                  )
+                else ...[
+                  Column(
+                    spacing: 8,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Chọn khoàng ngày
+                      'Date Range'.text.titleMedium(context).make(),
+                      Row(children: [
+                        ChoiceChip(
+                          label: Text(_startDate != null && _endDate != null
+                              ? '${'${_startDate!.toLocal()}'.split(' ')[0]} - ${'${_endDate!.toLocal()}'.split(' ')[0]}'
+                              : 'Select Date'),
+                          selected: _startDate != null && _endDate != null,
+                          onSelected: (_) => _selectDateRange(),
+                        ).px(4),
+                      ]).scrollHorizontal(),
+
+                      // Chọn khoàng thời gian
+                      'Interval'.text.titleMedium(context).make(),
+                      Row(
+                        children: ChartIntervals.values.map((interval) {
+                          return ChoiceChip(
+                            label: Text(interval.toString().split('.').last),
+                            selected: _selectedInterval == interval,
+                            onSelected: (_) {
+                              setState(() => _selectedInterval = interval);
+                              _fetchReportData();
+                            },
+                          ).px(4);
+                        }).toList(),
+                      ).scrollHorizontal(),
+                    ],
+                  ).p(8),
+
+                  // Phần tổng quan
+                  _buildTotalSummary(),
+
+                  // Các biểu đồ
+                  const SizedBox(height: 20),
+                  _buildChartSection(
+                    'Revenue',
+                    _chartData?.chartData?.revenue ?? [],
+                    Colors.blue,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildChartSection(
+                    'Tickets',
+                    _chartData?.chartData?.tickets ?? [],
+                    Colors.green,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildChartSection(
+                    'Cancelled Tickets',
+                    _chartData?.chartData?.cancelledTickets ?? [],
+                    Colors.red,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildChartSection(
+                    'Users',
+                    _chartData?.chartData?.users ?? [],
+                    Colors.purple,
+                  ),
+                  const SizedBox(height: 80),
+                ],
               ],
-            ).p(8),
-
-            // Phần tổng quan
-            _buildTotalSummary(),
-
-            // Các biểu đồ
-            const SizedBox(height: 20),
-            _buildChartSection(
-              'Revenue',
-              _chartData?.chartData?.revenue ?? [],
-              Colors.blue,
-            ),
-            const SizedBox(height: 20),
-            _buildChartSection(
-              'Tickets',
-              _chartData?.chartData?.tickets ?? [],
-              Colors.green,
-            ),
-            const SizedBox(height: 20),
-            _buildChartSection(
-              'Cancelled Tickets',
-              _chartData?.chartData?.cancelledTickets ?? [],
-              Colors.red,
-            ),
-            const SizedBox(height: 20),
-            _buildChartSection(
-              'Users',
-              _chartData?.chartData?.users ?? [],
-              Colors.purple,
-            ),
-            const SizedBox(height: 80),
+            ).expand(flex: 3),
           ],
-        ],
-      ),
+        ).px(24).centered();
+      }),
     );
   }
 

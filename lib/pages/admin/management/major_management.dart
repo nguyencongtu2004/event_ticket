@@ -52,9 +52,7 @@ class _MajorManagementScreenState extends State<MajorManagementScreen> {
       final response =
           await _universityRequest.createMajor(widget.faculty.id!, name);
       if (response.statusCode == 201) {
-        setState(() {
-          _majorFuture = _fetchMajors();
-        });
+        setState(() => _majorFuture = _fetchMajors());
       }
       context.showAnimatedToast(response.data['message']);
       Navigator.pop(context);
@@ -118,9 +116,7 @@ class _MajorManagementScreenState extends State<MajorManagementScreen> {
     if (confirmed == true) {
       final response = await _universityRequest.deleteMajor(major.id!);
       if (response.statusCode == 200) {
-        setState(() {
-          _majorFuture = _fetchMajors();
-        });
+        setState(() => _majorFuture = _fetchMajors());
       }
       if (mounted) {
         context.showAnimatedToast(response.data['message']);
@@ -138,9 +134,7 @@ class _MajorManagementScreenState extends State<MajorManagementScreen> {
       Navigator.pop(context);
       final response = await _universityRequest.updateMajor(major.id!, name);
       if (response.statusCode == 200) {
-        setState(() {
-          _majorFuture = _fetchMajors();
-        });
+        setState(() => _majorFuture = _fetchMajors());
       }
       context.showAnimatedToast(response.data['message']);
     }

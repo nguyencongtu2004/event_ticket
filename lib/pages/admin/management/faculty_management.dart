@@ -1,5 +1,6 @@
 import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/university.dart';
+import 'package:event_ticket/pages/admin/management/major_management.dart';
 import 'package:event_ticket/requests/university_request.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
@@ -21,6 +22,7 @@ class _FacultyManagementScreenState extends State<FacultyManagementScreen> {
   final _universityRequest = UniversityRequest();
   late Future<List<Faculty>> _facultyFuture;
   bool _isLoading = true;
+  Widget? panelWidget;
 
   @override
   void initState() {
@@ -55,9 +57,7 @@ class _FacultyManagementScreenState extends State<FacultyManagementScreen> {
       final response =
           await _universityRequest.createFaculty(widget.university.id!, name);
       if (response.statusCode == 201) {
-        setState(() {
-          _facultyFuture = _fetchFaculties();
-        });
+        setState(() => _facultyFuture = _fetchFaculties());
       }
       context.showAnimatedToast(response.data['message']);
       Navigator.pop(context);
@@ -122,6 +122,7 @@ class _FacultyManagementScreenState extends State<FacultyManagementScreen> {
       final response = await _universityRequest.deleteFaculty(faculty.id!);
       if (response.statusCode == 200) {
         setState(() {
+          panelWidget = null;
           _facultyFuture = _fetchFaculties();
         });
       }
@@ -142,9 +143,7 @@ class _FacultyManagementScreenState extends State<FacultyManagementScreen> {
       final response =
           await _universityRequest.updateFaculty(faculty.id!, name);
       if (response.statusCode == 200) {
-        setState(() {
-          _facultyFuture = _fetchFaculties();
-        });
+        setState(() => _facultyFuture = _fetchFaculties());
       }
       context.showAnimatedToast(response.data['message']);
     }
@@ -179,108 +178,148 @@ class _FacultyManagementScreenState extends State<FacultyManagementScreen> {
 
   void onTapFaculty(Faculty faculty) async {
     if (faculty.id == null) return;
-    context.push(Routes.majorManagement, extra: faculty);
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 600) {
+      context
+          .push(Routes.majorManagement, extra: faculty)
+          .then((_) => setState(() => panelWidget = null));
+    } else {
+      setState(() => panelWidget = MajorManagementScreen(
+            key: ValueKey(faculty.id),
+            faculty: faculty,
+          ));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return TicketScaffold(
-      title: 'Faculty Management',
-      floatingActionButton: FloatingActionButton(
-        onPressed: onAddFaculty,
-        child: const Icon(Icons.add),
-      ),
-      body: FutureBuilder<List<Faculty>>(
-        future: _facultyFuture,
-        builder: (context, snapshot) {
-          final isLoading = _isLoading;
-          final faculties = snapshot.data ?? [];
-
-          return RefreshIndicator(
-            onRefresh: _refreshFaculties,
-            child: ListView(
-              padding: const EdgeInsets.only(bottom: 80),
-              children: [
-                // Phần thông tin trường đại học
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.school, color: Theme.of(context).primaryColor),
-                    const SizedBox(width: 8),
-                    Text(
-                      'University: ${widget.university.name}',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ).expand(),
-                  ],
-                ).p(16),
-                // Tiêu đề danh sách khoa
-                Text(
-                  'Faculties:',
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ).pOnly(left: 16),
-                const SizedBox(height: 16),
-                // Hiển thị trạng thái tải dữ liệu
-                if (isLoading)
-                  const Center(child: CircularProgressIndicator())
-                else if (snapshot.hasError)
-                  Center(child: Text('Error: ${snapshot.error}'))
-                else if (faculties.isEmpty)
-                  const Center(child: Text('No faculties found'))
-                else
-                  ...faculties.map(
-                    (faculty) => Card(
-                      elevation: 2,
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 6, horizontal: 16),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        title: Text(
-                          faculty.name ?? 'No name',
-                          style:
-                              Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        // subtitle: Builder(builder: (context) {
-                        //   var text = 'No majors';
-                        //   if (faculty.majors == null) {
-                        //     text = 'No majors';
-                        //   } else if (faculty.majors!.isNotEmpty) {
-                        //     text =
-                        //         'Majors: ${faculty.majors!.length.toString()}';
-                        //   }
-                        //   return Text(
-                        //     text,
-                        //     style: Theme.of(context).textTheme.bodyMedium,
-                        //   );
-                        // }),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () => onEditFaculty(faculty),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => onDeleteFaculty(faculty),
-                            ),
-                          ],
-                        ),
-                        onTap: () => onTapFaculty(faculty),
-                      ),
-                    ),
-                  ),
-              ],
+    return LayoutBuilder(builder: (context, constraints) {
+      final isLargeScreen = constraints.maxWidth > 600;
+      return Row(
+        children: [
+          TicketScaffold(
+            title: 'Faculty Management',
+            floatingActionButton: FloatingActionButton(
+              onPressed: onAddFaculty,
+              child: const Icon(Icons.add),
             ),
-          );
-        },
-      ),
-    );
+            body: FutureBuilder<List<Faculty>>(
+              future: _facultyFuture,
+              builder: (context, snapshot) {
+                final isLoading = _isLoading;
+                final faculties = snapshot.data ?? [];
+
+                return RefreshIndicator(
+                  onRefresh: _refreshFaculties,
+                  child: ListView(
+                    padding: const EdgeInsets.only(bottom: 80),
+                    children: [
+                      // Phần thông tin trường đại học
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.school,
+                              color: Theme.of(context).primaryColor),
+                          const SizedBox(width: 8),
+                          Text(
+                            'University: ${widget.university.name}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ).expand(),
+                        ],
+                      ).p(16),
+                      // Tiêu đề danh sách khoa
+                      Text(
+                        'Faculties:',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ).pOnly(left: 16),
+                      const SizedBox(height: 16),
+                      // Hiển thị trạng thái tải dữ liệu
+                      if (isLoading)
+                        const Center(child: CircularProgressIndicator())
+                      else if (snapshot.hasError)
+                        Center(child: Text('Error: ${snapshot.error}'))
+                      else if (faculties.isEmpty)
+                        const Center(child: Text('No faculties found'))
+                      else
+                        ...faculties.map(
+                          (faculty) => Card(
+                            elevation: 2,
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 6, horizontal: 16),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              title: Text(
+                                faculty.name ?? 'No name',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                              // subtitle: Builder(builder: (context) {
+                              //   var text = 'No majors';
+                              //   if (faculty.majors == null) {
+                              //     text = 'No majors';
+                              //   } else if (faculty.majors!.isNotEmpty) {
+                              //     text =
+                              //         'Majors: ${faculty.majors!.length.toString()}';
+                              //   }
+                              //   return Text(
+                              //     text,
+                              //     style: Theme.of(context).textTheme.bodyMedium,
+                              //   );
+                              // }),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit,
+                                        color: Colors.blue),
+                                    onPressed: () => onEditFaculty(faculty),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                    onPressed: () => onDeleteFaculty(faculty),
+                                  ),
+                                ],
+                              ),
+                              onTap: () => onTapFaculty(faculty),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ).expand(),
+          if (panelWidget != null && isLargeScreen) ...[
+            const VerticalDivider(width: 1),
+            Stack(children: [
+              panelWidget!,
+              Positioned(
+                top: 8,
+                left: 12,
+                child: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => setState(() => panelWidget = null),
+                  tooltip: 'Close panel',
+                ),
+              ),
+            ]).expand(),
+          ],
+        ],
+      );
+    });
   }
 }

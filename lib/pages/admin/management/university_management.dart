@@ -1,5 +1,6 @@
 import 'package:event_ticket/extensions/context_extesion.dart';
 import 'package:event_ticket/models/university.dart';
+import 'package:event_ticket/pages/admin/management/faculty_management.dart';
 import 'package:event_ticket/requests/university_request.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
@@ -20,6 +21,7 @@ class _UniversityManagementScreenState
   final _universityRequest = UniversityRequest();
   late Future<List<University>> _universityFuture;
   bool _isFirstLoad = true;
+  Widget? panelWidget;
 
   @override
   void initState() {
@@ -30,25 +32,19 @@ class _UniversityManagementScreenState
   Future<List<University>> _fetchUniversities() async {
     final response = await _universityRequest.getUniversities();
     if (response.statusCode == 200) {
-      setState(() {
-        _isFirstLoad = false;
-      });
+      setState(() => _isFirstLoad = false);
       return (response.data as List)
           .map((e) => University.fromJson(e as Map<String, dynamic>))
           .toList();
     } else {
       context.showAnimatedToast(response.data['message']);
-      setState(() {
-        _isFirstLoad = false;
-      });
+      setState(() => _isFirstLoad = false);
       return [];
     }
   }
 
   Future<void> _refreshUniversities() async {
-    setState(() {
-      _universityFuture = _fetchUniversities();
-    });
+    setState(() => _universityFuture = _fetchUniversities());
   }
 
   void onAddUniversity() {
@@ -59,9 +55,7 @@ class _UniversityManagementScreenState
       if (name.isEmpty) return;
       final response = await _universityRequest.createUniversity(name);
       if (response.statusCode == 201) {
-        setState(() {
-          _universityFuture = _fetchUniversities();
-        });
+        setState(() => _universityFuture = _fetchUniversities());
       }
       context.showAnimatedToast(response.data['message']);
       Navigator.pop(context);
@@ -75,12 +69,11 @@ class _UniversityManagementScreenState
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Add New University',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ).pOnly(bottom: 20),
             TextField(
               controller: nameController,
@@ -127,6 +120,7 @@ class _UniversityManagementScreenState
           await _universityRequest.deleteUniversity(university.id!);
       if (response.statusCode == 200) {
         setState(() {
+          panelWidget = null;
           _universityFuture = _fetchUniversities();
         });
       }
@@ -147,9 +141,7 @@ class _UniversityManagementScreenState
       final response =
           await _universityRequest.updateUniversity(university.id!, name);
       if (response.statusCode == 200) {
-        setState(() {
-          _universityFuture = _fetchUniversities();
-        });
+        setState(() => _universityFuture = _fetchUniversities());
       }
       context.showAnimatedToast(response.data['message']);
     }
@@ -184,89 +176,127 @@ class _UniversityManagementScreenState
 
   void onTapUniversity(University university) async {
     if (university.id == null) return;
-    context.push(Routes.facultyManagement, extra: university);
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 250 + 600) {
+      context
+          .push(Routes.facultyManagement, extra: university)
+          .then((_) => setState(() => panelWidget = null));
+    } else {
+      setState(() => panelWidget = FacultyManagementScreen(
+            key: ValueKey(university.id),
+            university: university,
+          ));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return TicketScaffold(
-      title: 'University Management',
-      floatingActionButton: FloatingActionButton(
-        onPressed: onAddUniversity,
-        child: const Icon(Icons.add),
-      ),
-      body: FutureBuilder<List<University>>(
-        future: _universityFuture,
-        builder: (context, snapshot) {
-          if (_isFirstLoad &&
-              snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return LayoutBuilder(builder: (context, constraints) {
+      final isLargeScreen = constraints.maxWidth > 600;
 
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+      return Row(
+        children: [
+          TicketScaffold(
+            title: 'University Management',
+            floatingActionButton: FloatingActionButton(
+              onPressed: onAddUniversity,
+              child: const Icon(Icons.add),
+            ),
+            body: FutureBuilder<List<University>>(
+              future: _universityFuture,
+              builder: (context, snapshot) {
+                if (_isFirstLoad &&
+                    snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          final universities = snapshot.data ?? [];
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
 
-          if (universities.isEmpty) {
-            return const Center(child: Text('No universities found'));
-          }
+                final universities = snapshot.data ?? [];
 
-          return RefreshIndicator(
-            onRefresh: _refreshUniversities,
-            child: ListView.builder(
-              padding: const EdgeInsets.only(
-                  top: 16, left: 16, right: 16, bottom: 80),
-              itemCount: universities.length,
-              itemBuilder: (context, index) {
-                final university = universities[index];
-                return Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    title: Text(
-                      university.name ?? 'No name',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
+                if (universities.isEmpty) {
+                  return const Center(child: Text('No universities found'));
+                }
+
+                return RefreshIndicator(
+                  onRefresh: _refreshUniversities,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(
+                        top: 16, left: 16, right: 16, bottom: 80),
+                    itemCount: universities.length,
+                    itemBuilder: (context, index) {
+                      final university = universities[index];
+                      return Card(
+                        elevation: 2,
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          title: Text(
+                            university.name ?? 'No name',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
-                    ),
-                    subtitle: Builder(builder: (context) {
-                      var text = 'No faculties';
-                      if (university.faculties == null) {
-                        text = 'No faculties';
-                      } else if (university.faculties!.isNotEmpty) {
-                        text =
-                            'Faculties: ${university.faculties!.length.toString()}';
-                      }
-                      return Text(
-                        text,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                          subtitle: Builder(builder: (context) {
+                            var text = 'No faculties';
+                            if (university.faculties == null) {
+                              text = 'No faculties';
+                            } else if (university.faculties!.isNotEmpty) {
+                              text =
+                                  'Faculties: ${university.faculties!.length.toString()}';
+                            }
+                            return Text(
+                              text,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            );
+                          }),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.blue),
+                                onPressed: () => onEditUniversity(university),
+                              ),
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => onDeleteUniversity(university),
+                              ),
+                            ],
+                          ),
+                          onTap: () => onTapUniversity(university),
+                        ),
                       );
-                    }),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () => onEditUniversity(university),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => onDeleteUniversity(university),
-                        ),
-                      ],
-                    ),
-                    onTap: () => onTapUniversity(university),
+                    },
                   ),
                 );
               },
             ),
-          );
-        },
-      ),
-    );
+          ).expand(flex: 1),
+          if (panelWidget != null && isLargeScreen) ...[
+            const VerticalDivider(width: 1),
+            Stack(children: [
+              panelWidget!,
+              Positioned(
+                top: 8,
+                left: 12,
+                child: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => setState(() => panelWidget = null),
+                  tooltip: 'Close panel',
+                ),
+              ),
+            ]).expand(flex: 2),
+          ],
+        ],
+      );
+    });
   }
 }
