@@ -36,6 +36,7 @@ dependencies:
   go_router: ^14.6.0
   riverpod: ^2.6.1
   flutter_riverpod: ^2.6.1
+  flutter_dotenv: ^5.2.1
   dio: ^5.7.0
   velocity_x: ^4.2.1
   shared_preferences: ^2.3.3
@@ -81,6 +82,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

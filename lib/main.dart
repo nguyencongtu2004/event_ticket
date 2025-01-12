@@ -1,17 +1,21 @@
 import 'package:event_ticket/router/router.dart';
 import 'package:event_ticket/service/firebase_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'theme.dart';
 
 void main() async {
-  // Đặt hướng đứng cho ứng dụng
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // Đặt hướng đứng cho ứng dụng
+  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Khởi tạo Firebase
   await FirebaseService.init();
+
+  // Load file .env
+  await dotenv.load(fileName: ".env");
 
   // Chạy app
   runApp(const ProviderScope(child: TicketApp()));

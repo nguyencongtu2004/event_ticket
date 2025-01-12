@@ -1,15 +1,7 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class Api {
-  // 10.0.2.2 -> localhost for Android emulator
-  // static const String baseUrl = 'http://10.0.2.2:3001/api/';
-
-  // Tú
-  static const String baseUrl = 'https://b3510dzk-3001.asse.devtunnels.ms/api/';
-
-  // 2ANS
-  // static const String baseUrl = 'https://rmlq6088-3001.asse.devtunnels.ms/api/';
-
-  // Tuân
-  // static const String baseUrl = 'https://xdv4ncqf-3001.asse.devtunnels.ms/api/';
+  static final String baseUrl = dotenv.env['BASE_URL'] ?? '';
 
   // Auth
   static const String login = 'auth/login';
