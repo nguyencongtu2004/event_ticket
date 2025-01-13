@@ -19,6 +19,7 @@ extension ContextExtension on BuildContext {
   }
 
   void showAnimatedToast(String message, {bool isError = false}) {
+    if (message.trim().isEmpty) return;
     final overlay = Overlay.of(this);
     final width = MediaQuery.sizeOf(this).width;
     final overlayEntry = OverlayEntry(
