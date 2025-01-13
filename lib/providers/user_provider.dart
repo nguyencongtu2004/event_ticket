@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:event_ticket/requests/user_request.dart';
@@ -29,13 +29,16 @@ class UserNotifier extends AsyncNotifier<User?> {
     }
   }
 
-  Future<bool> updateUser(User newUser, File? file) async {
+  Future<bool> updateUser(User newUser, Uint8List? imageBytes) async {
     try {
       final formData = FormData.fromMap({
         ...newUser.toJson(),
-        if (file != null)
-          'avatar': await MultipartFile.fromFile(file.path,
-              filename: file.path.split('/').last),
+        if (imageBytes != null)
+          'avatar': MultipartFile.fromBytes(
+            imageBytes, // Sử dụng dữ liệu nhị phân Uint8List
+            filename: 'avatar.png', // Đặt tên tệp
+            contentType: DioMediaType('image', 'png'),
+          ),
       });
 
       final response = await _userRequest.updateUserInfo(formData);
@@ -44,7 +47,6 @@ class UserNotifier extends AsyncNotifier<User?> {
       }
 
       // Cập nhật lại trạng thái với user mới từ API
-      // lấy dữ liệu người dùng đã cập nhật từ response
       final updatedUser = User.fromJson(response.data);
       state = AsyncValue.data(updatedUser);
 

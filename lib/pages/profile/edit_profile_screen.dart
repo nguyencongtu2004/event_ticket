@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/extensions/context_extesion.dart';
@@ -23,7 +23,7 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late User editedUser;
-  File? _selectedImage;
+  Uint8List? _selectedImageBytes;
   var _isLoading = false;
   final _universityRequest = UniversityRequest();
   List<University> availableUniversities = [];
@@ -105,9 +105,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
+      final bytes = await pickedFile.readAsBytes();
+      setState(() => _selectedImageBytes = bytes);
     }
   }
 
@@ -119,7 +118,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       setState(() => _isLoading = true);
       final isSuccess = await ref
           .read(userProvider.notifier)
-          .updateUser(editedUser, _selectedImage);
+          .updateUser(editedUser, _selectedImageBytes); // Sử dụng Uint8List
       setState(() => _isLoading = false);
 
       if (isSuccess) {
@@ -149,7 +148,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           PickAvatar(
                             user,
                             radius: 70,
-                            selectedImage: _selectedImage,
+                            selectedImageBytes: _selectedImageBytes,
                             onTap: _pickImage,
                             showCamera: true,
                           ).centered(),
@@ -160,7 +159,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         PickAvatar(
                           user,
                           radius: 70,
-                          selectedImage: _selectedImage,
+                          selectedImageBytes: _selectedImageBytes,
                           onTap: _pickImage,
                           showCamera: true,
                         ).centered(),

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:event_ticket/models/user.dart';
 import 'package:flutter/material.dart';
 
@@ -8,14 +8,14 @@ class PickAvatar extends StatelessWidget {
     super.key,
     this.radius = 30,
     this.onTap,
-    this.selectedImage,
+    this.selectedImageBytes,
     this.showCamera = false,
   });
 
   final User? user;
   final double radius;
   final VoidCallback? onTap;
-  final File? selectedImage;
+  final Uint8List? selectedImageBytes; // Thay File bằng Uint8List
   final bool showCamera;
 
   @override
@@ -50,18 +50,18 @@ class PickAvatar extends StatelessWidget {
   }
 
   ImageProvider? _getBackgroundImage() {
-    if (selectedImage != null) {
-      return FileImage(selectedImage!);
+    if (selectedImageBytes != null) {
+      return MemoryImage(selectedImageBytes!); // Hiển thị từ Uint8List
     }
     if (user?.avatar != null && user!.avatar!.isNotEmpty) {
-      return NetworkImage(user!.avatar!);
+      return NetworkImage(user!.avatar!); // Hiển thị từ URL
     }
     return null;
   }
 
   Widget? _buildChild(BuildContext context) {
     // Nếu đã có ảnh được chọn, không hiển thị child
-    if (selectedImage != null) return null;
+    if (selectedImageBytes != null) return null;
 
     // Nếu có camera và không có ảnh, hiển thị icon camera
     if (showCamera && user?.avatar == null) {

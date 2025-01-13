@@ -294,17 +294,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen>
                         ],
                       ),
               ),
-              if (isLargeScreen)
-                Column(
-                  children: [
-                    Text(
-                      'Checked-in tickets',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ).p(16),
-                    const Divider(),
-                    const CheckList().expand(),
-                  ],
-                ).w(400),
+              if (isLargeScreen) const CheckList().expand().w(400),
             ],
           ),
         );

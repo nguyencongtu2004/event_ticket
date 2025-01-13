@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:event_ticket/enum.dart';
 import 'package:event_ticket/extensions/context_extesion.dart';
@@ -47,7 +47,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
   final FocusNode _maxAttendeesFocus = FocusNode();
   final FocusNode _timeFocus = FocusNode();
 
-  List<File> _selectedImages = [];
+  List<Map<String, dynamic>> _selectedImages = [];
   DateTime? _selectedDate = DateTime.now().add(const Duration(days: 7));
   Category? _selectedCategory;
   List<Category> _categories = [];
@@ -77,30 +77,47 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
   void _pickImages() async {
     final picker = ImagePicker();
     final pickedFiles = await picker.pickMultiImage();
+    if (pickedFiles.isEmpty) return;
 
-    setState(() {
-      _selectedImages = pickedFiles.map((file) => File(file.path)).toList();
-    });
+    // Đọc dữ liệu hình ảnh dưới dạng Uint8List
+    final imageData = await Future.wait(
+      pickedFiles.map((file) async {
+        return {
+          'path': file.path,
+          'bytes': await file.readAsBytes(), // Dữ liệu Uint8List
+        };
+      }),
+    );
+
+    setState(() => _selectedImages = imageData);
   }
 
   void _addImage() async {
     final picker = ImagePicker();
     final pickedFiles = await picker.pickMultiImage();
-    if (pickedFiles.isNotEmpty) {
-      setState(() {
-        // Convert new files to File objects
-        final newFiles = pickedFiles.map((file) => File(file.path));
+    if (pickedFiles.isEmpty) return;
 
-        // Add only files that don't exist in _selectedImages
-        for (var newFile in newFiles) {
-          bool isDuplicate = _selectedImages
-              .any((existingFile) => existingFile.path == newFile.path);
-          if (!isDuplicate) {
-            _selectedImages.add(newFile);
-          }
+    final newImages = await Future.wait(
+      pickedFiles.map((file) async {
+        final bytes = await file.readAsBytes(); // Đọc dữ liệu Uint8List
+        return {
+          'path': file.path,
+          'bytes': bytes
+        }; // Trả về bản đồ chứa dữ liệu
+      }),
+    );
+
+    setState(() {
+      for (var newImage in newImages) {
+        // Kiểm tra trùng lặp dựa trên bytes
+        bool isDuplicate = _selectedImages.any((existingImage) {
+          return existingImage['bytes'] == newImage['bytes'];
+        });
+        if (!isDuplicate) {
+          _selectedImages.add(newImage);
         }
-      });
-    }
+      }
+    });
   }
 
   void _pickDate(BuildContext context) async {
@@ -185,19 +202,23 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
       };
 
       if (_selectedImages.isNotEmpty) {
-        eventData['images'] = _selectedImages
-            .map((image) => MultipartFile.fromFileSync(image.path))
-            .toList();
+        eventData['images'] = _selectedImages.map((imageData) {
+          return MultipartFile.fromBytes(
+            imageData['bytes'], // Sử dụng dữ liệu Uint8List
+            filename: imageData['path'].split('/').last, // Lấy tên file
+          );
+        }).toList();
       }
 
       FormData formData = FormData.fromMap(eventData);
 
-      // Call API to create event
+      // Gọi API để tạo sự kiện
       setState(() => _isLoading = true);
       final created = await ref
           .read(eventManagementProvider.notifier)
           .createEvent(formData);
       setState(() => _isLoading = false);
+
       if (mounted) {
         if (created) {
           Navigator.of(context).pop(true);
@@ -226,39 +247,68 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
         else
           IconButton(
             icon: const Icon(Icons.check),
-            onPressed: () async {
-              await _createEvent();
-            },
+            onPressed: () async => await _createEvent(),
           ),
       ],
-      body: DefaultTabController(
-        length: 2,
-        child: Column(
-          children: [
-            TabBar(
-              onTap: (index) {
-                setState(() {
-                  currentIndex = index;
-                });
-              },
-              tabs: const [
-                Tab(text: 'General Information'),
-                Tab(text: 'Collaborators'),
+      body: LayoutBuilder(builder: (context, constraints) {
+        final isLargeScreen = constraints.maxWidth > 800;
+        if (isLargeScreen) {
+          return Form(
+            key: _formKey,
+            child: Row(
+              children: [
+                Column(
+                  children: [
+                    Text('General Information',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            )).px(16),
+                    _buildGeneralInformationTab().expand(),
+                  ],
+                ).expand(flex: 2),
+                const VerticalDivider(width: 1),
+                Column(
+                  children: [
+                    Text('Collaborators',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            )).px(16),
+                    _buildCollaboratorsTab().expand(),
+                  ],
+                ).expand(flex: 1),
               ],
-            ),
-            Form(
-              key: _formKey,
-              child: IndexedStack(
-                index: currentIndex,
-                children: [
-                  _buildGeneralInformationTab(),
-                  _buildCollaboratorsTab(),
+            ).w(1200).px(24).centered(),
+          );
+        }
+        return DefaultTabController(
+          length: 2,
+          child: Column(
+            children: [
+              TabBar(
+                onTap: (index) {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                tabs: const [
+                  Tab(text: 'General Information'),
+                  Tab(text: 'Collaborators'),
                 ],
               ),
-            ).expand(),
-          ],
-        ),
-      ),
+              Form(
+                key: _formKey,
+                child: IndexedStack(
+                  index: currentIndex,
+                  children: [
+                    _buildGeneralInformationTab(),
+                    _buildCollaboratorsTab(),
+                  ],
+                ),
+              ).expand(),
+            ],
+          ),
+        );
+      }),
     ).hero('addEvent');
   }
 
@@ -271,10 +321,10 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
           ListView(
             scrollDirection: Axis.horizontal,
             children: [
-              ..._selectedImages.map((image) => Stack(
+              ..._selectedImages.map((imageData) => Stack(
                     children: [
-                      Image.file(
-                        image,
+                      Image.memory(
+                        imageData['bytes'] as Uint8List,
                         fit: BoxFit.cover,
                       ).p(4).w(150).h(150),
                       Positioned(
@@ -282,11 +332,8 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
                         right: 0,
                         child: IconButton(
                           icon: const Icon(Icons.close, color: Colors.red),
-                          onPressed: () {
-                            setState(() {
-                              _selectedImages.remove(image);
-                            });
-                          },
+                          onPressed: () =>
+                              setState(() => _selectedImages.remove(imageData)),
                           tooltip: 'Remove image',
                         ),
                       ),
@@ -306,7 +353,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
                       ),
                     ],
                   ),
-                ).p(4).wFull(context).h(150).onTap(_pickImages)
+                ).p(4).h(150).w(450).onTap(_pickImages)
               else
                 Container(
                   color: Colors.grey[300],
