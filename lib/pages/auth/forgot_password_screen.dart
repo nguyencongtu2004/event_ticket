@@ -65,10 +65,20 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset(
-                          'assets/icons/app_icon.png',
-                          width: 120,
-                          height: 120,
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 4,
+                              color:
+                                  context.primaryColor.withValues(alpha: 0.2),
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Image.asset(
+                            'assets/icons/app_icon_removebg.png',
+                            width: 120,
+                            height: 120,
+                          ),
                         ),
                         const SizedBox(height: 24),
                         Text(
