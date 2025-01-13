@@ -1,7 +1,8 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Api {
-  static final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  // static final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  static const String baseUrl = 'https://b3510dzk-3001.asse.devtunnels.ms/api/';
 
   // Auth
   static const String login = 'auth/login';

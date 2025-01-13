@@ -6,6 +6,7 @@ import 'package:event_ticket/requests/ticket_request.dart';
 import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/extensions/extension.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -59,7 +60,9 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
   }
 
   Future<void> onBuyerTap() async {
-    final Uri url = Uri.parse(ticket!.paymentData!.deeplink!);
+    final Uri url = kIsWeb
+        ? Uri.parse(ticket!.paymentData!.payUrl!)
+        : Uri.parse(ticket!.paymentData!.deeplink!);
     try {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } catch (e) {
@@ -263,7 +266,7 @@ class _TicketDetailScreenState extends ConsumerState<TicketDetailScreen> {
                     )
                 ],
               ),
-            ),
+            ).w(600).centered(),
     );
   }
 

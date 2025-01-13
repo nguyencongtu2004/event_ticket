@@ -65,7 +65,7 @@ class _EventScreenState extends ConsumerState<EventScreen> {
             onPressed: onNotificationScreen,
             tooltip: 'Notifications',
           ),
-        )
+        ).px(unreadNotificationCount > 0 ? 8 : 0),
       ],
       body: LayoutBuilder(
         builder: (context, constraints) {

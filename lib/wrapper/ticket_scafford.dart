@@ -8,6 +8,7 @@ class TicketScaffold extends StatelessWidget {
     this.appBarActions,
     this.title,
     this.floatingActionButton,
+    this.showAppBar = true,
   });
 
   final Widget? body;
@@ -15,13 +16,14 @@ class TicketScaffold extends StatelessWidget {
   final List<Widget>? appBarActions;
   final String? title;
   final Widget? floatingActionButton;
+  final bool showAppBar;
 
   final noContent = const Center(child: Text('No content'));
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: (title == null && appBar == null)
+      appBar: (!showAppBar || (title == null && appBar == null))
           ? null
           : appBar ??
               AppBar(

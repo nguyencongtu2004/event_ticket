@@ -12,6 +12,7 @@ import 'package:event_ticket/router/routes.dart';
 import 'package:event_ticket/extensions/extension.dart';
 import 'package:event_ticket/wrapper/avatar.dart';
 import 'package:event_ticket/wrapper/ticket_scafford.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -51,7 +52,9 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     final ticket = Ticket.fromJson(response.data as Map<String, dynamic>);
 
     if (ticket.paymentData?.deeplink != null) {
-      final Uri url = Uri.parse(ticket.paymentData!.deeplink!);
+      final Uri url = kIsWeb
+          ? Uri.parse(ticket.paymentData!.payUrl!)
+          : Uri.parse(ticket.paymentData!.deeplink!);
       try {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } catch (e) {
