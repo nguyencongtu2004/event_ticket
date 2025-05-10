@@ -19,4 +19,4 @@ class AppTheme {
     //scaffoldBackgroundColor: backgroundColor,
     colorScheme: ColorScheme.fromSeed(seedColor: backgroundColor),
   );
-  }
+}

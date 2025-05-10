@@ -38,10 +38,10 @@ dependencies:
   flutter_riverpod: ^2.6.1
   flutter_dotenv: ^5.2.1
   dio: ^5.7.0
-  velocity_x: ^4.2.1
+  velocity_x: ^4.3.1
   shared_preferences: ^2.3.3
   image_picker: ^1.1.2
-  intl: ^0.19.0
+  intl: ^0.20.0
   url_launcher: ^6.3.1
   mobile_scanner: ^6.0.2
   qr_flutter: ^4.1.0

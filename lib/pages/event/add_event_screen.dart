@@ -124,7 +124,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
     final selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now().add(const Duration(days: 7)),
-      firstDate: DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
     if (selectedDate != null) {

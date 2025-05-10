@@ -2,7 +2,8 @@
 
 class Api {
   // static final String baseUrl = dotenv.env['BASE_URL'] ?? '';
-  static const String baseUrl = 'https://b3510dzk-3001.asse.devtunnels.ms/api/';
+  // static const String baseUrl = 'https://b3510dzk-3001.asse.devtunnels.ms/api/';
+  static const String baseUrl = 'http://localhost:3001/api/';
 
   // Auth
   static const String login = 'auth/login';

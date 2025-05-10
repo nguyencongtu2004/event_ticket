@@ -170,7 +170,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           TextField(
                             controller: emailController
                               ..text = 'congtu2132004@gmail.com',
-                            // controller: emailController,
+                            //controller: emailController,
                             decoration: InputDecoration(
                               labelText: 'Email',
                               prefixIcon: const Icon(Icons.email_outlined),
@@ -184,8 +184,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                           // Password Input
                           TextField(
+                            //controller: passwordController,
                             controller: passwordController..text = '471320',
-                            // controller: passwordController,
                             decoration: InputDecoration(
                               labelText: 'Password',
                               prefixIcon: const Icon(Icons.lock_outline),
